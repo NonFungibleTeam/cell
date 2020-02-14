@@ -18,5 +18,6 @@ contract Cell is ERC721Full {
         owner1.transfer(1 finney);
         owner2.transfer(1 finney);
         owner3.transfer(0 finney);
+        owner4.transfer(0 finney);
     }
 }
