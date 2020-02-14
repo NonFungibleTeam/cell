@@ -16,7 +16,9 @@
     "url": "https://github.com/NonFungibleTeam/cell/issues"
   },
   "homepage": "https://github.com/NonFungibleTeam/cell#readme",
-  "dependencies": {
-    "@openzeppelin/contracts": "^2.5.0"
+  "dependencies": {},
+  "devDependencies": {
+    "@openzeppelin/contracts": "^2.5.0",
+    "truffle": "^5.1.13"
   }
 }
