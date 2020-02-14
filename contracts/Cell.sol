@@ -17,5 +17,6 @@ contract Cell is ERC721Full {
         _mint(msg.sender, tokenId1.add(tokenId2));
         owner1.transfer(1 finney);
         owner2.transfer(1 finney);
+        owner3.transfer(0 finney);
     }
 }
