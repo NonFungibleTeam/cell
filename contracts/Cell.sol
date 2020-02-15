@@ -11,7 +11,7 @@ contract Cell is ERC721Full {
     address payable public owner = address(0xA096b47EbF7727d01Ff4F09c34Fc6591f2c375F0);
 
     struct Wall {
-        uint25 wave;
+        uint32 wave;
         bool round;
         uint24 color;
     }
@@ -22,8 +22,9 @@ contract Cell is ERC721Full {
     }
 
     struct Feature {
-        uint3 type;
-        uint4 count;
+        uint8 category;
+        uint8 family;
+        uint8 count;
         uint24 color;
     }
 
@@ -78,9 +79,10 @@ contract Cell is ERC721Full {
     }
 
     function get(uint id) external view returns (uint mass,
-        uint25 wallWave, bool wallRound, uint24 wallColor,
+        uint32 wallWave, bool wallRound, uint24 wallColor,
         bool nucleusHidden, uint24 nucleusColor,
-        uint3[] featureTypes, uint4[] featureCounts, uint24[] featureColors
+        uint8[] memory featureCategories, uint8[] memory featureFamilies,
+        uint8[] memory featureCounts, uint24[] memory featureColors
     ) {
         Metadata memory cell = id_to_cell[id];
         mass = cell.mass;
@@ -89,7 +91,8 @@ contract Cell is ERC721Full {
         wallColor = cell.wall.color;
         nucleusHidden = cell.nucleus.hidden;
         nucleusColor = cell.nucleus.color;
-        featureTypes = cell.features.type;
+        featureCategories = cell.features.category;
+        featureFamilies = cell.features.family;
         featureCounts = cell.features.count;
         featureColors = cell.features.color;
     }
