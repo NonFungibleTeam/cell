@@ -1,15 +1,17 @@
 <template lang="pug">
   v-app
     v-app-bar(app color="primary" dark)
-      .title Microverse
+      v-btn(
+        to="/"
+        text)
+        span.mr-2.title Microverse
+
       v-spacer
 
       v-btn(
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
+        to="/about"
         text)
-        span.mr-2 Latest Release
-        v-icon mdi-open-in-new
+        span.mr-2 About
     v-content
       router-view
 </template>
