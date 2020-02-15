@@ -32,6 +32,8 @@ contract Cell is ERC721Full {
         Feature[] features;
     }
 
+    mapping(uint => Metadata) id_to_cell;
+
     constructor() ERC721Full("Cell", "(Y)") public {
         massPool = 53000000000000000000000000000000000000;
         _mint(msg.sender, 1);
@@ -46,5 +48,22 @@ contract Cell is ERC721Full {
         owner2.transfer(1 finney);
         owner3.transfer(0 finney);
         owner4.transfer(0 finney);
+    }
+
+    function get(uint id) external view returns (uint mass,
+        uint25 wallWave, bool wallRound, uint24 wallColor,
+        bool nucleusHidden, uint24 nucleusColor,
+        uint3[] featureTypes, uint4[] featureCounts, uint24[] featureColors
+    ) {
+        Metadata memory cell = id_to_cell[id];
+        mass = cell.mass;
+        wallWave = cell.wall.wave;
+        wallRound = cell.wall.round;
+        wallColor = cell.wall.color;
+        nucleusHidden = cell.nucleus.hidden;
+        nucleusColor = cell.nucleus.color;
+        featureTypes = cell.features.type;
+        featureCounts = cell.features.count;
+        featureColors = cell.features.color;
     }
 }
