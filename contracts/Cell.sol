@@ -41,10 +41,15 @@ contract Cell is ERC721Full, usingProvable {
     mapping(bytes32 => address) public provableQueryToAddress;
     mapping(bytes32 => uint) public provableQueryToTokenId;
     mapping(uint => uint) public nftSeed;
+    
+    event LogMintQuery(address minter, bytes32 queryId, uint seed, uint tokenId);
 
     constructor() ERC721Full("Cell", "(Y)") public {
         massPool = 53000000000000000000000000000000000000;
         _mint(msg.sender, 1);
+        proxyRegistryAddress = _proxyRegistryAddress;
+        provable_setProof(proofType_Ledger);
+        provable_setCustomGasPrice(gasPrice);
     }
 
     function __callback(bytes32 _queryId, string memory _result, bytes memory _proof) public {
@@ -52,13 +57,12 @@ contract Cell is ERC721Full, usingProvable {
 
         uint16 seed = provableQueryToSeed[_queryId];
         address minterAddr = provableQueryToAddress[_queryId];
-        uint tokenId = provableQueryToTokenId[_queryId];
+        uint tokenId1 = provableQueryToTokenId[_queryId];
 
         uint rand = uint(
                 keccak256(abi.encodePacked(_result)) ^ blockhash(block.number-1) ^ bytes32(uint(seed))
             );
-        nftSeed[tokenId] = rand.mod(65535);
-        }
+        nftSeed[tokenId1] = rand.mod(65535);
 
         _safeMint(minterAddr,tokenId);
         
@@ -68,7 +72,7 @@ contract Cell is ERC721Full, usingProvable {
     }
 
 
-    function mint() public payable {
+    function mint(uint16 seed) public payable {
         require(msg.value == 2 finney);
         require(massPool >= 8);
         uint tokenId = totalSupply() + 1;
@@ -76,6 +80,17 @@ contract Cell is ERC721Full, usingProvable {
         massPool = massPool.sub(8);
         _mint(msg.sender, tokenId);
         owner.toPayable().sendValue(2 finney);
+
+        bytes32 queryId = provable_newRandomDSQuery(
+            0, //Execution delay
+            NUM_RANDOM_BYTES_REQUESTED,
+            gasAmount
+        );
+        emit LogMintQuery(msg.sender, queryId, seed, _currentTokenId);
+        provableQueryToSeed[queryId] = seed;
+        provableQueryToAddress[queryId] = msg.sender;
+        provableQueryToTokenId[queryId] = tokenId;
+
     }
 
     function merge(uint id1, uint id2) public payable {
