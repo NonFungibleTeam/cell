@@ -2,7 +2,7 @@ pragma solidity ^0.5.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721Full.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
-import "github.com/provable-things/ethereum-api/provableAPI_0.4.25.sol";
+import "./provableAPI_0.5.sol";
 
 contract Cell is ERC721Full, usingProvable {
     using Address for address payable;
