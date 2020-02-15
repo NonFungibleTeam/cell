@@ -6,7 +6,34 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 contract Cell is ERC721Full {
     using SafeMath for uint256;
 
+    uint public massPool;
+
+    struct Wall {
+        uint25 wave;
+        bool round;
+        uint24 color;
+    }
+
+    struct Nucleus {
+        bool hidden;
+        uint24 color;
+    }
+
+    struct Feature {
+        uint3 type;
+        uint4 count;
+        uint24 color;
+    }
+
+    struct Metadata {
+        uint mass;
+        Wall wall;
+        Nucleus nucleus;
+        Feature[] features;
+    }
+
     constructor() ERC721Full("Cell", "(Y)") public {
+        massPool = 53000000000000000000000000000000000000;
         _mint(msg.sender, 1);
     }
 
