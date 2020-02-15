@@ -14,6 +14,7 @@ contract Cell is ERC721Full, usingProvable {
     using Address for address payable;
     using SafeMath for uint256;
 
+    uint public maxTokenId;
     uint public massPool;
     address payable public owner = address(0xA096b47EbF7727d01Ff4F09c34Fc6591f2c375F0);
     address proxyRegistryAddress;
@@ -58,6 +59,7 @@ contract Cell is ERC721Full, usingProvable {
     constructor(address _proxyRegistryAddress) ERC721Full("Cell", "(Y)") public {
         massPool = 53000000000000000000000000000000000000;
         _mint(msg.sender, 1);
+        maxTokenId = 1;
         proxyRegistryAddress = _proxyRegistryAddress;
         provable_setProof(proofType_Ledger);
         provable_setCustomGasPrice(gasPrice);
@@ -86,14 +88,14 @@ contract Cell is ERC721Full, usingProvable {
     function mint(uint16 seed) public payable {
         require(msg.value == 2 finney);
         require(massPool >= 8);
-        uint tokenId = totalSupply() + 1;
-        Metadata storage cell = id_to_cell[tokenId];
+        maxTokenId++;
+        Metadata storage cell = id_to_cell[maxTokenId];
         cell.mass = 2;
         cell.wall = Wall(1, true, 1);
         cell.nucleus = Nucleus(true, 1);
         cell.features[0] = Feature(1, 1, 1, 1);
         massPool = massPool.sub(8);
-        _mint(msg.sender, tokenId);
+        _mint(msg.sender, maxTokenId);
         owner.toPayable().sendValue(2 finney);
 
         bytes32 queryId = provable_newRandomDSQuery(
@@ -113,13 +115,13 @@ contract Cell is ERC721Full, usingProvable {
         require(massPool > 0);
         require(ownerOf(id1) == msg.sender);
         require(ownerOf(id2) == msg.sender);
-        uint tokenId = totalSupply() + 1;
-        Metadata storage cell = id_to_cell[tokenId];
+        maxTokenId++;
+        Metadata storage cell = id_to_cell[maxTokenId];
         cell.mass = 2;
         cell.wall = Wall(1, true, 1);
         cell.nucleus = Nucleus(true, 1);
         cell.features[0] = Feature(1, 1, 1, 1);
-        _mint(msg.sender, tokenId);
+        _mint(msg.sender, maxTokenId);
         _burn(id1);
         _burn(id2);
         owner.toPayable().sendValue(2 finney);
@@ -129,20 +131,20 @@ contract Cell is ERC721Full, usingProvable {
         require(msg.value == 2 finney);
         require(massPool > 0);
         require(ownerOf(id) == msg.sender);
-        uint tokenId1 = totalSupply() + 1;
-        Metadata storage cell1 = id_to_cell[tokenId1];
+        maxTokenId++;
+        Metadata storage cell1 = id_to_cell[maxTokenId];
         cell1.mass = 2;
         cell1.wall = Wall(1, true, 1);
         cell1.nucleus = Nucleus(true, 1);
         cell1.features[0] = Feature(1, 1, 1, 1);
-        _mint(msg.sender, tokenId1);
-        uint tokenId2 = totalSupply() + 1;
-        Metadata storage cell2 = id_to_cell[tokenId2];
+        _mint(msg.sender, maxTokenId);
+        maxTokenId++;
+        Metadata storage cell2 = id_to_cell[maxTokenId];
         cell2.mass = 2;
         cell2.wall = Wall(1, true, 1);
         cell2.nucleus = Nucleus(true, 1);
         cell2.features[0] = Feature(1, 1, 1, 1);
-        _mint(msg.sender, tokenId2);
+        _mint(msg.sender, maxTokenId);
         _burn(id);
         owner.toPayable().sendValue(2 finney);
     }
