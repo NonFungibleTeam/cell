@@ -4,13 +4,24 @@ import "@openzeppelin/contracts/token/ERC721/ERC721Full.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "./provableAPI_0.5.sol";
 
+contract OwnableDelegateProxy { }
+
+contract ProxyRegistry {
+    mapping(address => OwnableDelegateProxy) public proxies;
+}
+
 contract Cell is ERC721Full, usingProvable {
     using Address for address payable;
     using SafeMath for uint256;
 
     uint public massPool;
     address payable public owner = address(0xA096b47EbF7727d01Ff4F09c34Fc6591f2c375F0);
-
+    address proxyRegistryAddress;
+    uint constant private NUM_RANDOM_BYTES_REQUESTED = 2; //The variable `ceiling` should never be greater than: `(256 ^ NUM_RANDOM_BYTES_REQUESTED) - 1`.
+    uint private _currentTokenId;
+    uint private gasPrice = 4010000000; //many set exactly 4gwei, so adding 0.01 gwei increases speed much more than expected.
+    uint private gasAmount = 250000;
+    
     struct Wall {
         uint32 wave;
         bool round;
@@ -44,7 +55,7 @@ contract Cell is ERC721Full, usingProvable {
     
     event LogMintQuery(address minter, bytes32 queryId, uint seed, uint tokenId);
 
-    constructor() ERC721Full("Cell", "(Y)") public {
+    constructor(address _proxyRegistryAddress) ERC721Full("Cell", "(Y)") public {
         massPool = 53000000000000000000000000000000000000;
         _mint(msg.sender, 1);
         proxyRegistryAddress = _proxyRegistryAddress;
@@ -57,14 +68,14 @@ contract Cell is ERC721Full, usingProvable {
 
         uint16 seed = provableQueryToSeed[_queryId];
         address minterAddr = provableQueryToAddress[_queryId];
-        uint tokenId1 = provableQueryToTokenId[_queryId];
+        uint tokenIdR = provableQueryToTokenId[_queryId];
 
         uint rand = uint(
                 keccak256(abi.encodePacked(_result)) ^ blockhash(block.number-1) ^ bytes32(uint(seed))
             );
-        nftSeed[tokenId1] = rand.mod(65535);
+        nftSeed[tokenIdR] = rand.mod(65535);
 
-        _safeMint(minterAddr,tokenId);
+        _safeMint(minterAddr,tokenIdR);
         
         delete provableQueryToSeed[_queryId];
         delete provableQueryToAddress[_queryId];
@@ -136,8 +147,24 @@ contract Cell is ERC721Full, usingProvable {
         owner.toPayable().sendValue(2 finney);
     }
 
-    function get(uint id) external view returns (uint mass) {
-        Metadata memory cell = id_to_cell[id];
+    function get(uint id) external view returns (uint mass,
+        uint32 wallWave, bool wallRound, uint24 wallColor,
+        bool nucleusHidden, uint24 nucleusColor,
+        uint8[] memory featureCategories, uint8[] memory featureFamilies,
+        uint8[] memory featureCounts, uint24[] memory featureColors
+    ) {
+        Metadata storage cell = id_to_cell[id];
         mass = cell.mass;
+        wallWave = cell.wall.wave;
+        wallRound = cell.wall.round;
+        wallColor = cell.wall.color;
+        nucleusHidden = cell.nucleus.hidden;
+        nucleusColor = cell.nucleus.color;
+        for (uint i = 0; i < 8; i++) {
+            featureCategories[i] = cell.features[i].category;
+            featureFamilies[i] = cell.features[i].family;
+            featureCounts[i] = cell.features[i].count;
+            featureColors[i] = cell.features[i].color;
+        }
     }
 }
