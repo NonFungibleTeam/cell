@@ -78,22 +78,7 @@ contract Cell is ERC721Full {
         owner.toPayable().sendValue(2 finney);
     }
 
-    function get(uint id) external view returns (uint mass,
-        uint32 wallWave, bool wallRound, uint24 wallColor,
-        bool nucleusHidden, uint24 nucleusColor,
-        uint8[] memory featureCategories, uint8[] memory featureFamilies,
-        uint8[] memory featureCounts, uint24[] memory featureColors
-    ) {
-        Metadata memory cell = id_to_cell[id];
-        mass = cell.mass;
-        wallWave = cell.wall.wave;
-        wallRound = cell.wall.round;
-        wallColor = cell.wall.color;
-        nucleusHidden = cell.nucleus.hidden;
-        nucleusColor = cell.nucleus.color;
-        featureCategories = cell.features.category;
-        featureFamilies = cell.features.family;
-        featureCounts = cell.features.count;
-        featureColors = cell.features.color;
+    function get(uint id) external view returns (Metadata memory cell) {
+        cell = id_to_cell[id];
     }
 }
