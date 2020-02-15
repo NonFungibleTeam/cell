@@ -147,8 +147,24 @@ contract Cell is ERC721Full, usingProvable {
         owner.toPayable().sendValue(2 finney);
     }
 
-    function get(uint id) external view returns (uint mass) {
-        Metadata memory cell = id_to_cell[id];
+    function get(uint id) external view returns (uint mass,
+        uint32 wallWave, bool wallRound, uint24 wallColor,
+        bool nucleusHidden, uint24 nucleusColor,
+        uint8[] memory featureCategories, uint8[] memory featureFamilies,
+        uint8[] memory featureCounts, uint24[] memory featureColors
+    ) {
+        Metadata storage cell = id_to_cell[id];
         mass = cell.mass;
+        wallWave = cell.wall.wave;
+        wallRound = cell.wall.round;
+        wallColor = cell.wall.color;
+        nucleusHidden = cell.nucleus.hidden;
+        nucleusColor = cell.nucleus.color;
+        for (uint i = 0; i < 8; i++) {
+            featureCategories[i] = cell.features[i].category;
+            featureFamilies[i] = cell.features[i].family;
+            featureCounts[i] = cell.features[i].count;
+            featureColors[i] = cell.features[i].color;
+        }
     }
 }
