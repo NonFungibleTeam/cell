@@ -106,7 +106,7 @@ contract Cell is ERC721Full, usingProvable {
         emit LogMintQuery(msg.sender, queryId, seed, _currentTokenId);
         provableQueryToSeed[queryId] = seed;
         provableQueryToAddress[queryId] = msg.sender;
-        provableQueryToTokenId[queryId] = tokenId;
+        provableQueryToTokenId[queryId] = maxTokenId;
 
     }
 
