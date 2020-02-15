@@ -43,12 +43,37 @@ contract Cell is ERC721Full {
 
     function mint() public payable {
         require(msg.value == 2 finney);
-        require(massPool > 0);
-        address payable owner1 = address(uint160(ownerOf(tokenId1)));
-        address payable owner2 = address(uint160(ownerOf(tokenId2)));
+        require(massPool >= 8);
         uint tokenId = totalSupply() + 1;
-        id_to_rgb[tokenId] = Metadata(mass, wall, nucleus, features);
+        id_to_cell[tokenId] = Metadata(mass, wall, nucleus, features);
+        massPool = massPool.sub(8);
         _mint(msg.sender, tokenId);
+        owner.toPayable().sendValue(2 finney);
+    }
+
+    function merge(uint id1, uint id2) public payable {
+        require(msg.value == 2 finney);
+        require(massPool > 0);
+        require(ownerOf(id1) == msg.sender);
+        require(ownerOf(id2) == msg.sender);
+        uint tokenId = totalSupply() + 1;
+        id_to_cell[tokenId] = Metadata(mass, wall, nucleus, features);
+        _mint(msg.sender, tokenId);
+        _burn(id1);
+        _burn(id2);
+        owner.toPayable().sendValue(2 finney);
+    }
+
+    function split(uint id) public payable {
+        require(msg.value == 2 finney);
+        require(massPool > 0);
+        require(ownerOf(id) == msg.sender);
+        uint tokenId = totalSupply() + 1;
+        id_to_cell[tokenId] = Metadata(mass, wall, nucleus, features);
+        _mint(msg.sender, tokenId);
+        id_to_cell[tokenId + 1] = Metadata(mass, wall, nucleus, features);
+        _mint(msg.sender, tokenId + 1);
+        _burn(id);
         owner.toPayable().sendValue(2 finney);
     }
 
