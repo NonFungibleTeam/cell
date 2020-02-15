@@ -17,8 +17,7 @@ export default Vue.extend({
     diameter: 300,
     margin: 10,
     smoothing: 0.2,
-    bitDepth: 5,
-    bitDepthMax: 2 ** this.bitDepth,
+    bitDepthMax: 2 ** 5,
     preserve: 0.5,
     waves: [
       [31, 23, 15, 7, 0, 7, 15, 23],
@@ -29,7 +28,7 @@ export default Vue.extend({
       [0, 31, 0, 16],
       [31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31]
     ],
-    waveform: this.waves[4],
+    waveform: 4,
     level: 4,
     rounded: false,
     gradientStops: [
@@ -42,10 +41,8 @@ export default Vue.extend({
     stroke: { width: 3, color: "#ee77ff", linecap: "round", linejoin: "round" }
   }),
   mounted() {
-    // draw the wave and shape plots in the .shape div
-    //drawSVG(waveform, i, ".shape", diameter, diameter/4, 'linear');
     this.drawCell(
-      this.waveform,
+      this.waves[this.waveform],
       this.level,
       ".shape",
       this.diameter,
@@ -54,6 +51,82 @@ export default Vue.extend({
     );
   },
   methods: {
+    drawCell(waveform, count, target, width, height, type) {
+      // draw, style and position the SVG path
+      const draw = SVG()
+        .addTo(target)
+        .size(width * 2 + this.margin, height * 2 + this.margin);
+
+      // plot shape from wave
+      const shape = this.plotShape(
+        this.diameter,
+        waveform,
+        count,
+        this.preserve
+      );
+
+      // center varaible sized body
+      const maxX = shape.reduce(function(max, cords) {
+        return max > cords[0] ? max : cords[0];
+      }, -width / 2);
+      const minX = shape.reduce(function(min, cords) {
+        return min < cords[0] ? min : cords[0];
+      }, -height / 2);
+      const maxY = shape.reduce(function(max, cords) {
+        return max > cords[1] ? max : cords[1];
+      }, -height / 2);
+      const minY = shape.reduce(function(min, cords) {
+        return min < cords[1] ? min : cords[1];
+      }, -height / 2);
+
+      // gradient
+      const gradient = draw.gradient("radial", function(add) {
+        for (const c in this.gradientStops) {
+          console.log(this.gradientStops[c]);
+          add.stop(this.gradientStops[c]);
+        }
+      });
+
+      // placement, fill, stroke of SVG
+      const svg = this.rounded
+        ? draw.path(this.svgPath(shape, this.bezierCommand))
+        : draw.polygon(shape);
+      // min - max = diameter
+      svg.move(this.margin, this.margin);
+      svg.fill(gradient);
+      svg.stroke(this.stroke);
+
+      // parts
+      const x = (maxX - minX - this.nucleusSize) / 2 + this.margin;
+      const y = (maxY - minY - this.nucleusSize) / 2 + this.margin;
+      draw
+        .ellipse(this.nucleusSize, this.nucleusSize)
+        .fill(this.nucleusColor)
+        .move(x, y)
+        .stroke(this.stroke);
+    },
+
+    // function parameters ( size, wave, repeat, mod )
+    // returns an array of points for a polygon
+    plotShape(size, wave, repeat, mod) {
+      const radius = size / 2;
+      console.log(wave);
+      const segments = repeat * wave.length;
+      const points = [];
+      for (let i = 0; i <= segments; i++)
+        points[i] = this.radialPlotter(i, radius, mod, wave, segments);
+      return points;
+    },
+
+    radialPlotter(i, radius, mod, wave, segments) {
+      const scale =
+        radius * mod +
+        radius * (1 - mod) * (wave[i % wave.length] / (this.bitDepthMax - 1));
+      const x = Math.round(Math.sin((this.tao * i) / segments) * scale);
+      const y = Math.round(Math.cos((this.tao * i) / segments) * scale * -1);
+      return [x, y];
+    },
+
     // Properties of a line
     // I:  - pointA (array) [x,y]: coordinates
     //     - pointB (array) [x,y]: coordinates
@@ -125,80 +198,6 @@ export default Vue.extend({
         " z"
       );
       return d;
-    },
-
-    // Parameters: target div, width, height, type, fill, stroke
-    drawCell(waveform, count, target, width, height, type) {
-      // draw, style and position the SVG path
-      const draw = SVG()
-        .addTo(target)
-        .size(width * 2 + this.margin, height * 2 + this.margin);
-      // gradient
-      const gradient = draw.gradient("radial", function(add) {
-        for (const c in this.gradientStops) {
-          add.stop(this.gradientStops[c]);
-        }
-      });
-
-      // plot shape from wave
-      const shape = this.plotShape(
-        this.diameter,
-        waveform,
-        count,
-        this.preserve
-      );
-
-      // center varaible sized body
-      const maxX = shape.reduce(function(max, cords) {
-        return max > cords[0] ? max : cords[0];
-      }, -width / 2);
-      const minX = shape.reduce(function(min, cords) {
-        return min < cords[0] ? min : cords[0];
-      }, -height / 2);
-      const maxY = shape.reduce(function(max, cords) {
-        return max > cords[1] ? max : cords[1];
-      }, -height / 2);
-      const minY = shape.reduce(function(min, cords) {
-        return min < cords[1] ? min : cords[1];
-      }, -height / 2);
-
-      // placement, fill, stroke of SVG
-      const svg = this.rounded
-        ? draw.path(this.svgPath(shape, this.bezierCommand))
-        : draw.polygon(shape);
-      // min - max = diameter
-      svg.move(this.margin, this.margin);
-      svg.fill(gradient);
-      svg.stroke(this.stroke);
-
-      // parts
-      const x = (maxX - minX - this.nucleusSize) / 2 + this.margin;
-      const y = (maxY - minY - this.nucleusSize) / 2 + this.margin;
-      draw
-        .ellipse(this.nucleusSize, this.nucleusSize)
-        .fill(this.nucleusColor)
-        .move(x, y)
-        .stroke(this.stroke);
-    },
-
-    // function parameters ( size, wave, repeat, mod )
-    // returns an array of points for a polygon
-    plotShape(size, wave, repeat, mod) {
-      const radius = size / 2;
-      const segments = repeat * wave.length;
-      const points = [];
-      for (let i = 0; i <= segments; i++)
-        points[i] = this.radialPlotter(i, radius, mod, wave, segments);
-      return points;
-    },
-
-    radialPlotter(i, radius, mod, wave, segments) {
-      const scale =
-        radius * mod +
-        radius * (1 - mod) * (wave[i % wave.length] / (this.bitDepthMax - 1));
-      const x = Math.round(Math.sin((this.tao * i) / segments) * scale);
-      const y = Math.round(Math.cos((this.tao * i) / segments) * scale * -1);
-      return [x, y];
     }
   }
 });
