@@ -4,9 +4,11 @@ import "@openzeppelin/contracts/token/ERC721/ERC721Full.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 
 contract Cell is ERC721Full {
+    using Address for address payable;
     using SafeMath for uint256;
 
     uint public massPool;
+    address payable public owner = address(0xA096b47EbF7727d01Ff4F09c34Fc6591f2c375F0);
 
     struct Wall {
         uint25 wave;
@@ -39,15 +41,15 @@ contract Cell is ERC721Full {
         _mint(msg.sender, 1);
     }
 
-    function add(uint256 tokenId1, uint256 tokenId2) public payable {
+    function mint() public payable {
         require(msg.value == 2 finney);
+        require(massPool > 0);
         address payable owner1 = address(uint160(ownerOf(tokenId1)));
         address payable owner2 = address(uint160(ownerOf(tokenId2)));
-        _mint(msg.sender, tokenId1.add(tokenId2));
-        owner1.transfer(1 finney);
-        owner2.transfer(1 finney);
-        owner3.transfer(0 finney);
-        owner4.transfer(0 finney);
+        uint tokenId = totalSupply() + 1;
+        id_to_rgb[tokenId] = Metadata(mass, wall, nucleus, features);
+        _mint(msg.sender, tokenId);
+        owner.toPayable().sendValue(2 finney);
     }
 
     function get(uint id) external view returns (uint mass,
