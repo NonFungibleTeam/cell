@@ -28,8 +28,8 @@ export default Vue.extend({
       [0, 31, 0, 16],
       [31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31]
     ],
-    waveform: 4,
-    level: 4,
+    waveform: 5,
+    level: 7,
     rounded: false,
     gradientStops: [
       { offset: 0.1, color: "#ffffff" },
@@ -68,35 +68,39 @@ export default Vue.extend({
       // center varaible sized body
       const maxX = shape.reduce(function(max, cords) {
         return max > cords[0] ? max : cords[0];
-      }, -width / 2);
+      }, 0);
       const minX = shape.reduce(function(min, cords) {
         return min < cords[0] ? min : cords[0];
-      }, -height / 2);
+      }, 0);
       const maxY = shape.reduce(function(max, cords) {
         return max > cords[1] ? max : cords[1];
-      }, -height / 2);
+      }, 0);
       const minY = shape.reduce(function(min, cords) {
         return min < cords[1] ? min : cords[1];
-      }, -height / 2);
+      }, 0);
 
       // gradient
-      const gradient = draw.gradient("radial", function(add) {
-        for (const c in this.gradientStops) {
-          console.log(this.gradientStops[c]);
-          add.stop(this.gradientStops[c]);
-        }
-      });
+      const gradient = draw.gradient(
+        "radial",
+        function(add) {
+          add.stop(this.gradientStops[0]);
+          add.stop(this.gradientStops[1]);
+          for (const c in this.gradientStops) {
+            add.stop(this.gradientStops[c]);
+          }
+        }.bind(this)
+      );
 
       // placement, fill, stroke of SVG
       const svg = this.rounded
         ? draw.path(this.svgPath(shape, this.bezierCommand))
         : draw.polygon(shape);
-      // min - max = diameter
-      svg.move(this.margin, this.margin);
-      svg.fill(gradient);
-      svg.stroke(this.stroke);
+      svg
+        .move(this.margin, this.margin)
+        .fill(gradient)
+        .stroke(this.stroke);
 
-      // parts
+      // nucleus
       const x = (maxX - minX - this.nucleusSize) / 2 + this.margin;
       const y = (maxY - minY - this.nucleusSize) / 2 + this.margin;
       draw
@@ -104,6 +108,18 @@ export default Vue.extend({
         .fill(this.nucleusColor)
         .move(x, y)
         .stroke(this.stroke);
+
+      // endoplasmic reticulum
+
+      // golgi aparatus
+
+      // mitocondria
+
+      // chloroplasts
+
+      // lisosome
+
+      // ribosomes
     },
 
     // function parameters ( size, wave, repeat, mod )
