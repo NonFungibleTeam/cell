@@ -6,7 +6,10 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 contract Cell is ERC721Full {
     using SafeMath for uint256;
 
+    uint public massPool;
+
     constructor() ERC721Full("Cell", "(Y)") public {
+        massPool = 53000000000000000000000000000000000000;
         _mint(msg.sender, 1);
     }
 
