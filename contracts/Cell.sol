@@ -32,7 +32,7 @@ contract Cell is ERC721Full {
         uint mass;
         Wall wall;
         Nucleus nucleus;
-        Feature[] features;
+        mapping(uint => Feature) features;
     }
 
     mapping(uint => Metadata) id_to_cell;
@@ -46,7 +46,11 @@ contract Cell is ERC721Full {
         require(msg.value == 2 finney);
         require(massPool >= 8);
         uint tokenId = totalSupply() + 1;
-        id_to_cell[tokenId] = Metadata(mass, wall, nucleus, features);
+        Metadata storage cell = id_to_cell[tokenId];
+        cell.mass = 2;
+        cell.wall = Wall(1, true, 1);
+        cell.nucleus = Nucleus(true, 1);
+        cell.features[0] = Feature(1, 1, 1, 1);
         massPool = massPool.sub(8);
         _mint(msg.sender, tokenId);
         owner.toPayable().sendValue(2 finney);
@@ -58,7 +62,11 @@ contract Cell is ERC721Full {
         require(ownerOf(id1) == msg.sender);
         require(ownerOf(id2) == msg.sender);
         uint tokenId = totalSupply() + 1;
-        id_to_cell[tokenId] = Metadata(mass, wall, nucleus, features);
+        Metadata storage cell = id_to_cell[tokenId];
+        cell.mass = 2;
+        cell.wall = Wall(1, true, 1);
+        cell.nucleus = Nucleus(true, 1);
+        cell.features[0] = Feature(1, 1, 1, 1);
         _mint(msg.sender, tokenId);
         _burn(id1);
         _burn(id2);
@@ -70,15 +78,20 @@ contract Cell is ERC721Full {
         require(massPool > 0);
         require(ownerOf(id) == msg.sender);
         uint tokenId = totalSupply() + 1;
-        id_to_cell[tokenId] = Metadata(mass, wall, nucleus, features);
+        Metadata storage cell = id_to_cell[tokenId];
+        cell.mass = 2;
+        cell.wall = Wall(1, true, 1);
+        cell.nucleus = Nucleus(true, 1);
+        cell.features[0] = Feature(1, 1, 1, 1);
         _mint(msg.sender, tokenId);
-        id_to_cell[tokenId + 1] = Metadata(mass, wall, nucleus, features);
+        id_to_cell[tokenId + 1] = cell;
         _mint(msg.sender, tokenId + 1);
         _burn(id);
         owner.toPayable().sendValue(2 finney);
     }
 
-    function get(uint id) external view returns (Metadata memory cell) {
-        cell = id_to_cell[id];
+    function get(uint id) external view returns (uint mass) {
+        Metadata memory cell = id_to_cell[id];
+        mass = cell.mass;
     }
 }
