@@ -1,7 +1,6 @@
 <template>
-<div id="app">
-  <div>How To Play:</div>
-  <v-app id="inspire">
+<div>
+  <div> How To Play:</div>
     <v-card
       class="mx-auto"
       max-width="1000"
@@ -77,7 +76,5 @@
         </v-btn>
       </v-card-actions>
     </v-card>
-
-  </v-app>
 </div>
 </template>
