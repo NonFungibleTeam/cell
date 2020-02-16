@@ -1,10 +1,8 @@
 <template lang="pug">
   v-app
     v-app-bar(app color="primary" dark)
-      v-toolbar-title(
-        to="/"
-        text)
-        span.mr-2.title Microverse
+      v-toolbar-title
+        router-link(to="/" text color="accent").mr-2.title Microverse
 
       v-spacer
 
@@ -56,4 +54,7 @@ body
 .title
   font-family: "Pangolin"
   font-size: 2rem
+  color: #ffffff
+  text-decoration: none
+  
 </style>
