@@ -28,7 +28,7 @@ export default Vue.extend({
       [0, 31, 0, 16],
       [31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31]
     ],
-    waveform: 5,
+    waveform: 0,
     level: 7,
     rounded: true,
     gradientStops: [
@@ -68,12 +68,11 @@ export default Vue.extend({
       this.level,
       ".shape",
       this.diameter,
-      this.diameter,
-      "radial"
+      this.diameter
     );
   },
   methods: {
-    drawCell(waveform, count, target, width, height, type) {
+    drawCell(waveform, count, target, width, height) {
       // draw, style and position the SVG path
       const draw = SVG()
         .addTo(target)
@@ -132,7 +131,7 @@ export default Vue.extend({
         .stroke(this.stroke);
 
       // endoplasmic reticulum
-      const ER1 = draw.path("M 15 75 A 35 35 -45 0 1 70 50");
+      const ER1 = draw.path("M 10 70 A 35 35 -45 0 1 70 50");
       ER1.move(x - 5, y - 5)
         .stroke({
           width: 3,
@@ -152,7 +151,7 @@ export default Vue.extend({
           linejoin: "round"
         })
         .fill("none");
-      const ER3 = draw.path("M 0 80 A 45 45 -45 0 1 70 50");
+      const ER3 = draw.path("M -5 85 A 45 45 -45 0 1 70 50");
       ER3.move(x - 15, y - 15)
         .stroke({
           width: 3,
@@ -199,7 +198,7 @@ export default Vue.extend({
       // lisosome
       for (let i = 0; i < this.lisosomeArray.length; i++) {
         draw
-          .ellipse(8, 16)
+          .ellipse(20, 28)
           .fill(this.lisosomeColor)
           .move(x + this.lisosomeArray[i][0], y + this.lisosomeArray[i][1])
           .transform({ rotate: this.lisosomeArray[i][2] })
@@ -209,7 +208,7 @@ export default Vue.extend({
       // ribosomes
       for (let i = 0; i < this.ribosomeArray.length; i++) {
         draw
-          .ellipse(8, 16)
+          .ellipse(4, 10)
           .fill(this.ribosomeColor)
           .move(x + this.ribosomeArray[i][0], y + this.ribosomeArray[i][1])
           .transform({ rotate: this.ribosomeArray[i][2] })
