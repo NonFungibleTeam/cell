@@ -221,7 +221,6 @@ function getMerge(uint256 seed) internal view returns (uint8[] memory combineCel
         cell.wall = Wall({wave: 1, round: true, color: 1});
         cell.nucleus = Nucleus(true, 1);
         cell.features[0] = Feature(1, 1, 1, 1);
-        id_to_cell[maxTokenId] = cell;
         massPool = massPool.sub(8);
         _mint(msg.sender, maxTokenId);
         owner.toPayable().sendValue(2 finney);
@@ -249,7 +248,6 @@ function getMerge(uint256 seed) internal view returns (uint8[] memory combineCel
         cell.wall = Wall(1, true, 1);
         cell.nucleus = Nucleus(true, 1);
         cell.features[0] = Feature(1, 1, 1, 1);
-        id_to_cell[maxTokenId] = cell;
         _mint(msg.sender, maxTokenId);
         _burn(id1);
         _burn(id2);
@@ -266,7 +264,6 @@ function getMerge(uint256 seed) internal view returns (uint8[] memory combineCel
         cell1.wall = Wall(1, true, 1);
         cell1.nucleus = Nucleus(true, 1);
         cell1.features[0] = Feature(1, 1, 1, 1);
-        id_to_cell[maxTokenId] = cell1;
         _mint(msg.sender, maxTokenId);
         maxTokenId++;
         Metadata storage cell2 = id_to_cell[maxTokenId];
@@ -274,7 +271,6 @@ function getMerge(uint256 seed) internal view returns (uint8[] memory combineCel
         cell2.wall = Wall(1, true, 1);
         cell2.nucleus = Nucleus(true, 1);
         cell2.features[0] = Feature(1, 1, 1, 1);
-        id_to_cell[maxTokenId] = cell2;
         _mint(msg.sender, maxTokenId);
         _burn(id);
         owner.toPayable().sendValue(2 finney);
