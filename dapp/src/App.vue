@@ -41,6 +41,6 @@ export default Vue.extend({
 
 <style lang="sass" scoped>
 .title
-  font-family: "Arial"
+  font-family: "Pangolin"
   font-size: 2rem
 </style>
