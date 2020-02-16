@@ -1,7 +1,7 @@
 <template lang="pug">
   v-app
     v-app-bar(app color="primary" dark)
-      v-btn(
+      v-toolbar-title(
         to="/"
         text)
         span.mr-2.title Microverse
