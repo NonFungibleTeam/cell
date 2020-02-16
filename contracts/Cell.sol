@@ -10,6 +10,57 @@ contract ProxyRegistry {
     mapping(address => OwnableDelegateProxy) public proxies;
 }
 
+library Random
+{
+	/**
+	* Initialize the pool with the entropy of the blockhashes of the blocks in the closed interval [earliestBlock, latestBlock]
+	* The argument "seed" is optional and can be left zero in most cases.
+	* This extra seed allows you to select a different sequence of random numbers for the same block range.
+	*/
+	function init(uint256 earliestBlock, uint256 latestBlock, uint256 seed) internal view returns (bytes32[] memory) {
+		//require(block.number-1 >= latestBlock && latestBlock >= earliestBlock && earliestBlock >= block.number-256, "Random.init: invalid block interval");
+		require(block.number-1 >= latestBlock && latestBlock >= earliestBlock, "Random.init: invalid block interval");
+		bytes32[] memory pool = new bytes32[](latestBlock-earliestBlock+2);
+		bytes32 salt = keccak256(abi.encodePacked(block.number,seed));
+		for(uint256 i=0; i<=latestBlock-earliestBlock; i++) {
+			// Add some salt to each blockhash so that we don't reuse those hash chains
+			// when this function gets called again in another block.
+			pool[i+1] = keccak256(abi.encodePacked(blockhash(earliestBlock+i),salt));
+		}
+		return pool;
+	}
+	
+	/**
+	* Initialize the pool from the latest "num" blocks.
+	*/
+	function initLatest(uint256 num, uint256 seed) internal view returns (bytes32[] memory) {
+		return init(block.number-num, block.number-1, seed);
+	}
+	
+	/**
+	* Advances to the next 256-bit random number in the pool of hash chains.
+	*/
+	function next(bytes32[] memory pool) internal pure returns (uint256) {
+		require(pool.length > 1, "Random.next: invalid pool");
+		uint256 roundRobinIdx = uint256(pool[0]) % (pool.length-1) + 1;
+		bytes32 hash = keccak256(abi.encodePacked(pool[roundRobinIdx]));
+		pool[0] = bytes32(uint256(pool[0])+1);
+		pool[roundRobinIdx] = hash;
+		return uint256(hash);
+	}
+	
+	/**
+	* Produces random integer values, uniformly distributed on the closed interval [a, b]
+	*/
+	function uniform(bytes32[] memory pool, int256 a, int256 b) internal pure returns (int256) {
+		require(a <= b, "Random.uniform: invalid interval");
+		return int256(next(pool)%uint256(b-a+1))+a;
+	}
+}
+
+
+
+
 contract Cell is ERC721Full, usingProvable {
     using Address for address payable;
     using SafeMath for uint256;
@@ -92,6 +143,74 @@ contract Cell is ERC721Full, usingProvable {
         }
         return value % diff + min;
     }
+    
+function getWall(uint256 seed) internal view returns (uint32 wallWaveRNG, bool wallRoundRNG, uint24 wallColorRNG){
+
+        bytes32[] memory pool = Random.initLatest(1, seed);        
+        
+		wallWaveRNG = uint32(Random.uniform(pool, 0, 33554431)); 
+		wallRoundRNG = Random.uniform(pool, 0, 1) == 1;
+		wallColorRNG = uint24(Random.uniform(pool, 0, 16777215)); 
+
+    }
+
+function getNucleus(uint256 seed) internal view returns (bool nucleusHiddenRNG, uint24 nucleusColorRNG){
+
+        bytes32[] memory pool = Random.initLatest(2, seed);        
+        
+		nucleusHiddenRNG = Random.uniform(pool, 0, 1) == 1; 
+		nucleusColorRNG = uint24(Random.uniform(pool, 0, 16777215)); 
+
+    }
+
+function getFeatures(uint256 seed) internal view returns (uint8 featureTotalRNG, uint8 featureCategoryRNG, uint8 featureFamilyRNG, uint8 featureCountRNG, uint24 featureColorRNG){
+
+        bytes32[] memory pool = Random.initLatest(3, seed);        
+        
+		featureTotalRNG = uint8(Random.uniform(pool, 0, 7)); 
+		featureCategoryRNG = uint8(Random.uniform(pool, 0, 7)); 
+		featureFamilyRNG = uint8(Random.uniform(pool, 0, 7)); 
+		featureCountRNG = uint8(Random.uniform(pool, 0, 15)); 
+		featureColorRNG = uint24(Random.uniform(pool, 0, 16777215)); 
+				
+    }
+
+    function getMassOffset(uint256 seed) internal view returns (int8 massOffsetRNG){
+
+        bytes32[] memory pool = Random.initLatest(4, seed);        
+        
+		massOffsetRNG = int8(Random.uniform(pool, -2, 2)); 
+
+    } 
+
+function getMerge(uint256 seed) internal view returns (uint8[] memory combineCellsRNG){
+
+        bytes32[] memory pool = Random.initLatest(5, seed);        
+ 		
+		uint i;
+		    
+		for(i=0; i<10; i++) {
+			combineCellsRNG[i] = uint8(Random.uniform(pool, 1, 100)); 
+		}       
+
+    } 
+    
+    function getDivide(uint256 seed) internal view returns (int8 divideCellsRNG){
+
+        bytes32[] memory pool = Random.initLatest(6, seed);        
+        
+		divideCellsRNG = int8(Random.uniform(pool, 25, 50)); 
+
+    } 
+    
+    function getRektBoost(uint256 seed) internal view returns (int8 rektBoostRNG){
+
+        bytes32[] memory pool = Random.initLatest(6, seed);        
+        
+		rektBoostRNG = int8(Random.uniform(pool, 1, 100)); 
+
+    }     
+
 
     function mint(uint16 seed) public payable {
         require(msg.value == 2 finney);
