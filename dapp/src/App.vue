@@ -9,9 +9,22 @@
       v-spacer
 
       v-btn(
+        to="/mint"
+        text)
+        span.mr-2 Mint
+      v-btn(
+        to="/merge"
+        text)
+        span.mr-2 Merge
+      v-btn(
+        to="/divide"
+        text)
+        span.mr-2 Divide
+      v-btn(
         to="/about"
         text)
         span.mr-2 About
+
     v-content
       router-view
 </template>

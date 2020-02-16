@@ -10,10 +10,62 @@ contract ProxyRegistry {
     mapping(address => OwnableDelegateProxy) public proxies;
 }
 
+library Random
+{
+	/**
+	* Initialize the pool with the entropy of the blockhashes of the blocks in the closed interval [earliestBlock, latestBlock]
+	* The argument "seed" is optional and can be left zero in most cases.
+	* This extra seed allows you to select a different sequence of random numbers for the same block range.
+	*/
+	function init(uint256 earliestBlock, uint256 latestBlock, uint256 seed) internal view returns (bytes32[] memory) {
+		//require(block.number-1 >= latestBlock && latestBlock >= earliestBlock && earliestBlock >= block.number-256, "Random.init: invalid block interval");
+		require(block.number-1 >= latestBlock && latestBlock >= earliestBlock, "Random.init: invalid block interval");
+		bytes32[] memory pool = new bytes32[](latestBlock-earliestBlock+2);
+		bytes32 salt = keccak256(abi.encodePacked(block.number,seed));
+		for(uint256 i=0; i<=latestBlock-earliestBlock; i++) {
+			// Add some salt to each blockhash so that we don't reuse those hash chains
+			// when this function gets called again in another block.
+			pool[i+1] = keccak256(abi.encodePacked(blockhash(earliestBlock+i),salt));
+		}
+		return pool;
+	}
+	
+	/**
+	* Initialize the pool from the latest "num" blocks.
+	*/
+	function initLatest(uint256 num, uint256 seed) internal view returns (bytes32[] memory) {
+		return init(block.number-num, block.number-1, seed);
+	}
+	
+	/**
+	* Advances to the next 256-bit random number in the pool of hash chains.
+	*/
+	function next(bytes32[] memory pool) internal pure returns (uint256) {
+		require(pool.length > 1, "Random.next: invalid pool");
+		uint256 roundRobinIdx = uint256(pool[0]) % (pool.length-1) + 1;
+		bytes32 hash = keccak256(abi.encodePacked(pool[roundRobinIdx]));
+		pool[0] = bytes32(uint256(pool[0])+1);
+		pool[roundRobinIdx] = hash;
+		return uint256(hash);
+	}
+	
+	/**
+	* Produces random integer values, uniformly distributed on the closed interval [a, b]
+	*/
+	function uniform(bytes32[] memory pool, int256 a, int256 b) internal pure returns (int256) {
+		require(a <= b, "Random.uniform: invalid interval");
+		return int256(next(pool)%uint256(b-a+1))+a;
+	}
+}
+
+
+
+
 contract Cell is ERC721Full, usingProvable {
     using Address for address payable;
     using SafeMath for uint256;
 
+    uint public maxTokenId;
     uint public massPool;
     address payable public owner = address(0xA096b47EbF7727d01Ff4F09c34Fc6591f2c375F0);
     address proxyRegistryAddress;
@@ -58,6 +110,7 @@ contract Cell is ERC721Full, usingProvable {
     constructor(address _proxyRegistryAddress) ERC721Full("Cell", "(Y)") public {
         massPool = 53000000000000000000000000000000000000;
         _mint(msg.sender, 1);
+        maxTokenId = 1;
         proxyRegistryAddress = _proxyRegistryAddress;
         provable_setProof(proofType_Ledger);
         provable_setCustomGasPrice(gasPrice);
@@ -82,18 +135,95 @@ contract Cell is ERC721Full, usingProvable {
         delete provableQueryToTokenId[_queryId];
     }
 
+    function _parseRandom(uint random, uint min, uint max, uint offset) internal pure returns (uint) {
+        uint diff = max.sub(min);
+        uint value = random;
+        for (uint i = 0; i < offset; i++) {
+            value /= diff;
+        }
+        return value % diff + min;
+    }
+    
+function getWall(uint256 seed) internal view returns (uint32 wallWaveRNG, bool wallRoundRNG, uint24 wallColorRNG){
+
+        bytes32[] memory pool = Random.initLatest(1, seed);        
+        
+		wallWaveRNG = uint32(Random.uniform(pool, 0, 33554431)); 
+		wallRoundRNG = Random.uniform(pool, 0, 1) == 1;
+		wallColorRNG = uint24(Random.uniform(pool, 0, 16777215)); 
+
+    }
+
+function getNucleus(uint256 seed) internal view returns (bool nucleusHiddenRNG, uint24 nucleusColorRNG){
+
+        bytes32[] memory pool = Random.initLatest(2, seed);        
+        
+		nucleusHiddenRNG = Random.uniform(pool, 0, 1) == 1; 
+		nucleusColorRNG = uint24(Random.uniform(pool, 0, 16777215)); 
+
+    }
+
+function getFeatures(uint256 seed) internal view returns (uint8 featureTotalRNG, uint8 featureCategoryRNG, uint8 featureFamilyRNG, uint8 featureCountRNG, uint24 featureColorRNG){
+
+        bytes32[] memory pool = Random.initLatest(3, seed);        
+        
+		featureTotalRNG = uint8(Random.uniform(pool, 0, 7)); 
+		featureCategoryRNG = uint8(Random.uniform(pool, 0, 7)); 
+		featureFamilyRNG = uint8(Random.uniform(pool, 0, 7)); 
+		featureCountRNG = uint8(Random.uniform(pool, 0, 15)); 
+		featureColorRNG = uint24(Random.uniform(pool, 0, 16777215)); 
+				
+    }
+
+    function getMassOffset(uint256 seed) internal view returns (int8 massOffsetRNG){
+
+        bytes32[] memory pool = Random.initLatest(4, seed);        
+        
+		massOffsetRNG = int8(Random.uniform(pool, -2, 2)); 
+
+    } 
+
+function getMerge(uint256 seed) internal view returns (uint8[] memory combineCellsRNG){
+
+        bytes32[] memory pool = Random.initLatest(5, seed);        
+ 		
+		uint i;
+		    
+		for(i=0; i<10; i++) {
+			combineCellsRNG[i] = uint8(Random.uniform(pool, 1, 100)); 
+		}       
+
+    } 
+    
+    function getDivide(uint256 seed) internal view returns (int8 divideCellsRNG){
+
+        bytes32[] memory pool = Random.initLatest(6, seed);        
+        
+		divideCellsRNG = int8(Random.uniform(pool, 25, 50)); 
+
+    } 
+    
+    function getRektBoost(uint256 seed) internal view returns (int8 rektBoostRNG){
+
+        bytes32[] memory pool = Random.initLatest(6, seed);        
+        
+		rektBoostRNG = int8(Random.uniform(pool, 1, 100)); 
+
+    }     
+
 
     function mint(uint16 seed) public payable {
         require(msg.value == 2 finney);
         require(massPool >= 8);
-        uint tokenId = totalSupply() + 1;
-        Metadata storage cell = id_to_cell[tokenId];
+        maxTokenId++;
+        Metadata storage cell = id_to_cell[maxTokenId];
         cell.mass = 2;
-        cell.wall = Wall(1, true, 1);
+        cell.wall = Wall({wave: 1, round: true, color: 1});
         cell.nucleus = Nucleus(true, 1);
         cell.features[0] = Feature(1, 1, 1, 1);
+        id_to_cell[maxTokenId] = cell;
         massPool = massPool.sub(8);
-        _mint(msg.sender, tokenId);
+        _mint(msg.sender, maxTokenId);
         owner.toPayable().sendValue(2 finney);
 
         bytes32 queryId = provable_newRandomDSQuery(
@@ -104,7 +234,7 @@ contract Cell is ERC721Full, usingProvable {
         emit LogMintQuery(msg.sender, queryId, seed, _currentTokenId);
         provableQueryToSeed[queryId] = seed;
         provableQueryToAddress[queryId] = msg.sender;
-        provableQueryToTokenId[queryId] = tokenId;
+        provableQueryToTokenId[queryId] = maxTokenId;
 
     }
 
@@ -113,13 +243,14 @@ contract Cell is ERC721Full, usingProvable {
         require(massPool > 0);
         require(ownerOf(id1) == msg.sender);
         require(ownerOf(id2) == msg.sender);
-        uint tokenId = totalSupply() + 1;
-        Metadata storage cell = id_to_cell[tokenId];
+        maxTokenId++;
+        Metadata storage cell = id_to_cell[maxTokenId];
         cell.mass = 2;
         cell.wall = Wall(1, true, 1);
         cell.nucleus = Nucleus(true, 1);
         cell.features[0] = Feature(1, 1, 1, 1);
-        _mint(msg.sender, tokenId);
+        id_to_cell[maxTokenId] = cell;
+        _mint(msg.sender, maxTokenId);
         _burn(id1);
         _burn(id2);
         owner.toPayable().sendValue(2 finney);
@@ -129,20 +260,22 @@ contract Cell is ERC721Full, usingProvable {
         require(msg.value == 2 finney);
         require(massPool > 0);
         require(ownerOf(id) == msg.sender);
-        uint tokenId1 = totalSupply() + 1;
-        Metadata storage cell1 = id_to_cell[tokenId1];
+        maxTokenId++;
+        Metadata storage cell1 = id_to_cell[maxTokenId];
         cell1.mass = 2;
         cell1.wall = Wall(1, true, 1);
         cell1.nucleus = Nucleus(true, 1);
         cell1.features[0] = Feature(1, 1, 1, 1);
-        _mint(msg.sender, tokenId1);
-        uint tokenId2 = totalSupply() + 1;
-        Metadata storage cell2 = id_to_cell[tokenId2];
+        id_to_cell[maxTokenId] = cell1;
+        _mint(msg.sender, maxTokenId);
+        maxTokenId++;
+        Metadata storage cell2 = id_to_cell[maxTokenId];
         cell2.mass = 2;
         cell2.wall = Wall(1, true, 1);
         cell2.nucleus = Nucleus(true, 1);
         cell2.features[0] = Feature(1, 1, 1, 1);
-        _mint(msg.sender, tokenId2);
+        id_to_cell[maxTokenId] = cell2;
+        _mint(msg.sender, maxTokenId);
         _burn(id);
         owner.toPayable().sendValue(2 finney);
     }
