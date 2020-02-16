@@ -108,7 +108,7 @@ contract Cell is ERC721Full, usingProvable {
     event LogMintQuery(address minter, bytes32 queryId, uint seed, uint tokenId);
 
     constructor() ERC721Full("Cell", "(Y)") public {
-        massPool = 53000000000000000000000000000000000000;
+        massPool = 20000;
         _mint(msg.sender, 1);
         maxTokenId = 1;
         provable_setProof(proofType_Ledger);
@@ -205,11 +205,44 @@ function getMerge(uint256 seed) internal view returns (uint8[12] memory combineC
 
     } 
     
-    function getRektBoost(uint256 seed) internal view returns (uint8 rektBoostRNG){
+    function getRektBoost(uint256 seed, uint mass) internal view returns (uint256 rektBoostMass){
 
         bytes32[] memory pool = Random.initLatest(6, seed);        
         
-		rektBoostRNG = uint8(Random.uniform(pool, 1, 100)); 
+		uint8 rektBoostRNG = uint8(Random.uniform(pool, 1, 100)); 
+	    
+        uint x = mass;
+        uint8 level = 1;
+        while (x > 8) {
+         x /= 2;
+         level++;
+        }
+
+        if (rektBoostRNG <= 1) {
+        rektBoostMass = mass * 1 / 100;	
+		
+		} else if (rektBoostRNG <= 3) {
+        rektBoostMass = mass * 70 / 100;			    	    
+	    
+		} else if (rektBoostRNG <= 10) {
+        rektBoostMass = mass * 90 / 100;		    
+	    
+		} else if (rektBoostRNG <= 35) {
+        rektBoostMass = mass * 95 / 100;		    
+	    
+		} else if (rektBoostRNG <= 65) {
+        rektBoostMass = mass;		    
+	    
+		} else if (rektBoostRNG <= 90) {
+        rektBoostMass = mass + uint256(level*(massPool/1000));		    
+	    
+		} else if (rektBoostRNG <= 97) {
+        rektBoostMass = mass + uint256(level*(massPool/333));		    
+	    	    
+	    } else {
+        rektBoostMass = mass + uint256(level*(massPool/100));	
+        
+		}
 
     }     
 
@@ -220,8 +253,7 @@ function getMerge(uint256 seed) internal view returns (uint8[12] memory combineC
         maxTokenId++;
         Metadata storage cell = id_to_cell[maxTokenId];
         
-
-        cell.mass = 8 + uint8(getMassOffset(seed + maxTokenId));
+        cell.mass = 8;
         cell.wall = getWall(seed + maxTokenId);
         cell.nucleus = getNucleus(seed + maxTokenId);
         
@@ -258,6 +290,7 @@ function getMerge(uint256 seed) internal view returns (uint8[12] memory combineC
         Metadata storage cell = id_to_cell[maxTokenId];
         
         cell.mass = cellA.mass.add(cellB.mass);
+        cell.mass = getRektBoost(1234, cell.mass);
         uint256 mergeRatio = (cellA.mass*100/cell.mass);
     
         uint8[12] memory mergeSelectRNG = getMerge(123);
