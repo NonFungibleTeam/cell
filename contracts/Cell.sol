@@ -107,11 +107,10 @@ contract Cell is ERC721Full, usingProvable {
     
     event LogMintQuery(address minter, bytes32 queryId, uint seed, uint tokenId);
 
-    constructor(address _proxyRegistryAddress) ERC721Full("Cell", "(Y)") public {
+    constructor() ERC721Full("Cell", "(Y)") public {
         massPool = 53000000000000000000000000000000000000;
         _mint(msg.sender, 1);
         maxTokenId = 1;
-        proxyRegistryAddress = _proxyRegistryAddress;
         provable_setProof(proofType_Ledger);
         provable_setCustomGasPrice(gasPrice);
     }
@@ -144,35 +143,38 @@ contract Cell is ERC721Full, usingProvable {
         return value % diff + min;
     }
     
-function getWall(uint256 seed) internal view returns (uint32 wallWaveRNG, bool wallRoundRNG, uint24 wallColorRNG){
+function getWall(uint256 seed) internal view returns (Wall memory cellWall){
 
         bytes32[] memory pool = Random.initLatest(1, seed);        
         
-		wallWaveRNG = uint32(Random.uniform(pool, 0, 33554431)); 
-		wallRoundRNG = Random.uniform(pool, 0, 1) == 1;
-		wallColorRNG = uint24(Random.uniform(pool, 0, 16777215)); 
-
+	uint32	wallWaveRNG = uint32(Random.uniform(pool, 0, 33554431)); 
+	bool	wallRoundRNG = Random.uniform(pool, 0, 1) == 1;
+	uint24	wallColorRNG = uint24(Random.uniform(pool, 0, 16777215)); 
+    
+    return Wall(wallWaveRNG, wallRoundRNG, wallColorRNG);
     }
 
-function getNucleus(uint256 seed) internal view returns (bool nucleusHiddenRNG, uint24 nucleusColorRNG){
+function getNucleus(uint256 seed) internal view returns (Nucleus memory cellNucleus){
 
         bytes32[] memory pool = Random.initLatest(2, seed);        
         
-		nucleusHiddenRNG = Random.uniform(pool, 0, 1) == 1; 
-		nucleusColorRNG = uint24(Random.uniform(pool, 0, 16777215)); 
+		bool nucleusHiddenRNG = Random.uniform(pool, 0, 1) == 1; 
+		uint24 nucleusColorRNG = uint24(Random.uniform(pool, 0, 16777215));
+		
+		return Nucleus(nucleusHiddenRNG, nucleusColorRNG);
 
     }
 
-function getFeatures(uint256 seed) internal view returns (uint8 featureTotalRNG, uint8 featureCategoryRNG, uint8 featureFamilyRNG, uint8 featureCountRNG, uint24 featureColorRNG){
+function getFeatures(uint256 seed) internal view returns (Feature memory cellFeature){
 
         bytes32[] memory pool = Random.initLatest(3, seed);        
         
-		featureTotalRNG = uint8(Random.uniform(pool, 0, 7)); 
-		featureCategoryRNG = uint8(Random.uniform(pool, 0, 7)); 
-		featureFamilyRNG = uint8(Random.uniform(pool, 0, 7)); 
-		featureCountRNG = uint8(Random.uniform(pool, 0, 15)); 
-		featureColorRNG = uint24(Random.uniform(pool, 0, 16777215)); 
-				
+		uint8 featureCategoryRNG = uint8(Random.uniform(pool, 0, 7)); 
+		uint8 featureFamilyRNG = uint8(Random.uniform(pool, 0, 7)); 
+		uint8 featureCountRNG = uint8(Random.uniform(pool, 0, 15)); 
+		uint24 featureColorRNG = uint24(Random.uniform(pool, 0, 16777215)); 
+		
+		return Feature(featureCategoryRNG, featureFamilyRNG, featureCountRNG, featureColorRNG);		
     }
 
     function getMassOffset(uint256 seed) internal view returns (int8 massOffsetRNG){
@@ -183,48 +185,55 @@ function getFeatures(uint256 seed) internal view returns (uint8 featureTotalRNG,
 
     } 
 
-function getMerge(uint256 seed) internal view returns (uint8[] memory combineCellsRNG){
+function getMerge(uint256 seed) internal view returns (uint8[12] memory combineCellsRNG){
 
         bytes32[] memory pool = Random.initLatest(5, seed);        
  		
 		uint i;
 		    
-		for(i=0; i<10; i++) {
+		for(i=0; i<12; i++) {
 			combineCellsRNG[i] = uint8(Random.uniform(pool, 1, 100)); 
 		}       
 
     } 
     
-    function getDivide(uint256 seed) internal view returns (int8 divideCellsRNG){
+    function getDivide(uint256 seed) internal view returns (uint8 divideCellsRNG){
 
         bytes32[] memory pool = Random.initLatest(6, seed);        
         
-		divideCellsRNG = int8(Random.uniform(pool, 25, 50)); 
+		divideCellsRNG = uint8(Random.uniform(pool, 30, 70)); 
 
     } 
     
-    function getRektBoost(uint256 seed) internal view returns (int8 rektBoostRNG){
+    function getRektBoost(uint256 seed) internal view returns (uint8 rektBoostRNG){
 
         bytes32[] memory pool = Random.initLatest(6, seed);        
         
-		rektBoostRNG = int8(Random.uniform(pool, 1, 100)); 
+		rektBoostRNG = uint8(Random.uniform(pool, 1, 100)); 
 
     }     
 
 
-    function mint(uint16 seed) public payable {
-        require(msg.value == 2 finney);
+    function mint(uint256 seed) public payable {
+        require(msg.value == 8 finney);
         require(massPool >= 8);
         maxTokenId++;
         Metadata storage cell = id_to_cell[maxTokenId];
-        cell.mass = 2;
-        cell.wall = Wall({wave: 1, round: true, color: 1});
-        cell.nucleus = Nucleus(true, 1);
-        cell.features[0] = Feature(1, 1, 1, 1);
+        
+
+        cell.mass = 8 + uint8(getMassOffset(seed + maxTokenId));
+        cell.wall = getWall(seed + maxTokenId);
+        cell.nucleus = getNucleus(seed + maxTokenId);
+        
+        for (uint i = 0; i < 10; i++) {
+        cell.features[i] = getFeatures(seed + maxTokenId + i);
+        }
+        
+        id_to_cell[maxTokenId] = cell;
         massPool = massPool.sub(8);
         _mint(msg.sender, maxTokenId);
-        owner.toPayable().sendValue(2 finney);
-
+        owner.toPayable().sendValue(8 finney);
+/*
         bytes32 queryId = provable_newRandomDSQuery(
             0, //Execution delay
             NUM_RANDOM_BYTES_REQUESTED,
@@ -234,7 +243,7 @@ function getMerge(uint256 seed) internal view returns (uint8[] memory combineCel
         provableQueryToSeed[queryId] = seed;
         provableQueryToAddress[queryId] = msg.sender;
         provableQueryToTokenId[queryId] = maxTokenId;
-
+*/
     }
 
     function merge(uint id1, uint id2) public payable {
@@ -243,11 +252,48 @@ function getMerge(uint256 seed) internal view returns (uint8[] memory combineCel
         require(ownerOf(id1) == msg.sender);
         require(ownerOf(id2) == msg.sender);
         maxTokenId++;
+        
+        Metadata storage cellA = id_to_cell[id1];        
+        Metadata storage cellB = id_to_cell[id2];       
         Metadata storage cell = id_to_cell[maxTokenId];
-        cell.mass = 2;
-        cell.wall = Wall(1, true, 1);
-        cell.nucleus = Nucleus(true, 1);
-        cell.features[0] = Feature(1, 1, 1, 1);
+        
+        cell.mass = cellA.mass.add(cellB.mass);
+        uint256 mergeRatio = (cellA.mass*100/cell.mass);
+    
+        uint8[12] memory mergeSelectRNG = getMerge(123);
+        for (uint i = 0; i < 8; i++) {
+	    if (mergeSelectRNG[i] >= mergeRatio) {
+        cell.features[i] = cellB.features[i];	
+		} else { 
+        cell.features[i] = cellA.features[i];			    	    
+		}    
+        }
+
+        if (mergeSelectRNG[8] >= mergeRatio) {
+        cell.wall.wave = cellB.wall.wave;	
+		} else { 
+        cell.wall.wave = cellA.wall.wave;			    	    
+		}
+
+        if (mergeSelectRNG[9] >= mergeRatio) {
+        cell.wall.round = cellB.wall.round;	
+		} else { 
+        cell.wall.round = cellA.wall.round;			    	    
+		}
+
+        if (mergeSelectRNG[10] >= mergeRatio) {
+        cell.wall.color = cellB.wall.color;	
+		} else { 
+        cell.wall.color = cellA.wall.color;			    	    
+		}
+		
+	    if (mergeSelectRNG[11] >= mergeRatio) {
+        cell.nucleus = cellB.nucleus;	
+		} else { 
+        cell.nucleus = cellA.nucleus;			    	    
+		}
+    
+        
         _mint(msg.sender, maxTokenId);
         _burn(id1);
         _burn(id2);
@@ -259,19 +305,32 @@ function getMerge(uint256 seed) internal view returns (uint8[] memory combineCel
         require(massPool > 0);
         require(ownerOf(id) == msg.sender);
         maxTokenId++;
+        
+        Metadata storage cell = id_to_cell[id];
+        
+        uint8 divideRatio = getDivide(123);
+        
         Metadata storage cell1 = id_to_cell[maxTokenId];
-        cell1.mass = 2;
-        cell1.wall = Wall(1, true, 1);
-        cell1.nucleus = Nucleus(true, 1);
-        cell1.features[0] = Feature(1, 1, 1, 1);
+        cell1.mass = (divideRatio*cell.mass)/100;
+        cell1.wall = cell.wall;
+        cell1.nucleus = cell.nucleus;
+        for (uint i = 0; i < 8; i++) {
+        cell1.features[i] = cell.features[i];
+        }
+        id_to_cell[maxTokenId] = cell1;
         _mint(msg.sender, maxTokenId);
         maxTokenId++;
+        
         Metadata storage cell2 = id_to_cell[maxTokenId];
-        cell2.mass = 2;
-        cell2.wall = Wall(1, true, 1);
-        cell2.nucleus = Nucleus(true, 1);
-        cell2.features[0] = Feature(1, 1, 1, 1);
+        cell2.mass = cell.mass - cell1.mass;
+        cell2.wall = cell.wall;
+        cell2.nucleus = cell.nucleus;
+        for (uint i = 0; i < 8; i++) {
+        cell2.features[i] = cell.features[i];
+        }
+        id_to_cell[maxTokenId] = cell2;
         _mint(msg.sender, maxTokenId);
+        
         _burn(id);
         owner.toPayable().sendValue(2 finney);
     }
