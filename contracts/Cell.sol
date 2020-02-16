@@ -279,8 +279,8 @@ function getMerge(uint256 seed) internal view returns (uint8[] memory combineCel
     function get(uint id) external view returns (uint mass,
         uint32 wallWave, bool wallRound, uint24 wallColor,
         bool nucleusHidden, uint24 nucleusColor,
-        uint8[] memory featureCategories, uint8[] memory featureFamilies,
-        uint8[] memory featureCounts, uint24[] memory featureColors
+        uint8[8] memory featureCategories, uint8[8] memory featureFamilies,
+        uint8[8] memory featureCounts, uint24[8] memory featureColors
     ) {
         Metadata storage cell = id_to_cell[id];
         mass = cell.mass;
@@ -290,10 +290,11 @@ function getMerge(uint256 seed) internal view returns (uint8[] memory combineCel
         nucleusHidden = cell.nucleus.hidden;
         nucleusColor = cell.nucleus.color;
         for (uint i = 0; i < 8; i++) {
-            featureCategories[i] = cell.features[i].category;
-            featureFamilies[i] = cell.features[i].family;
-            featureCounts[i] = cell.features[i].count;
-            featureColors[i] = cell.features[i].color;
+            Feature memory feature = cell.features[i];
+            featureCategories[i] = feature.category;
+            featureFamilies[i] = feature.family;
+            featureCounts[i] = feature.count;
+            featureColors[i] = feature.color;
         }
     }
 }
