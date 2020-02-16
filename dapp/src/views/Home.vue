@@ -8,9 +8,7 @@
           v-card.text.text-center
             v-card-text
               h1 NFT Cells
-              h3 Merge
-              h3 Divide
-              h3 Level Up
+              h3 Mint, merge, and divide NFT biological cells. Compete to make massive unique cells and avoid getting rekt!
               v-btn(color="secondary" to="/mint") Start Playing Now
               
               .web3(v-if="isDrizzleInitialized")

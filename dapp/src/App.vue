@@ -54,7 +54,7 @@ body
 .title
   font-family: "Pangolin"
   font-size: 2rem
-  color: #ffffff
+  color: #ffffff !important
   text-decoration: none
   
 </style>
