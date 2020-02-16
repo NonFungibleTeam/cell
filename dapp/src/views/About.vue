@@ -6,7 +6,7 @@
       </v-toolbar>
       <v-tabs vertical>
         <v-tab>
-          <v-icon left>mdi-storefront</v-icon>
+          <v-icon left>mdi-biohazard</v-icon>
           Minting
         </v-tab>
         <v-tab>
@@ -18,8 +18,12 @@
           Dividing
         </v-tab>
         <v-tab>
-          <v-icon left>mdi-view-list</v-icon>
+          <v-icon left>mdi-menu</v-icon>
           Levels
+        </v-tab>
+        <v-tab>
+          <v-icon left>mdi-dice-6</v-icon>
+          Get Rekt?
         </v-tab>
   
         <v-tab-item>
@@ -79,6 +83,30 @@
               </v-simple-table>
           </v-card>
         </v-tab-item>
+        <v-tab-item>
+          <v-card flat>
+                <v-simple-table>
+                  <template v-slot:default>
+                   <thead>
+                    <tr>
+                      <th class="text-left">Merge Result</th>
+                      <th class="text-left">Probability</th>
+                      <th class="text-left">Loss(% of Cell Mass)</th>
+                      <th class="text-left">Gain(% of Mass Pool)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                      <tr v-for="item in rekt" :key="item.mergeresult">
+                      <td>{{ item.mergeresult }}</td>
+                      <td>{{ item.probability }}</td>
+                      <td>{{ item.loss }}</td>
+                      <td>{{ item.gain }}</td>
+                    </tr>
+                  </tbody>
+                </template>
+              </v-simple-table>
+          </v-card>
+        </v-tab-item>
       </v-tabs>
     </v-card>
 </div>
@@ -130,6 +158,56 @@ export default Vue.extend({
           level: 10,
           mass: 4096,
         },
+      ],
+      rekt: [
+        {
+          mergeresult: 'Boost',
+          probability: '3%',
+          loss: 0,
+          gain: '1% * Level',
+        },
+        {
+          mergeresult: 'Kinda Boost',
+          probability: '7%',
+          loss: 0,
+          gain: '.3% * Level',
+        },
+        {
+          mergeresult: 'Barely Boost',
+          probability: '25%',
+          loss: 0,
+          gain: '.1% * Level',
+        },
+        {
+          mergeresult: 'Neutral',
+          probability: '30%',
+          loss: 0,
+          gain: 0,
+        },
+        {
+          mergeresult: 'Barely Rekt',
+          probability: '25%',
+          loss: '5%',
+          gain: 0,
+        },
+        {
+          mergeresult: 'Kinda Rekt',
+          probability: '7%',
+          loss: '10%',
+          gain: 0,
+        },
+        {
+          mergeresult: 'Rekt',
+          probability: '2%',
+          loss: '30%',
+          gain: 0,
+        },
+        {
+          mergeresult: 'Fukt',
+          probability: '1%',
+          loss: '99%',
+          gain: 0,
+        }
       ],
   })
 })

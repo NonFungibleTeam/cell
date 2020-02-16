@@ -24,6 +24,15 @@
         to="/about"
         text)
         span.mr-2 About
+      v-btn(
+        href="https://discord.gg/upwdYAh"
+        target="_new"
+        text)
+        v-icon.mr-2 mdi-discord
+      v-btn(
+        href="https://discord.gg/upwdYAh"
+        text)
+        v-icon.mr-2 mdi-twitter
 
     v-content
       router-view
