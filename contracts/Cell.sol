@@ -243,7 +243,8 @@ function getMerge(uint256 seed) internal view returns (uint8[12] memory combineC
         rektBoostMass = mass + uint256(level*(massPool/100));	
         
 		}
-
+		
+        
     }     
 
 
@@ -290,7 +291,9 @@ function getMerge(uint256 seed) internal view returns (uint8[12] memory combineC
         Metadata storage cell = id_to_cell[maxTokenId];
         
         cell.mass = cellA.mass.add(cellB.mass);
-        cell.mass = getRektBoost(1234, cell.mass);
+        uint256 rektBoostMass = getRektBoost(1234, cell.mass);
+        massPool = massPool + cell.mass - rektBoostMass;
+        cell.mass = rektBoostMass;
         uint256 mergeRatio = (cellA.mass*100/cell.mass);
     
         uint8[12] memory mergeSelectRNG = getMerge(123);
