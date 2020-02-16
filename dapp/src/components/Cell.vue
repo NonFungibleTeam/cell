@@ -15,10 +15,10 @@ export default Vue.extend({
   data: () => ({
     tao: 2 * Math.PI,
     diameter: 300,
-    margin: 10,
+    margin: 0,
     smoothing: 0.2,
     bitDepthMax: 2 ** 5,
-    preserve: 0.5,
+    preserve: 0.6,
     waves: [
       [31, 23, 15, 7, 0, 7, 15, 23],
       [31, 31, 0, 0, 31, 31, 0, 0],
@@ -28,9 +28,9 @@ export default Vue.extend({
       [0, 31, 0, 16],
       [31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31]
     ],
-    waveform: 3,
+    waveform: 5,
     level: 7,
-    rounded: false,
+    rounded: true,
     gradientStops: [
       { offset: 0.1, color: "#ffffff" },
       { offset: 0.5, color: "#770002" },
@@ -136,12 +136,12 @@ export default Vue.extend({
       const pattern = draw.pattern(10, 10, function(add) {
         add.rect(10, 10).fill("#f33");
         add
-          .rect(7, 2)
+          .rect(10, 2)
           .move(5, 5)
           .fill("#fff");
         add
           .rect(7, 2)
-          .move(3, 0)
+          .move(0, 0)
           .fill("#fff");
       });
       for (let i = 0; i < this.mitoArray.length; i++) {
