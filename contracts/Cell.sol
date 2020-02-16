@@ -84,6 +84,14 @@ contract Cell is ERC721Full, usingProvable {
         delete provableQueryToTokenId[_queryId];
     }
 
+    function _parseRandom(uint random, uint min, uint max, uint offset) internal pure returns (uint) {
+        uint diff = max.sub(min);
+        uint value = random;
+        for (uint i = 0; i < offset; i++) {
+            value /= diff;
+        }
+        return value % diff + min;
+    }
 
     function mint(uint16 seed) public payable {
         require(msg.value == 2 finney);
@@ -91,7 +99,7 @@ contract Cell is ERC721Full, usingProvable {
         maxTokenId++;
         Metadata storage cell = id_to_cell[maxTokenId];
         cell.mass = 2;
-        cell.wall = Wall(1, true, 1);
+        cell.wall = Wall({wave: 1, round: true, color: 1});
         cell.nucleus = Nucleus(true, 1);
         cell.features[0] = Feature(1, 1, 1, 1);
         massPool = massPool.sub(8);
