@@ -24,13 +24,13 @@ export default Vue.extend({
       [0, 31, 0, 16],
       [31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31]
     ],
-    waveform: 5,
-    level: 8,
-    rounded: true,
+    waveform: 3,
+    level: 6,
+    rounded: false,
     gradientStops: [
-      { offset: 0.1, color: "#ffffff" },
-      { offset: 0.5, color: "#770002" },
-      { offset: 0.9, color: "#77ff00" }
+      { offset: 0.1, color: "#cc2200" },
+      { offset: 0.5, color: "#44eeaa" },
+      { offset: 0.9, color: "#444444" }
     ],
     nucleusColor: "#f56",
     nucleusSize: 60,
@@ -40,6 +40,7 @@ export default Vue.extend({
       [-10, -20, 0],
       [80, -20, 158],
       [75, 65, 287],
+      [-25, -15, 187],
       [-15, 75, 77]
     ],
     chloroplastColor: "#3f5",
@@ -51,12 +52,14 @@ export default Vue.extend({
     ],
     lisosomeColor: "#ff0",
     lisosomeArray: [[80, 10, 23]],
-    ribosomeColor: "#cdf",
+    ribosomeColor: "#66f",
     ribosomeArray: [
       [-12, 54, 285],
+      [-32, 20, 85],
+      [75, -32, 165],
       [70, -5, 57]
     ],
-    stroke: { width: 3, color: "#ee77ff", linecap: "round", linejoin: "round" }
+    stroke: { width: 3, color: "#77eeff", linecap: "round", linejoin: "round" }
   }),
   mounted() {
     this.drawCell(
