@@ -13,12 +13,9 @@
               h3 Level Up
               v-btn(color="secondary" to="/mint") Start Playing Now
               
-              drizzle-account
-              drizzle-contract(
-                contractName="TutorialToken"
-                method="totalSupply"
-                label="Total")
-              h3(:v-if="isDrizzleInitialized") :)
+              .web3(v-if="isDrizzleInitialized")
+                p :)
+                p {{ activeAccount }}
 </template>
 
 <script>
@@ -31,6 +28,9 @@ export default {
   components: {
     Cell
   },
-  computed: mapGetters("drizzle", ["isDrizzleInitialized"])
+  computed: {
+    ...mapGetters("accounts", ["activeAccount", "activeBalance"]),
+    ...mapGetters("drizzle", ["isDrizzleInitialized"])
+  }
 };
 </script>
