@@ -34,31 +34,41 @@ export default Vue.extend({
     ],
     nucleusColor: "#f56",
     nucleusSize: 60,
-    mitocondriaColor: "#f41",
-    mitoArray: [
-      [-30, 35, 35],
-      [-10, -20, 0],
-      [80, -20, 158],
-      [75, 65, 287],
-      [-25, -15, 187],
-      [-15, 75, 77]
-    ],
-    chloroplastColor: "#3f5",
-    chloroArray: [
-      [50, -45, 145],
-      [-35, -3, 95],
-      [48, 73, 277],
-      [85, 39, 13]
-    ],
-    lisosomeColor: "#ff0",
-    lisosomeArray: [[80, 10, 23]],
-    ribosomeColor: "#66f",
-    ribosomeArray: [
-      [-12, 54, 285],
-      [-32, 20, 85],
-      [75, -32, 165],
-      [70, -5, 57]
-    ],
+    features: {
+      mitocondria: {
+        color: "#f41",
+        array: [
+          [-30, 35, 35],
+          [-10, -20, 0],
+          [80, -20, 158],
+          [75, 65, 287],
+          [-25, -15, 187],
+          [-15, 75, 77]
+        ]
+      },
+      chloroplasts: {
+        color: "#3f5",
+        array: [
+          [50, -45, 145],
+          [-35, -3, 95],
+          [48, 73, 277],
+          [85, 39, 13]
+        ]
+      },
+      lisosomes: {
+        color: "#ff0",
+        array: [[80, 10, 23]]
+      },
+      ribosomes: {
+        color: "#66f",
+        array: [
+          [-12, 54, 285],
+          [-32, 20, 85],
+          [75, -32, 165],
+          [70, -5, 57]
+        ]
+      }
+    },
     stroke: { width: 3, color: "#77eeff", linecap: "round", linejoin: "round" }
   }),
   mounted() {
@@ -175,13 +185,21 @@ export default Vue.extend({
           .move(0, 0)
           .fill("#fff");
       });
-      this.drawFeature(draw, this.mitoArray, pattern, x, y, 10, 18);
+      this.drawFeature(
+        draw,
+        this.features.mitocondria.array,
+        pattern,
+        x,
+        y,
+        10,
+        18
+      );
 
       // chloroplasts
       this.drawFeature(
         draw,
-        this.chloroArray,
-        this.chloroplastColor,
+        this.features.chloroplasts.array,
+        this.features.chloroplasts.color,
         x,
         y,
         8,
@@ -191,8 +209,8 @@ export default Vue.extend({
       // lisosome
       this.drawFeature(
         draw,
-        this.lisosomeArray,
-        this.lisosomeColor,
+        this.features.lisosomes.array,
+        this.features.lisosomes.color,
         x,
         y,
         20,
@@ -202,8 +220,8 @@ export default Vue.extend({
       // ribosomes
       this.drawFeature(
         draw,
-        this.ribosomeArray,
-        this.ribosomeColor,
+        this.features.ribosomes.array,
+        this.features.ribosomes.color,
         x,
         y,
         4,
