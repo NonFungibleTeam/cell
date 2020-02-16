@@ -5,7 +5,7 @@ const options: any = {
     block: false,
     fallback: {
       type: "ws",
-      url: "ws://127.0.0.1:9545"
+      url: "ws://rinkeby.infura.io/v3/36c17feb3c2d44208df78f3772f9f59a"
     }
   },
 
