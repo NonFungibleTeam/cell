@@ -1,15 +1,5 @@
 <template lang="pug">
-  v-container(flex)
-    v-row(align="center" flex)
-      v-col(cols="5")
-        .shape
-      v-col.text-center(cols="7")
-        .text.text-center
-          h1 NFT Cells
-          h3 Merge
-          h3 Divide
-          h3 Level Up
-          v-button(text) Start Playing Now
+  .shape
 </template>
 
 <script>

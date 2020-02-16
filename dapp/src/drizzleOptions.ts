@@ -1,4 +1,4 @@
-//import Cell from "./contracts/Cell.json";
+import Cell from "@/contracts/Cell.json";
 
 const options: any = {
   web3: {
@@ -10,7 +10,7 @@ const options: any = {
   },
 
   // The contracts to monitor
-  // contracts: [Cell],
+  contracts: [Cell],
   // events: {
   //   // monitor Cell.Mint events
   //   Cell: ["Mint"]
