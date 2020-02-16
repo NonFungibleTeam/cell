@@ -140,36 +140,34 @@ export default Vue.extend({
         .stroke(this.stroke);
 
       // endoplasmic reticulum
-      const ER1 = draw.path("M 10 70 A 35 35 -45 0 1 70 50");
-      ER1.move(x - 5, y - 5)
-        .stroke({
-          width: 3,
-          color: "#00f",
-          dasharray: "5,3,9",
-          linecap: "round",
-          linejoin: "round"
-        })
-        .fill("none");
-      const ER2 = draw.path("M 0 80 A 40 40 -45 0 1 70 50");
-      ER2.move(x - 10, y - 10)
-        .stroke({
-          width: 3,
-          color: "#00f",
-          dasharray: "3,9,7",
-          linecap: "round",
-          linejoin: "round"
-        })
-        .fill("none");
-      const ER3 = draw.path("M -5 85 A 45 45 -45 0 1 70 50");
-      ER3.move(x - 15, y - 15)
-        .stroke({
-          width: 3,
-          color: "#00f",
-          dasharray: "2,7,5",
-          linecap: "round",
-          linejoin: "round"
-        })
-        .fill("none");
+      const layers = [
+        {
+          path: "M 10 70 A 35 35 -45 0 1 70 50",
+          dashes: "5,3,9"
+        },
+        {
+          path: "M 0 80 A 40 40 -45 0 1 70 50",
+          dashes: "3,9,7"
+        },
+        {
+          path: "M -5 85 A 45 45 -45 0 1 70 50",
+          dashes: "2,7,5"
+        }
+      ];
+      const endoStroke = {
+        width: 3,
+        color: "#00f",
+        linecap: "round",
+        linejoin: "round"
+      };
+      for (let i = 0; i < layers.length; i++) {
+        const ER = draw.path(layers[i].path);
+        const layerStroke = endoStroke;
+        layerStroke.dasharray = layers[i].dashes;
+        ER.move(x - 5 * (i + 1), y - 5 * (i + 1))
+          .stroke(layerStroke)
+          .fill("none");
+      }
 
       // golgi aparatus
 
