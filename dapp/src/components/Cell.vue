@@ -175,42 +175,49 @@ export default Vue.extend({
           .move(0, 0)
           .fill("#fff");
       });
-      for (let i = 0; i < this.mitoArray.length; i++) {
-        draw
-          .ellipse(10, 18)
-          .fill(pattern)
-          .move(x + this.mitoArray[i][0], y + this.mitoArray[i][1])
-          .transform({ rotate: this.mitoArray[i][2] })
-          .stroke("none");
-      }
+      this.drawFeature(draw, this.mitoArray, pattern, x, y, 10, 18);
 
       // chloroplasts
-      for (let i = 0; i < this.chloroArray.length; i++) {
-        draw
-          .ellipse(8, 16)
-          .fill(this.chloroplastColor)
-          .move(x + this.chloroArray[i][0], y + this.chloroArray[i][1])
-          .transform({ rotate: this.chloroArray[i][2] })
-          .stroke("none");
-      }
+      this.drawFeature(
+        draw,
+        this.chloroArray,
+        this.chloroplastColor,
+        x,
+        y,
+        8,
+        16
+      );
 
       // lisosome
-      for (let i = 0; i < this.lisosomeArray.length; i++) {
-        draw
-          .ellipse(20, 28)
-          .fill(this.lisosomeColor)
-          .move(x + this.lisosomeArray[i][0], y + this.lisosomeArray[i][1])
-          .transform({ rotate: this.lisosomeArray[i][2] })
-          .stroke("none");
-      }
+      this.drawFeature(
+        draw,
+        this.lisosomeArray,
+        this.lisosomeColor,
+        x,
+        y,
+        20,
+        28
+      );
 
       // ribosomes
-      for (let i = 0; i < this.ribosomeArray.length; i++) {
+      this.drawFeature(
+        draw,
+        this.ribosomeArray,
+        this.ribosomeColor,
+        x,
+        y,
+        4,
+        10
+      );
+    },
+
+    drawFeature(draw, array, fill, x, y, w, h) {
+      for (let i = 0; i < array.length; i++) {
         draw
-          .ellipse(4, 10)
-          .fill(this.ribosomeColor)
-          .move(x + this.ribosomeArray[i][0], y + this.ribosomeArray[i][1])
-          .transform({ rotate: this.ribosomeArray[i][2] })
+          .ellipse(w, h)
+          .fill(fill)
+          .move(x + array[i][0], y + array[i][1])
+          .transform({ rotate: array[i][2] })
           .stroke("none");
       }
     },
