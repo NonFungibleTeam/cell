@@ -28,7 +28,7 @@ export default Vue.extend({
       [0, 31, 0, 16],
       [31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31]
     ],
-    waveform: 5,
+    waveform: 3,
     level: 7,
     rounded: false,
     gradientStops: [
@@ -38,6 +38,21 @@ export default Vue.extend({
     ],
     nucleusColor: "#f56",
     nucleusSize: 60,
+    mitocondriaColor: "#f41",
+    mitoArray: [
+      [-30, 35, 35],
+      [-10, -20, 0],
+      [80, -20, 158],
+      [75, 65, 287],
+      [-15, 75, 77]
+    ],
+    chloroplastColor: "#3f5",
+    chloroArray: [
+      [50, -45, 145],
+      [-35, -3, 95],
+      [48, 73, 277],
+      [85, 39, 13]
+    ],
     stroke: { width: 3, color: "#ee77ff", linecap: "round", linejoin: "round" }
   }),
   mounted() {
@@ -110,12 +125,43 @@ export default Vue.extend({
         .stroke(this.stroke);
 
       // endoplasmic reticulum
+      // const ER = draw.path("M 15 75 A 35 35 -45 0 1 70 50");
+      // ER.move(x, y)
+      //   .stroke({ width: 2, color: "#00f" })
+      //   .fill("none");
 
       // golgi aparatus
 
       // mitocondria
+      const pattern = draw.pattern(10, 10, function(add) {
+        add.rect(10, 10).fill("#f33");
+        add
+          .rect(7, 2)
+          .move(5, 5)
+          .fill("#fff");
+        add
+          .rect(7, 2)
+          .move(3, 0)
+          .fill("#fff");
+      });
+      for (let i = 0; i < this.mitoArray.length; i++) {
+        draw
+          .ellipse(10, 18)
+          .fill(pattern)
+          .move(x + this.mitoArray[i][0], y + this.mitoArray[i][1])
+          .transform({ rotate: this.mitoArray[i][2] })
+          .stroke("none");
+      }
 
       // chloroplasts
+      for (let i = 0; i < this.chloroArray.length; i++) {
+        draw
+          .ellipse(8, 16)
+          .fill(this.chloroplastColor)
+          .move(x + this.chloroArray[i][0], y + this.chloroArray[i][1])
+          .transform({ rotate: this.chloroArray[i][2] })
+          .stroke("none");
+      }
 
       // lisosome
 
@@ -130,11 +176,17 @@ export default Vue.extend({
       const segments = repeat * wave.length;
       const points = [];
       for (let i = 0; i <= segments; i++)
-        points[i] = this.radialPlotter(i, radius, mod, wave, segments);
+        points[i] = this.radialWavePlotter(i, radius, mod, wave, segments);
       return points;
     },
 
-    radialPlotter(i, radius, mod, wave, segments) {
+    radialPlotter(i, segments, scale) {
+      const x = Math.round(Math.sin((this.tao * i) / segments) * scale);
+      const y = Math.round(Math.cos((this.tao * i) / segments) * scale * -1);
+      return [x, y];
+    },
+
+    radialWavePlotter(i, radius, mod, wave, segments) {
       const scale =
         radius * mod +
         radius * (1 - mod) * (wave[i % wave.length] / (this.bitDepthMax - 1));
@@ -211,7 +263,7 @@ export default Vue.extend({
           i === 0
             ? `M ${point[0]},${point[1]}`
             : `${acc} ${command(point, i, a)}`,
-        " z"
+        ""
       );
       return d;
     }
