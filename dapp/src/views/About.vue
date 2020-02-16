@@ -81,7 +81,7 @@
               <thead>
                 <tr>
                   <th class="text-left">Level</th>
-                  <th class="text-left">mass</th>
+                  <th class="text-left">Mass</th>
                 </tr>
               </thead>
               <tbody>
