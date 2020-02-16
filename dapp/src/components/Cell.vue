@@ -1,8 +1,8 @@
 <template lang="pug">
-  v-container
-    v-row.text-center
-      v-col(cols="10")
-        v-card
+  v-container(flex)
+    v-row(align="center")
+      v-col(cols="5")
+        v-card(outlined title)
           .shape
 </template>
 
@@ -15,7 +15,7 @@ export default Vue.extend({
   data: () => ({
     tao: 2 * Math.PI,
     diameter: 300,
-    margin: 0,
+    margin: 10,
     smoothing: 0.2,
     bitDepthMax: 2 ** 5,
     preserve: 0.6,
@@ -76,7 +76,7 @@ export default Vue.extend({
       // draw, style and position the SVG path
       const draw = SVG()
         .addTo(target)
-        .size(width * 2 + this.margin, height * 2 + this.margin);
+        .size(width + this.margin * 2, height + this.margin * 2);
 
       // plot shape from wave
       const shape = this.plotShape(
