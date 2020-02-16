@@ -30,7 +30,8 @@
         text)
         v-icon.mr-2 mdi-discord
       v-btn(
-        href="https://discord.gg/upwdYAh"
+        href="https://twitter.com/MicroverseLife"
+        target="_new"
         text)
         v-icon.mr-2 mdi-twitter
 
@@ -49,7 +50,7 @@ export default Vue.extend({
 </script>
 
 <style lang="sass">
-.body
+body
   background-color: #121212
   font-family: "sans-serif"
 .title
