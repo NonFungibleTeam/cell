@@ -1,21 +1,19 @@
 <template lang="pug">
   .home
+    Cell
+    v-row(align="center" justify="center" cols=12)
+      v-col
+        h1.paralax-title Microverse
+        h3 A game of single cellular crypto organisms
+    v-row(align="center" justify="center" cols=12).call-to-actions
+      v-col(justify="space-around")
+        v-btn(color="secondary" to="/mint") Play Now
+        v-btn(color="secondary" to="/About") Learn More
     v-container(flex)
       v-row(align="center" flex)
-        v-col(cols="5")
-          Cell
-        v-col(cols="5").mt-5
+        v-col(cols=6)
           v-card.text.text-center
             v-card-text
-              h1 NFT Cells
-              h3 Merge
-              h3 Divide
-              h3 Level Up
-              v-btn(color="secondary" to="/mint") Start Playing Now
-              
-              .web3(v-if="isDrizzleInitialized")
-                p :)
-                p {{ activeAccount }}
 </template>
 
 <script>
@@ -34,3 +32,8 @@ export default {
   }
 };
 </script>
+
+<style lang="sass" scoped>
+  .paralax-title
+    font-size: 4rem
+</style>
