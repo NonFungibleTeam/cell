@@ -53,6 +53,13 @@ export default Vue.extend({
       [48, 73, 277],
       [85, 39, 13]
     ],
+    lisosomeColor: "#ff0",
+    lisosomeArray: [[80, 10, 23]],
+    ribosomeColor: "#cdf",
+    ribosomeArray: [
+      [-12, 54, 285],
+      [70, -5, 57]
+    ],
     stroke: { width: 3, color: "#ee77ff", linecap: "round", linejoin: "round" }
   }),
   mounted() {
@@ -125,10 +132,36 @@ export default Vue.extend({
         .stroke(this.stroke);
 
       // endoplasmic reticulum
-      // const ER = draw.path("M 15 75 A 35 35 -45 0 1 70 50");
-      // ER.move(x, y)
-      //   .stroke({ width: 2, color: "#00f" })
-      //   .fill("none");
+      const ER1 = draw.path("M 15 75 A 35 35 -45 0 1 70 50");
+      ER1.move(x - 5, y - 5)
+        .stroke({
+          width: 3,
+          color: "#00f",
+          dasharray: "5,3,9",
+          linecap: "round",
+          linejoin: "round"
+        })
+        .fill("none");
+      const ER2 = draw.path("M 0 80 A 40 40 -45 0 1 70 50");
+      ER2.move(x - 10, y - 10)
+        .stroke({
+          width: 3,
+          color: "#00f",
+          dasharray: "3,9,7",
+          linecap: "round",
+          linejoin: "round"
+        })
+        .fill("none");
+      const ER3 = draw.path("M 0 80 A 45 45 -45 0 1 70 50");
+      ER3.move(x - 15, y - 15)
+        .stroke({
+          width: 3,
+          color: "#00f",
+          dasharray: "2,7,5",
+          linecap: "round",
+          linejoin: "round"
+        })
+        .fill("none");
 
       // golgi aparatus
 
@@ -164,8 +197,24 @@ export default Vue.extend({
       }
 
       // lisosome
+      for (let i = 0; i < this.lisosomeArray.length; i++) {
+        draw
+          .ellipse(8, 16)
+          .fill(this.lisosomeColor)
+          .move(x + this.lisosomeArray[i][0], y + this.lisosomeArray[i][1])
+          .transform({ rotate: this.lisosomeArray[i][2] })
+          .stroke("none");
+      }
 
       // ribosomes
+      for (let i = 0; i < this.ribosomeArray.length; i++) {
+        draw
+          .ellipse(8, 16)
+          .fill(this.ribosomeColor)
+          .move(x + this.ribosomeArray[i][0], y + this.ribosomeArray[i][1])
+          .transform({ rotate: this.ribosomeArray[i][2] })
+          .stroke("none");
+      }
     },
 
     // function parameters ( size, wave, repeat, mod )
