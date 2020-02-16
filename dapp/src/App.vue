@@ -40,7 +40,7 @@ export default Vue.extend({
 </script>
 
 <style lang="sass">
-.body
+body
   background-color: #121212
   font-family: "sans-serif"
 .title
