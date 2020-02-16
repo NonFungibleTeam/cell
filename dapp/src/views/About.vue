@@ -76,30 +76,43 @@
           </v-card>
         </v-tab-item>
         <v-tab-item>
-          <v-card flat></v-card>
+          <v-card flat>
+            <table>
+              <thead>
+                <tr>
+                  <th class="text-left">Level</th>
+                  <th class="text-left">mass</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="item in masslevels" :key="item.level">
+                  <td>{{ item.level }}</td>
+                  <td>{{ item.mass }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </v-card>
         </v-tab-item>
         <v-tab-item>
           <v-card flat>
-            <v-simple-table>
-              <template v-slot:default>
-                <thead>
-                  <tr>
-                    <th class="text-left">Merge Result</th>
-                    <th class="text-left">Probability</th>
-                    <th class="text-left">Loss(% of Cell Mass)</th>
-                    <th class="text-left">Gain(% of Mass Pool)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="item in rekt" :key="item.mergeresult">
-                    <td>{{ item.mergeresult }}</td>
-                    <td>{{ item.probability }}</td>
-                    <td>{{ item.loss }}</td>
-                    <td>{{ item.gain }}</td>
-                  </tr>
-                </tbody>
-              </template>
-            </v-simple-table>
+            <table>
+              <thead>
+                <tr>
+                  <th class="text-left">Merge Result</th>
+                  <th class="text-left">Probability</th>
+                  <th class="text-left">Loss(% of Cell Mass)</th>
+                  <th class="text-left">Gain(% of Mass Pool)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="item in rekt" :key="item.mergeresult">
+                  <td>{{ item.mergeresult }}</td>
+                  <td>{{ item.probability }}</td>
+                  <td>{{ item.loss }}</td>
+                  <td>{{ item.gain }}</td>
+                </tr>
+              </tbody>
+            </table>
           </v-card>
         </v-tab-item>
       </v-tabs>
