@@ -29,7 +29,7 @@
       router-view
 </template>
 
-<script lang="ts">
+<script>
 import Vue from "vue";
 
 export default Vue.extend({
@@ -42,6 +42,7 @@ export default Vue.extend({
 <style lang="sass">
 .body
   background-color: #121212
+  font-family: "sans-serif"
 .title
   font-family: "Pangolin"
   font-size: 2rem

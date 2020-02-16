@@ -1,6 +1,6 @@
-import Cell from "./contracts/Cell.json";
+//import Cell from "./contracts/Cell.json";
 
-const options = {
+const options: any = {
   web3: {
     block: false,
     fallback: {
@@ -10,11 +10,11 @@ const options = {
   },
 
   // The contracts to monitor
-  contracts: [Cell],
-  events: {
-    // monitor Cell.Mint events
-    Cell: ["Mint"]
-  },
+  // contracts: [Cell],
+  // events: {
+  //   // monitor Cell.Mint events
+  //   Cell: ["Mint"]
+  // },
   polls: {
     // check accounts ever 15 seconds
     accounts: 15000

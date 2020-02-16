@@ -1,12 +1,18 @@
 <template lang="pug">
   v-container(flex)
-    v-row(align="center")
+    v-row(align="center" flex)
       v-col(cols="5")
-        v-card(outlined title)
-          .shape
+        .shape
+      v-col.text-center(cols="7")
+        .text.text-center
+          h1 NFT Cells
+          h3 Merge
+          h3 Divide
+          h3 Level Up
+          v-button(text) Start Playing Now
 </template>
 
-<script lang="ts">
+<script>
 import Vue from "vue";
 import { SVG } from "@svgdotjs/svg.js";
 
@@ -28,8 +34,8 @@ export default Vue.extend({
       [0, 31, 0, 16],
       [31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31]
     ],
-    waveform: 0,
-    level: 7,
+    waveform: 5,
+    level: 8,
     rounded: true,
     gradientStops: [
       { offset: 0.1, color: "#ffffff" },
@@ -220,7 +226,6 @@ export default Vue.extend({
     // returns an array of points for a polygon
     plotShape(size, wave, repeat, mod) {
       const radius = size / 2;
-      console.log(wave);
       const segments = repeat * wave.length;
       const points = [];
       for (let i = 0; i <= segments; i++)
