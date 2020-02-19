@@ -237,10 +237,12 @@ export default Vue.extend({
 
     mergeWaves(waves) {
       const compoundWave = [];
-      const lcm = 4; // least common multiple of the length of the wave arrays
+      const waveLengths = waves.map(w => w.length);
+      const lcm = this.lcmNumbers(waveLengths); // least common multiple of the length of the wave arrays
       for (let i = 0; i < lcm; i++) {
         compoundWave[i] = 0;
-        for (const wave in waves) compoundWave[i] += wave[Math.floor(i / wave.length)];
+        for (const wave in waves)
+          compoundWave[i] += wave[Math.floor(i / (lcm / wave.length))];
       }
       return compoundWave;
     },
@@ -353,6 +355,28 @@ export default Vue.extend({
         ""
       );
       return d;
+    },
+
+    lcmNumbers(inputArray) {
+      if (toString.call(inputArray) !== "[object Array]") return false;
+      let r1 = 0,
+        r2 = 0;
+      const l = inputArray.length;
+      for (let i = 0; i < l; i++) {
+        r1 = inputArray[i] % inputArray[i + 1];
+        if (r1 === 0) {
+          inputArray[i + 1] =
+            (inputArray[i] * inputArray[i + 1]) / inputArray[i + 1];
+        } else {
+          r2 = inputArray[i + 1] % r1;
+          if (r2 === 0) {
+            inputArray[i + 1] = (inputArray[i] * inputArray[i + 1]) / r1;
+          } else {
+            inputArray[i + 1] = (inputArray[i] * inputArray[i + 1]) / r2;
+          }
+        }
+      }
+      return inputArray[l - 1];
     }
   }
 });
