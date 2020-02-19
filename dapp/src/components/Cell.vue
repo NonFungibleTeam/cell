@@ -8,72 +8,66 @@ import { SVG } from "@svgdotjs/svg.js";
 
 export default Vue.extend({
   name: "Cell",
+  props: ["mass", "features"],
+  computed: {
+    level() {
+      return Math.floor(Math.log2(this.mass)) - 2;
+    },
+    gradientStops() {
+      return [
+        { offset: 0.1, color: "#cc2200" },
+        { offset: 0.5, color: "#44eeaa" },
+        { offset: 0.9, color: "#444444" }
+      ];
+    }
+  },
   data: () => ({
     tao: 2 * Math.PI,
     diameter: 300,
     margin: 10,
     smoothing: 0.2,
     bitDepthMax: 2 ** 5,
-    preserve: 0.6,
+    preserve: 0.55,
     waves: [
-      [31, 23, 15, 7, 0, 7, 15, 23],
-      [31, 31, 0, 0, 31, 31, 0, 0],
+      [31, 23, 15, 7, 3, 0, 3, 7, 15, 23],
       [0, 7, 15, 23, 31, 23, 15, 7],
-      [31, 22, 14, 8, 16, 7, 16, 4, 32, 8, 22],
-      [0, 0, 0, 0, 0, 0, 31],
-      [0, 31, 0, 16],
-      [31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31]
+      [0, 3, 7, 15, 23, 31, 0],
+      [31, 22, 14, 8, 16, 7, 16, 4, 32, 8, 22, 29],
+      [31, 31, 0, 0, 31, 31, 0, 0],
+      [0, 31, 0, 15],
+      [0, 31],
+      [0, 0, 0, 31]
     ],
-    waveform: 3,
-    level: 6,
-    rounded: false,
-    gradientStops: [
-      { offset: 0.1, color: "#cc2200" },
-      { offset: 0.5, color: "#44eeaa" },
-      { offset: 0.9, color: "#444444" }
-    ],
-    nucleusColor: "#f56",
-    nucleusSize: 60,
-    features: {
-      mitocondria: {
-        color: "#f41",
-        array: [
-          [-30, 35, 35],
-          [-10, -20, 0],
-          [80, -20, 158],
-          [75, 65, 287],
-          [-25, -15, 187],
-          [-15, 75, 77]
-        ]
-      },
-      chloroplasts: {
-        color: "#3f5",
-        array: [
-          [50, -45, 145],
-          [-35, -3, 95],
-          [48, 73, 277],
-          [85, 39, 13]
-        ]
-      },
-      lisosomes: {
-        color: "#ff0",
-        array: [[80, 10, 23]]
-      },
-      ribosomes: {
-        color: "#66f",
-        array: [
-          [-12, 54, 285],
-          [-32, 20, 85],
-          [75, -32, 165],
-          [70, -5, 57]
-        ]
-      }
-    },
-    stroke: { width: 3, color: "#77eeff", linecap: "round", linejoin: "round" }
+    locations: {
+      mitocondria: [
+        [-30, 35, 35],
+        [-10, -20, 0],
+        [80, -20, 158],
+        [75, 65, 287],
+        [-25, -15, 187],
+        [-15, 75, 77]
+      ],
+      chloroplasts: [
+        [50, -45, 145],
+        [-35, -3, 95],
+        [48, 73, 277],
+        [85, 39, 13]
+      ],
+      lisosomes: [
+        [80, 10, 23],
+        [-40, -30, 312]
+      ],
+      ribosomes: [
+        [-12, 54, 285],
+        [-32, 20, 85],
+        [75, -32, 165],
+        [70, -5, 57]
+      ]
+    }
   }),
   mounted() {
     this.drawCell(
-      this.waves[this.waveform],
+      this.waves[this.features.body.waveform],
       this.level,
       ".shape",
       this.diameter,
@@ -96,46 +90,52 @@ export default Vue.extend({
       );
 
       // center varaible sized body
-      const maxX = shape.reduce(function(max, cords) {
-        return max > cords[0] ? max : cords[0];
-      }, 0);
-      const minX = shape.reduce(function(min, cords) {
-        return min < cords[0] ? min : cords[0];
-      }, 0);
-      const maxY = shape.reduce(function(max, cords) {
-        return max > cords[1] ? max : cords[1];
-      }, 0);
-      const minY = shape.reduce(function(min, cords) {
-        return min < cords[1] ? min : cords[1];
-      }, 0);
+      const [xRange, yRange] = shape.reduce(
+        function(result, cords) {
+          const [x, y] = cords;
+          const [lX, lY] = result;
+          return [
+            [lX[0] < x ? lX[0] : x, lX[1] > x ? lX[1] : x],
+            [lY[0] < y ? lY[0] : y, lY[1] > y ? lY[1] : y]
+          ];
+        },
+        [
+          [0, 0],
+          [0, 0]
+        ]
+      );
+      const [minX, maxX] = xRange;
+      const [minY, maxY] = yRange;
 
       // gradient
       const gradient = draw.gradient(
         "radial",
         function(add) {
-          add.stop(this.gradientStops[0]);
-          add.stop(this.gradientStops[1]);
-          for (const c in this.gradientStops) {
-            add.stop(this.gradientStops[c]);
-          }
+          for (const c in this.gradientStops) add.stop(this.gradientStops[c]);
         }.bind(this)
       );
 
-      // placement, fill, stroke of SVG
-      const svg = this.rounded
+      // placement, fill, stroke of body
+      const svg = this.features.body.rounded
         ? draw.path(this.svgPath(shape, this.bezierCommand))
         : draw.polygon(shape);
       svg
         .move(this.margin, this.margin)
         .fill(gradient)
-        .stroke(this.stroke);
+        .stroke({
+          width: 3,
+          color: this.features.body.color,
+          linecap: "round",
+          linejoin: "round"
+        });
 
       // nucleus
-      const x = (maxX - minX - this.nucleusSize) / 2 + this.margin;
-      const y = (maxY - minY - this.nucleusSize) / 2 + this.margin;
+      const nucleusSize = this.features.nucleus.size;
+      const x = (maxX - minX - nucleusSize) / 2 + this.margin;
+      const y = (maxY - minY - nucleusSize) / 2 + this.margin;
       draw
-        .ellipse(this.nucleusSize, this.nucleusSize)
-        .fill(this.nucleusColor)
+        .ellipse(nucleusSize, nucleusSize)
+        .fill(this.features.nucleus.color)
         .move(x, y)
         .stroke(this.stroke);
 
@@ -156,7 +156,7 @@ export default Vue.extend({
       ];
       const endoStroke = {
         width: 3,
-        color: "#00f",
+        color: this.features.endo.color,
         linecap: "round",
         linejoin: "round"
       };
@@ -172,21 +172,26 @@ export default Vue.extend({
       // golgi aparatus
 
       // mitocondria
-      const pattern = draw.pattern(10, 10, function(add) {
-        add.rect(10, 10).fill("#f33");
-        add
-          .rect(10, 2)
-          .move(5, 5)
-          .fill("#fff");
-        add
-          .rect(7, 2)
-          .move(0, 0)
-          .fill("#fff");
-      });
+      const pattern = draw.pattern(
+        10,
+        10,
+        function(add) {
+          add.rect(10, 10).fill(this.features.mitocondria.color);
+          add
+            .rect(10, 2)
+            .move(5, 5)
+            .fill("#fff");
+          add
+            .rect(7, 2)
+            .move(0, 0)
+            .fill("#fff");
+        }.bind(this)
+      );
       this.drawFeature(
         draw,
-        this.features.mitocondria.array,
+        this.locations.mitocondria,
         pattern,
+        this.features.mitocondria.count,
         x,
         y,
         10,
@@ -196,8 +201,9 @@ export default Vue.extend({
       // chloroplasts
       this.drawFeature(
         draw,
-        this.features.chloroplasts.array,
+        this.locations.chloroplasts,
         this.features.chloroplasts.color,
+        this.features.chloroplasts.count,
         x,
         y,
         8,
@@ -207,8 +213,9 @@ export default Vue.extend({
       // lisosome
       this.drawFeature(
         draw,
-        this.features.lisosomes.array,
+        this.locations.lisosomes,
         this.features.lisosomes.color,
+        this.features.lisosomes.count,
         x,
         y,
         20,
@@ -218,8 +225,9 @@ export default Vue.extend({
       // ribosomes
       this.drawFeature(
         draw,
-        this.features.ribosomes.array,
+        this.locations.ribosomes,
         this.features.ribosomes.color,
+        this.features.ribosomes.count,
         x,
         y,
         4,
@@ -227,13 +235,23 @@ export default Vue.extend({
       );
     },
 
-    drawFeature(draw, array, fill, x, y, w, h) {
-      for (let i = 0; i < array.length; i++) {
+    mergeWaves(waves) {
+      const compoundWave = [];
+      const lcm = 4; // least common multiple of the length of the wave arrays
+      for (let i = 0; i < lcm; i++) {
+        compoundWave[i] = 0;
+        for (const wave in waves) compoundWave[i] += wave[Math.floor(i / wave.length)];
+      }
+      return compoundWave;
+    },
+
+    drawFeature(draw, positions, fill, count, x, y, w, h) {
+      for (let i = 0; i < count; i++) {
         draw
           .ellipse(w, h)
           .fill(fill)
-          .move(x + array[i][0], y + array[i][1])
-          .transform({ rotate: array[i][2] })
+          .move(x + positions[i][0], y + positions[i][1])
+          .transform({ rotate: positions[i][2] })
           .stroke("none");
       }
     },
