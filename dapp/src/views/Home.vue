@@ -1,19 +1,16 @@
 <template lang="pug">
   .home
-    v-container(flex)
-      v-row(align="center" cols=6)
-        v-col(flex)
+    v-container
+      v-row(cols=6)
+        v-col(align="center")
           Cell(:mass="cell.mass" :features="cell.features")
-      v-row(align="center" justify="center" cols=6)
-        v-col
           h1.title Microverse
           h2 NFT Cells
           h3 Mint, merge, and divide NFT biological cells. 
           h3 Compete to make massive unique cells and avoid getting rekt!
-      v-row(align="center" justify="center" cols=12).call-to-actions
-        v-col(justify="space-around")
-          v-btn.ma-5(color="primary" large to="/mint") Play Now
-          v-btn(color="tertiary" outline large to="/About") Learn More
+          .call-to-action
+            v-btn.btn(color="primary" large to="/mint") Play Now
+            v-btn.btn(color="tertiary" large to="/about") Learn More
 </template>
 
 <script>
@@ -71,6 +68,9 @@ export default {
 <style lang="sass" scoped>
   .title
     font-size: 4rem
-  .call-to-actions .btn
+  .call-to-action
+    margin-top: 20px
     color: #121212
+    .btn
+      margin: 30px
 </style>
