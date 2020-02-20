@@ -3,9 +3,9 @@
     v-container
       v-row(cols=6)
         v-col(align="center")
-          Cell(:mass="cell.mass" :features="cell.features")
+          Cell.cell(:mass="cell.mass" :features="cell.features")
           h1.title Microverse
-          h3 Mint, merge, and divide NFT biological cells. 
+          h3 Mint, merge, and divide NFT cells. 
           h3 Compete to make massive unique cells and avoid getting rekt!
           .call-to-action
             v-btn.btn(color="primary" large to="/mint") Play Now
@@ -65,11 +65,13 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+  .cell 
+    margin-top: 3vh
   .title
     font-size: 4rem
   .call-to-action
-    margin-top: 20px
+    margin-top: 5vh
     color: #121212
     .btn
-      margin: 30px
+      margin: 15px
 </style>
