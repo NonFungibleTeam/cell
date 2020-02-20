@@ -20,10 +20,19 @@
           .call-to-action
             v-btn.btn(color="primary" large to="/mint") Play Now
             v-btn.btn(color="tertiary" large to="/about") Learn More
-      v-row(cols=6).details
+      v-row(d-flex).details
         v-col(align="center")
-          h1 
-          h1 Fully Generative Open Source Art
+          v-card.details-card
+            h1 Generative Open Source Art 
+            h3 An open source rendering library allows you to completely own your cells art.
+            h3 While also promoting a vibrant ecosystem of third party applications.
+            v-btn(color="primary" large target="_new" href="") View Source
+        v-col(align="center")
+          v-card.details-card
+            h1 ERC721 Standard NFTs
+            h3 Trade your cells on OpenSea.
+            h3 Manage them in any NFT compatible wallet.
+            v-btn(color="primary" large target="_new" href="") Shop OpenSea
 </template>
 
 <script>
@@ -84,10 +93,13 @@ export default {
     height: 100vh
     width: 100vw
   .landing
-    padding-top: 15vh
+    padding-top: 10vh
     height: 100vh
   .details
     height: 50vh
+    .details-card
+      margin: 2rem
+      padding: 2rem
   .cell 
     margin-top: 3vh
   .title
