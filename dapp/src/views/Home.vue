@@ -11,7 +11,7 @@
       :hoverEffect="false"
       :clickEffect="false").particles
     v-container
-      v-row(cols=6)
+      v-row(cols=6).landing
         v-col(align="center")
           Cell.cell(:mass="cell.mass" :features="cell.features")
           h1.title Microverse
@@ -20,6 +20,10 @@
           .call-to-action
             v-btn.btn(color="primary" large to="/mint") Play Now
             v-btn.btn(color="tertiary" large to="/about") Learn More
+      v-row(cols=6).details
+        v-col(align="center")
+          h1 
+          h1 Fully Generative Open Source Art
 </template>
 
 <script>
@@ -79,6 +83,11 @@ export default {
     position: fixed
     height: 100vh
     width: 100vw
+  .landing
+    padding-top: 15vh
+    height: 100vh
+  .details
+    height: 50vh
   .cell 
     margin-top: 3vh
   .title
