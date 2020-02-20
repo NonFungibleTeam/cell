@@ -1,25 +1,27 @@
 <template lang="pug">
-  .collection
-    h1.title Collection:
-    v-divider
-    .list
-      v-card(v-for="c,i in cells" :key="i" width="300").ma-3.pa-3
-        Cell(:mass="c.mass" :features="c.features")
-        v-card-title {{ i }}
-        v-card-text
-          p.display-1.text--primary #1
-        v-card-actions
-          v-spacer
-          v-btn(to="/merge" color="deep-purple accent-4") Merge
-          v-btn(to="/divide") Divide
+  v-container.collection
+    Nav
+    v-row
+      v-col(align="center")
+        .cell(v-for="c,i in cells" :key="i")
+            v-card(width="360")
+              v-card-title {{ i }}
+              v-card-text
+                Cell(:id="i" :mass="c.mass" :features="c.features")
+              v-card-actions
+                v-spacer
+                v-btn(color="primary") Merge
+                v-btn(color="primary") Divide
 </template>
 
 <script>
 import Cell from "@/components/Cell.vue";
+import Nav from "@/components/Nav.vue";
 
 export default {
   name: "Home",
   components: {
+    Nav,
     Cell
   },
   data: () => ({

@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-container.about
+  v-container.mint
     Nav
     v-row(cols=6).landing
         v-col(align="center").content

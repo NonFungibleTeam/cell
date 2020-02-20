@@ -1,5 +1,5 @@
 <template lang="pug">
-  .shape
+  .shape(:class="[shapeID]")
 </template>
 
 <script>
@@ -8,8 +8,11 @@ import { SVG } from "@svgdotjs/svg.js";
 
 export default Vue.extend({
   name: "Cell",
-  props: ["mass", "features"],
+  props: ["id", "mass", "features"],
   computed: {
+    shapeID() {
+      return ".shape-" + this.id;
+    },
     level() {
       return Math.floor(Math.log2(this.mass)) - 2;
     },

@@ -13,7 +13,7 @@
     v-container
       v-row(cols=6).landing
         v-col(align="center")
-          Cell.cell(:mass="cell.mass" :features="cell.features")
+          Cell.cell(id="1" :mass="cell.mass" :features="cell.features")
           h1.title Microverse
           h3 Mint, merge, and divide NFT cells. 
           h3 Compete to make massive unique cells and avoid getting rekt!
