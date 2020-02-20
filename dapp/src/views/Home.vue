@@ -1,5 +1,15 @@
 <template lang="pug">
   .home
+    vue-particles(color="#ffffff"
+      width=1000
+      :particleOpacity="0.1"
+      :particlesNumber="70"
+      shapeType="circle"
+      :particleSize="7"
+      :lineLinked="false"
+      :moveSpeed="1"
+      :hoverEffect="false"
+      :clickEffect="false").particles
     v-container
       v-row(cols=6)
         v-col(align="center")
@@ -24,11 +34,11 @@ export default {
   },
   data: () => ({
     cell: {
-      mass: 17,
+      mass: 541,
       features: {
         body: {
           rounded: false,
-          waves: [0, 1, 2, 3],
+          waves: [2, 1, 1, 0],
           color: "#efcc35"
         },
         nucleus: {
@@ -65,6 +75,10 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+  .particles
+    position: fixed
+    height: 100vh
+    width: 100vw
   .cell 
     margin-top: 3vh
   .title
