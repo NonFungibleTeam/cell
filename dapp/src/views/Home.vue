@@ -24,14 +24,14 @@
         v-col(align="center")
           v-card.details-card
             h1 Generative Open Source Art 
-            h3 An open source rendering library allows you to completely own your cells art.
-            h3 While also promoting a vibrant ecosystem of third party applications.
+            p An open source rendering library allows you to completely own your cells art,
+            p While also promoting a vibrant ecosystem of third party applications.
             v-btn(color="primary" large target="_new" href="") View Source
         v-col(align="center")
           v-card.details-card
             h1 ERC721 Standard NFTs
-            h3 Trade your cells on OpenSea.
-            h3 Manage them in any NFT compatible wallet.
+            p Trade your cells on OpenSea.
+            p Manage them in any NFT compatible wallet.
             v-btn(color="primary" large target="_new" href="") Shop OpenSea
 </template>
 
