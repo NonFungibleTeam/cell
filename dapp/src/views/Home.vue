@@ -5,7 +5,6 @@
         v-col(align="center")
           Cell(:mass="cell.mass" :features="cell.features")
           h1.title Microverse
-          h2 NFT Cells
           h3 Mint, merge, and divide NFT biological cells. 
           h3 Compete to make massive unique cells and avoid getting rekt!
           .call-to-action
