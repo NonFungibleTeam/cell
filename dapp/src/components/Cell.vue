@@ -255,7 +255,6 @@ export default Vue.extend({
       for (let i = 0; i < lcm; i++) {
         compoundWave[i] = 0;
         for (const wave in waves) {
-          debugger;
           const j = Math.floor(i / (lcm / wave.length));
           compoundWave[i] += wave[j] / (this.bitDepthMax - 1);
         }
