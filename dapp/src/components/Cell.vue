@@ -13,6 +13,9 @@ export default Vue.extend({
     level() {
       return Math.floor(Math.log2(this.mass)) - 2;
     },
+    wave() {
+      return this.mergeWaves(this.features.body.waves.map(i => this.waves[i]));
+    },
     gradientStops() {
       return [
         { offset: 0.1, color: "#cc2200" },
@@ -67,7 +70,7 @@ export default Vue.extend({
   }),
   mounted() {
     this.drawCell(
-      this.waves[this.features.body.waveform],
+      this.wave,
       this.level,
       ".shape",
       this.diameter,
@@ -236,13 +239,14 @@ export default Vue.extend({
     },
 
     mergeWaves(waves) {
-      const compoundWave = [];
       const waveLengths = waves.map(w => w.length);
       const lcm = this.lcmNumbers(waveLengths); // least common multiple of the length of the wave arrays
+      const compoundWave = [];
       for (let i = 0; i < lcm; i++) {
         compoundWave[i] = 0;
         for (const wave in waves)
-          compoundWave[i] += wave[Math.floor(i / (lcm / wave.length))];
+          compoundWave[i] +=
+            wave[Math.floor(i / (lcm / wave.length))] / (this.bitDepthMax - 1);
       }
       return compoundWave;
     },
@@ -269,16 +273,8 @@ export default Vue.extend({
       return points;
     },
 
-    radialPlotter(i, segments, scale) {
-      const x = Math.round(Math.sin((this.tao * i) / segments) * scale);
-      const y = Math.round(Math.cos((this.tao * i) / segments) * scale * -1);
-      return [x, y];
-    },
-
     radialWavePlotter(i, radius, mod, wave, segments) {
-      const scale =
-        radius * mod +
-        radius * (1 - mod) * (wave[i % wave.length] / (this.bitDepthMax - 1));
+      const scale = radius * mod + radius * (1 - mod) * wave[i % wave.length];
       const x = Math.round(Math.sin((this.tao * i) / segments) * scale);
       const y = Math.round(Math.cos((this.tao * i) / segments) * scale * -1);
       return [x, y];
