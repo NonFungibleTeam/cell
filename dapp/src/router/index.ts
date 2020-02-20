@@ -14,7 +14,7 @@ const routes = [
     path: "/collection",
     name: "Collection",
     component: () =>
-      import(/* webpackChunkName: "mint" */ "../views/Collection.vue")
+      import(/* webpackChunkName: "collection" */ "../views/Collection.vue")
   },
   {
     path: "/about",
@@ -41,6 +41,11 @@ const routes = [
     name: "Divide",
     component: () =>
       import(/* webpackChunkName: "divide" */ "../views/Divide.vue")
+  },
+  {
+    path: "/*",
+    name: "404",
+    component: () => import(/* webpackChunkName: "404" */ "../views/404.vue")
   }
 ];
 
