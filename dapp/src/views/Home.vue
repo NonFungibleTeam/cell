@@ -1,21 +1,55 @@
 <template lang="pug">
   .home
-    v-container(flex)
-      v-row(align="center" flex)
-        v-col(cols="5")
-          Cell(v-for="c,i in cells" :key="i" 
-          :mass="c.mass" 
-          :features="c.features")
-        v-col(cols="5").mt-5
-          v-card.text.text-center
-            v-card-text
-              h1 NFT Cells
-              h3 Mint, merge, and divide NFT biological cells. Compete to make massive unique cells and avoid getting rekt!
-              v-btn(color="secondary" to="/mint") Start Playing Now
-              
-              .web3(v-if="isDrizzleInitialized")
-                p :)
-                p {{ activeAccount }}
+    vue-particles(color="#ffffff"
+      width=1000
+      :particleOpacity="0.1"
+      :particlesNumber="70"
+      shapeType="circle"
+      :particleSize="7"
+      :lineLinked="false"
+      :moveSpeed="1"
+      :hoverEffect="false"
+      :clickEffect="false").particles
+    v-container
+      v-row(cols=6).landing
+        v-col(align="center")
+          Cell.cell(id="1" :mass="cell.mass" :features="cell.features")
+          h1.title Microverse
+          h3 Mint, merge, and divide NFT cells. 
+          h3 Compete to make massive unique cells and avoid getting rekt!
+          .call-to-action
+            v-btn.btn(color="primary" large to="/mint") Play Now
+            v-btn.btn(color="tertiary" large to="/about") Learn More
+      v-row(d-flex).details
+        v-col(align="center")
+          v-card.details-card
+            v-icon(large) mdi-draw
+            h1 Generative Open Source Art 
+            p An open source rendering library allows you to completely own your cells art,
+            p While also promoting a vibrant ecosystem of third party applications.
+            v-btn(color="primary" large target="_new" href="github.com/NonFungibleTeam/cell") View Source
+        v-col(align="center")
+          v-card.details-card
+            v-icon(large) mdi-check-decagram
+            h1 ERC721 Standard NFTs
+            p Trade your cells on OpenSea.
+            p Manage them in any NFT compatible wallet.
+            v-btn(color="primary" large target="_new" href="https://opensea.io/") Shop OpenSea
+      v-row(d-flex).details
+        v-col(align="center")
+          v-card.details-card
+            v-icon(large) mdi-dna
+            h1 Evolve Your Genetics
+            p Each cell has its own set of genes the determine its features.
+            p Learn about how genes combine on merging.
+            v-btn(color="primary" href="/guide/genes") Genetics
+        v-col(align="center")
+          v-card.details-card
+            v-icon(large) mdi-atom
+            h1 Expand Your Mass
+            p Trade your cells on OpenSea.
+            p Manage them in any NFT compatible wallet.
+            v-btn(color="primary" href="/guide/mass") Mass
 </template>
 
 <script>
@@ -29,107 +63,39 @@ export default {
     Cell
   },
   data: () => ({
-    cells: [
-      {
-        mass: 17,
-        features: {
-          body: {
-            rounded: false,
-            waves: [0, 1, 2, 3],
-            color: "#efcc35"
-          },
-          nucleus: {
-            color: "#f56",
-            size: 60
-          },
-          endo: {
-            color: "#00f"
-          },
-          mitocondria: {
-            color: "#f33",
-            count: 6
-          },
-          chloroplasts: {
-            color: "#3f5",
-            count: 4
-          },
-          lisosomes: {
-            color: "#ff0",
-            count: 1
-          },
-          ribosomes: {
-            color: "#66f",
-            count: 4
-          }
-        }
-      },
-      {
-        mass: 66,
-        features: {
-          body: {
-            rounded: false,
-            waves: [3, 5, 6, 7],
-            color: "#efcc35"
-          },
-          nucleus: {
-            color: "#f56",
-            size: 60
-          },
-          endo: {
-            color: "#00f"
-          },
-          mitocondria: {
-            color: "#f33",
-            count: 6
-          },
-          chloroplasts: {
-            color: "#3f5",
-            count: 4
-          },
-          lisosomes: {
-            color: "#ff0",
-            count: 1
-          },
-          ribosomes: {
-            color: "#66f",
-            count: 4
-          }
-        }
-      },
-      {
-        mass: 75,
-        features: {
-          body: {
-            rounded: false,
-            waves: [3, 5, 6, 7],
-            color: "#efcc35"
-          },
-          nucleus: {
-            color: "#f56",
-            size: 60
-          },
-          endo: {
-            color: "#00f"
-          },
-          mitocondria: {
-            color: "#f33",
-            count: 6
-          },
-          chloroplasts: {
-            color: "#3f5",
-            count: 4
-          },
-          lisosomes: {
-            color: "#ff0",
-            count: 1
-          },
-          ribosomes: {
-            color: "#66f",
-            count: 4
-          }
+    cell: {
+      mass: 541,
+      features: {
+        body: {
+          rounded: false,
+          waves: [2, 1, 1, 0],
+          color: "#efcc35"
+        },
+        nucleus: {
+          color: "#f56",
+          size: 60
+        },
+        endo: {
+          color: "#00f"
+        },
+        mitocondria: {
+          color: "#f33",
+          count: 6
+        },
+        chloroplasts: {
+          color: "#3f5",
+          count: 4
+        },
+        lisosomes: {
+          color: "#ff0",
+          count: 1
+        },
+        ribosomes: {
+          color: "#66f",
+          count: 4
         }
       }
-    ]
+    }
   }),
   computed: {
     ...mapGetters("accounts", ["activeAccount", "activeBalance"]),
@@ -137,3 +103,27 @@ export default {
   }
 };
 </script>
+
+<style lang="sass" scoped>
+  .particles
+    position: fixed
+    height: 100vh
+    width: 100vw
+  .landing
+    padding-top: 10vh
+    height: 100vh
+  .details
+    height: 50vh
+    .details-card
+      margin: 2rem
+      padding: 2rem
+  .cell 
+    margin-top: 3vh
+  .title
+    font-size: 4rem
+  .call-to-action
+    margin-top: 5vh
+    color: #121212
+    .btn
+      margin: 15px
+</style>

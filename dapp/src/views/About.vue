@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <v-container class="about">
+    <Nav />
     <v-card>
       <v-toolbar flat color="primary" dark>
         <v-toolbar-title>How To Play:</v-toolbar-title>
@@ -117,13 +118,16 @@
         </v-tab-item>
       </v-tabs>
     </v-card>
-  </div>
+  </v-container>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
+import Nav from "@/components/Nav.vue";
+
 export default Vue.extend({
   name: "About",
+  components: { Nav },
   data: () => ({
     masslevels: [
       {

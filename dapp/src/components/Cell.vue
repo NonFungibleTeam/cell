@@ -1,5 +1,5 @@
 <template lang="pug">
-  .shape
+  .shape(:class="[shapeID]")
 </template>
 
 <script>
@@ -8,8 +8,11 @@ import { SVG } from "@svgdotjs/svg.js";
 
 export default Vue.extend({
   name: "Cell",
-  props: ["mass", "features"],
+  props: ["id", "mass", "features"],
   computed: {
+    shapeID() {
+      return ".shape-" + this.id;
+    },
     level() {
       return Math.floor(Math.log2(this.mass)) - 2;
     },
@@ -255,7 +258,6 @@ export default Vue.extend({
       for (let i = 0; i < lcm; i++) {
         compoundWave[i] = 0;
         for (const wave in waves) {
-          debugger;
           const j = Math.floor(i / (lcm / wave.length));
           compoundWave[i] += wave[j] / (this.bitDepthMax - 1);
         }

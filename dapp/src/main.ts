@@ -8,6 +8,9 @@ import vuetify from "./plugins/vuetify";
 import drizzleVuePlugin from "@drizzle/vue-plugin";
 import drizzleOptions from "./drizzleOptions";
 
+import VueParticles from "vue-particles";
+Vue.use(VueParticles);
+
 // Register the drizzleVuePlugin
 Vue.use(drizzleVuePlugin, { store, drizzleOptions });
 
