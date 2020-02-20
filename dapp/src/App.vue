@@ -18,4 +18,10 @@ export default Vue.extend({
 body
   background-color: #121212
   font-family: "sans-serif"
+.title
+  font-family: "Pangolin"
+  font-size: 2rem
+  color: #ffffff !important
+  text-decoration: none
+  
 </style>

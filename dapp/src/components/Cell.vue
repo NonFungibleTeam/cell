@@ -8,62 +8,72 @@ import { SVG } from "@svgdotjs/svg.js";
 
 export default Vue.extend({
   name: "Cell",
+  props: ["mass", "features"],
+  computed: {
+    level() {
+      return Math.floor(Math.log2(this.mass)) - 2;
+    },
+    wave() {
+      //return this.mergeWaves(this.features.body.waves.map(i => this.waves[i]));
+      return this.waves[this.features.body.waves[0]].map(
+        s => s / (this.bitDepthMax - 1)
+      );
+    },
+    gradientStops() {
+      return [
+        { offset: 0.1, color: "#cc2200" },
+        { offset: 0.5, color: "#44eeaa" },
+        { offset: 0.9, color: "#444444" }
+      ];
+    }
+  },
   data: () => ({
     tao: 2 * Math.PI,
     diameter: 300,
     margin: 10,
     smoothing: 0.2,
     bitDepthMax: 2 ** 5,
-    preserve: 0.6,
+    preserve: 0.55,
     waves: [
-      [31, 23, 15, 7, 0, 7, 15, 23],
-      [31, 31, 0, 0, 31, 31, 0, 0],
+      [31, 23, 15, 7, 3, 0, 3, 7, 15, 23],
       [0, 7, 15, 23, 31, 23, 15, 7],
-      [31, 22, 14, 8, 16, 7, 16, 4, 32, 8, 22],
-      [0, 0, 0, 0, 0, 0, 31],
-      [0, 31, 0, 16],
-      [31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31]
+      [0, 3, 7, 15, 23, 31, 0],
+      [31, 22, 14, 8, 16, 7, 16, 4, 32, 8, 22, 29],
+      [31, 31, 0, 0, 31, 31, 0, 0],
+      [0, 31, 0, 15],
+      [0, 31],
+      [0, 0, 0, 31]
     ],
-    waveform: 3,
-    level: 6,
-    rounded: false,
-    gradientStops: [
-      { offset: 0.1, color: "#cc2200" },
-      { offset: 0.5, color: "#44eeaa" },
-      { offset: 0.9, color: "#444444" }
-    ],
-    nucleusColor: "#f56",
-    nucleusSize: 60,
-    mitocondriaColor: "#f41",
-    mitoArray: [
-      [-30, 35, 35],
-      [-10, -20, 0],
-      [80, -20, 158],
-      [75, 65, 287],
-      [-25, -15, 187],
-      [-15, 75, 77]
-    ],
-    chloroplastColor: "#3f5",
-    chloroArray: [
-      [50, -45, 145],
-      [-35, -3, 95],
-      [48, 73, 277],
-      [85, 39, 13]
-    ],
-    lisosomeColor: "#ff0",
-    lisosomeArray: [[80, 10, 23]],
-    ribosomeColor: "#66f",
-    ribosomeArray: [
-      [-12, 54, 285],
-      [-32, 20, 85],
-      [75, -32, 165],
-      [70, -5, 57]
-    ],
-    stroke: { width: 3, color: "#77eeff", linecap: "round", linejoin: "round" }
+    locations: {
+      mitocondria: [
+        [-30, 35, 35],
+        [-10, -20, 0],
+        [80, -20, 158],
+        [75, 65, 287],
+        [-25, -15, 187],
+        [-15, 75, 77]
+      ],
+      chloroplasts: [
+        [50, -45, 145],
+        [-35, -3, 95],
+        [48, 73, 277],
+        [85, 39, 13]
+      ],
+      lisosomes: [
+        [80, 10, 23],
+        [-40, -30, 312]
+      ],
+      ribosomes: [
+        [-12, 54, 285],
+        [-32, 20, 85],
+        [75, -32, 165],
+        [70, -5, 57]
+      ]
+    }
   }),
   mounted() {
     this.drawCell(
-      this.waves[this.waveform],
+      this.wave,
       this.level,
       ".shape",
       this.diameter,
@@ -86,131 +96,180 @@ export default Vue.extend({
       );
 
       // center varaible sized body
-      const maxX = shape.reduce(function(max, cords) {
-        return max > cords[0] ? max : cords[0];
-      }, 0);
-      const minX = shape.reduce(function(min, cords) {
-        return min < cords[0] ? min : cords[0];
-      }, 0);
-      const maxY = shape.reduce(function(max, cords) {
-        return max > cords[1] ? max : cords[1];
-      }, 0);
-      const minY = shape.reduce(function(min, cords) {
-        return min < cords[1] ? min : cords[1];
-      }, 0);
+      const [xRange, yRange] = shape.reduce(
+        function(result, cords) {
+          const [x, y] = cords;
+          const [lX, lY] = result;
+          return [
+            [lX[0] < x ? lX[0] : x, lX[1] > x ? lX[1] : x],
+            [lY[0] < y ? lY[0] : y, lY[1] > y ? lY[1] : y]
+          ];
+        },
+        [
+          [0, 0],
+          [0, 0]
+        ]
+      );
+      const [minX, maxX] = xRange;
+      const [minY, maxY] = yRange;
+      const w = maxX - minX;
+      const h = maxY - minY;
 
       // gradient
       const gradient = draw.gradient(
         "radial",
         function(add) {
-          add.stop(this.gradientStops[0]);
-          add.stop(this.gradientStops[1]);
-          for (const c in this.gradientStops) {
-            add.stop(this.gradientStops[c]);
-          }
+          for (const c in this.gradientStops) add.stop(this.gradientStops[c]);
         }.bind(this)
       );
 
-      // placement, fill, stroke of SVG
-      const svg = this.rounded
+      // placement, fill, stroke of body
+      const svg = this.features.body.rounded
         ? draw.path(this.svgPath(shape, this.bezierCommand))
         : draw.polygon(shape);
       svg
-        .move(this.margin, this.margin)
+        .move(
+          this.margin + (this.diameter - w) / 2,
+          this.margin + (this.diameter - h) / 2
+        )
         .fill(gradient)
-        .stroke(this.stroke);
+        .stroke({
+          width: 3,
+          color: this.features.body.color,
+          linecap: "round",
+          linejoin: "round"
+        });
 
       // nucleus
-      const x = (maxX - minX - this.nucleusSize) / 2 + this.margin;
-      const y = (maxY - minY - this.nucleusSize) / 2 + this.margin;
+      const nucleusSize = this.features.nucleus.size;
+      const x =
+        (maxX - minX - nucleusSize) / 2 + this.margin + (this.diameter - w) / 2;
+      const y =
+        (maxY - minY - nucleusSize) / 2 + this.margin + (this.diameter - h) / 2;
       draw
-        .ellipse(this.nucleusSize, this.nucleusSize)
-        .fill(this.nucleusColor)
+        .ellipse(nucleusSize, nucleusSize)
+        .fill(this.features.nucleus.color)
         .move(x, y)
         .stroke(this.stroke);
 
       // endoplasmic reticulum
-      const ER1 = draw.path("M 10 70 A 35 35 -45 0 1 70 50");
-      ER1.move(x - 5, y - 5)
-        .stroke({
-          width: 3,
-          color: "#00f",
-          dasharray: "5,3,9",
-          linecap: "round",
-          linejoin: "round"
-        })
-        .fill("none");
-      const ER2 = draw.path("M 0 80 A 40 40 -45 0 1 70 50");
-      ER2.move(x - 10, y - 10)
-        .stroke({
-          width: 3,
-          color: "#00f",
-          dasharray: "3,9,7",
-          linecap: "round",
-          linejoin: "round"
-        })
-        .fill("none");
-      const ER3 = draw.path("M -5 85 A 45 45 -45 0 1 70 50");
-      ER3.move(x - 15, y - 15)
-        .stroke({
-          width: 3,
-          color: "#00f",
-          dasharray: "2,7,5",
-          linecap: "round",
-          linejoin: "round"
-        })
-        .fill("none");
+      const layers = [
+        {
+          path: "M 10 70 A 35 35 -45 0 1 70 50",
+          dashes: "5,3,9"
+        },
+        {
+          path: "M 0 80 A 40 40 -45 0 1 70 50",
+          dashes: "3,9,7"
+        },
+        {
+          path: "M -5 85 A 45 45 -45 0 1 70 50",
+          dashes: "2,7,5"
+        }
+      ];
+      const endoStroke = {
+        width: 3,
+        color: this.features.endo.color,
+        linecap: "round",
+        linejoin: "round"
+      };
+      for (let i = 0; i < layers.length; i++) {
+        const ER = draw.path(layers[i].path);
+        const layerStroke = endoStroke;
+        layerStroke.dasharray = layers[i].dashes;
+        ER.move(x - 5 * (i + 1), y - 5 * (i + 1))
+          .stroke(layerStroke)
+          .fill("none");
+      }
 
       // golgi aparatus
 
       // mitocondria
-      const pattern = draw.pattern(10, 10, function(add) {
-        add.rect(10, 10).fill("#f33");
-        add
-          .rect(10, 2)
-          .move(5, 5)
-          .fill("#fff");
-        add
-          .rect(7, 2)
-          .move(0, 0)
-          .fill("#fff");
-      });
-      for (let i = 0; i < this.mitoArray.length; i++) {
-        draw
-          .ellipse(10, 18)
-          .fill(pattern)
-          .move(x + this.mitoArray[i][0], y + this.mitoArray[i][1])
-          .transform({ rotate: this.mitoArray[i][2] })
-          .stroke("none");
-      }
+      const pattern = draw.pattern(
+        10,
+        10,
+        function(add) {
+          add.rect(10, 10).fill(this.features.mitocondria.color);
+          add
+            .rect(10, 2)
+            .move(5, 5)
+            .fill("#fff");
+          add
+            .rect(7, 2)
+            .move(0, 0)
+            .fill("#fff");
+        }.bind(this)
+      );
+      this.drawFeature(
+        draw,
+        this.locations.mitocondria,
+        pattern,
+        this.features.mitocondria.count,
+        x,
+        y,
+        10,
+        18
+      );
 
       // chloroplasts
-      for (let i = 0; i < this.chloroArray.length; i++) {
-        draw
-          .ellipse(8, 16)
-          .fill(this.chloroplastColor)
-          .move(x + this.chloroArray[i][0], y + this.chloroArray[i][1])
-          .transform({ rotate: this.chloroArray[i][2] })
-          .stroke("none");
-      }
+      this.drawFeature(
+        draw,
+        this.locations.chloroplasts,
+        this.features.chloroplasts.color,
+        this.features.chloroplasts.count,
+        x,
+        y,
+        8,
+        16
+      );
 
       // lisosome
-      for (let i = 0; i < this.lisosomeArray.length; i++) {
-        draw
-          .ellipse(20, 28)
-          .fill(this.lisosomeColor)
-          .move(x + this.lisosomeArray[i][0], y + this.lisosomeArray[i][1])
-          .transform({ rotate: this.lisosomeArray[i][2] })
-          .stroke("none");
-      }
+      this.drawFeature(
+        draw,
+        this.locations.lisosomes,
+        this.features.lisosomes.color,
+        this.features.lisosomes.count,
+        x,
+        y,
+        20,
+        28
+      );
 
       // ribosomes
-      for (let i = 0; i < this.ribosomeArray.length; i++) {
+      this.drawFeature(
+        draw,
+        this.locations.ribosomes,
+        this.features.ribosomes.color,
+        this.features.ribosomes.count,
+        x,
+        y,
+        4,
+        10
+      );
+    },
+
+    mergeWaves(waves) {
+      const waveLengths = waves.map(w => w.length);
+      const lcm = this.lcmNumbers(waveLengths); // least common multiple of the length of the wave arrays
+      let compoundWave;
+      for (let i = 0; i < lcm; i++) {
+        compoundWave[i] = 0;
+        for (const wave in waves) {
+          debugger;
+          const j = Math.floor(i / (lcm / wave.length));
+          compoundWave[i] += wave[j] / (this.bitDepthMax - 1);
+        }
+      }
+      return compoundWave;
+    },
+
+    drawFeature(draw, positions, fill, count, x, y, w, h) {
+      for (let i = 0; i < count; i++) {
         draw
-          .ellipse(4, 10)
-          .fill(this.ribosomeColor)
-          .move(x + this.ribosomeArray[i][0], y + this.ribosomeArray[i][1])
-          .transform({ rotate: this.ribosomeArray[i][2] })
+          .ellipse(w, h)
+          .fill(fill)
+          .move(x + positions[i][0], y + positions[i][1])
+          .transform({ rotate: positions[i][2] })
           .stroke("none");
       }
     },
@@ -226,16 +285,8 @@ export default Vue.extend({
       return points;
     },
 
-    radialPlotter(i, segments, scale) {
-      const x = Math.round(Math.sin((this.tao * i) / segments) * scale);
-      const y = Math.round(Math.cos((this.tao * i) / segments) * scale * -1);
-      return [x, y];
-    },
-
     radialWavePlotter(i, radius, mod, wave, segments) {
-      const scale =
-        radius * mod +
-        radius * (1 - mod) * (wave[i % wave.length] / (this.bitDepthMax - 1));
+      const scale = radius * mod + radius * (1 - mod) * wave[i % wave.length];
       const x = Math.round(Math.sin((this.tao * i) / segments) * scale);
       const y = Math.round(Math.cos((this.tao * i) / segments) * scale * -1);
       return [x, y];
@@ -312,6 +363,28 @@ export default Vue.extend({
         ""
       );
       return d;
+    },
+
+    lcmNumbers(inputArray) {
+      if (toString.call(inputArray) !== "[object Array]") return false;
+      let r1 = 0,
+        r2 = 0;
+      const l = inputArray.length;
+      for (let i = 0; i < l; i++) {
+        r1 = inputArray[i] % inputArray[i + 1];
+        if (r1 === 0) {
+          inputArray[i + 1] =
+            (inputArray[i] * inputArray[i + 1]) / inputArray[i + 1];
+        } else {
+          r2 = inputArray[i + 1] % r1;
+          if (r2 === 0) {
+            inputArray[i + 1] = (inputArray[i] * inputArray[i + 1]) / r1;
+          } else {
+            inputArray[i + 1] = (inputArray[i] * inputArray[i + 1]) / r2;
+          }
+        }
+      }
+      return inputArray[l - 1];
     }
   }
 });
