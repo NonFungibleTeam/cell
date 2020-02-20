@@ -6,13 +6,13 @@
       .web3(v-if="isDrizzleInitialized")
         p :)
       v-btn(
-        to="/mine"
-        text)
-        span.mr-2 My Cells
-      v-btn(
         to="/mint"
         text)
         span.mr-2 Mint
+      v-btn(
+        to="/collection"
+        text)
+        span.mr-2 Collection
       v-btn(
         to="/about"
         text)
