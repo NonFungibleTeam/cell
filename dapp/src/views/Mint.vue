@@ -1,26 +1,24 @@
-<template>
-<div>
-  <div> Mint:</div>
-    <v-card
-      class="mx-auto"
-      max-width="1000"
-    >
-      <v-card-text>
-        <p class="display-1 text--primary">
-          Mint
-        </p>
-        <div class="text--primary">
-          Mint a new cell!
-        </div>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn
-          text
-          color="deep-purple accent-4"
-        >
-          Mint Now
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-</div>
+<template lang="pug">
+  v-container.about
+    Nav
+    v-row(cols=6).landing
+        v-col(align="center").content
+          h1 Create a freshly minted cell
+          v-btn Mint a new cell
+    
 </template>
+
+<script lang="ts">
+import Vue from "vue";
+import Nav from "@/components/Nav.vue";
+
+export default Vue.extend({
+  name: "Mint",
+  components: { Nav }
+});
+</script>
+
+<style lang="sass" scoped>
+.content
+  margin-top: 35vh
+</style>
