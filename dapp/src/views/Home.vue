@@ -23,12 +23,14 @@
       v-row(d-flex).details
         v-col(align="center")
           v-card.details-card
+            v-icon(large) mdi-image
             h1 Generative Open Source Art 
             p An open source rendering library allows you to completely own your cells art,
             p While also promoting a vibrant ecosystem of third party applications.
             v-btn(color="primary" large target="_new" href="") View Source
         v-col(align="center")
           v-card.details-card
+            v-icon(large) mdi-send
             h1 ERC721 Standard NFTs
             p Trade your cells on OpenSea.
             p Manage them in any NFT compatible wallet.
