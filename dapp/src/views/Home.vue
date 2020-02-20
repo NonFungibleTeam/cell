@@ -35,7 +35,7 @@ export default {
         features: {
           body: {
             rounded: false,
-            waves: [0, 0, 0, 0],
+            waves: [0, 1, 2, 3],
             color: "#efcc35"
           },
           nucleus: {

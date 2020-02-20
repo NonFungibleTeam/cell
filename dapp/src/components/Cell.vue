@@ -14,7 +14,10 @@ export default Vue.extend({
       return Math.floor(Math.log2(this.mass)) - 2;
     },
     wave() {
-      return this.mergeWaves(this.features.body.waves.map(i => this.waves[i]));
+      //return this.mergeWaves(this.features.body.waves.map(i => this.waves[i]));
+      return this.waves[this.features.body.waves[0]].map(
+        s => s / (this.bitDepthMax - 1)
+      );
     },
     gradientStops() {
       return [
@@ -241,12 +244,13 @@ export default Vue.extend({
     mergeWaves(waves) {
       const waveLengths = waves.map(w => w.length);
       const lcm = this.lcmNumbers(waveLengths); // least common multiple of the length of the wave arrays
-      const compoundWave = [];
+      let compoundWave;
       for (let i = 0; i < lcm; i++) {
         compoundWave[i] = 0;
         for (const wave in waves) {
-          compoundWave[i] +=
-            wave[Math.floor(i / (lcm / wave.length))] / (this.bitDepthMax - 1);
+          debugger;
+          const j = Math.floor(i / (lcm / wave.length));
+          compoundWave[i] += wave[j] / (this.bitDepthMax - 1);
         }
       }
       return compoundWave;
