@@ -23,18 +23,33 @@
       v-row(d-flex).details
         v-col(align="center")
           v-card.details-card
-            v-icon(large) mdi-image
+            v-icon(large) mdi-draw
             h1 Generative Open Source Art 
             p An open source rendering library allows you to completely own your cells art,
             p While also promoting a vibrant ecosystem of third party applications.
-            v-btn(color="primary" large target="_new" href="") View Source
+            v-btn(color="primary" large target="_new" href="github.com/NonFungibleTeam/cell") View Source
         v-col(align="center")
           v-card.details-card
-            v-icon(large) mdi-send
+            v-icon(large) mdi-check-decagram
             h1 ERC721 Standard NFTs
             p Trade your cells on OpenSea.
             p Manage them in any NFT compatible wallet.
-            v-btn(color="primary" large target="_new" href="") Shop OpenSea
+            v-btn(color="primary" large target="_new" href="https://opensea.io/") Shop OpenSea
+      v-row(d-flex).details
+        v-col(align="center")
+          v-card.details-card
+            v-icon(large) mdi-dna
+            h1 Evolve Your Genetics
+            p Each cell has its own set of genes the determine its features.
+            p Learn about how genes combine on merging.
+            v-btn(color="primary" href="/guide/genes") Genetics
+        v-col(align="center")
+          v-card.details-card
+            v-icon(large) mdi-atom
+            h1 Expand Your Mass
+            p Trade your cells on OpenSea.
+            p Manage them in any NFT compatible wallet.
+            v-btn(color="primary" href="/guide/mass") Mass
 </template>
 
 <script>
