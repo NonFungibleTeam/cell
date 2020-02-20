@@ -17,7 +17,7 @@ export default Vue.extend({
 <style lang="sass">
 body
   background-color: #121212
-  font-family: "sans-serif"
+  font-family: sans-serif
 .title
   font-family: "Pangolin"
   font-size: 2rem
