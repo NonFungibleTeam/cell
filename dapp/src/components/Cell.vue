@@ -112,6 +112,8 @@ export default Vue.extend({
       );
       const [minX, maxX] = xRange;
       const [minY, maxY] = yRange;
+      const w = maxX - minX;
+      const h = maxY - minY;
 
       // gradient
       const gradient = draw.gradient(
@@ -126,7 +128,10 @@ export default Vue.extend({
         ? draw.path(this.svgPath(shape, this.bezierCommand))
         : draw.polygon(shape);
       svg
-        .move(this.margin, this.margin)
+        .move(
+          this.margin + (this.diameter - w) / 2,
+          this.margin + (this.diameter - h) / 2
+        )
         .fill(gradient)
         .stroke({
           width: 3,
@@ -137,8 +142,10 @@ export default Vue.extend({
 
       // nucleus
       const nucleusSize = this.features.nucleus.size;
-      const x = (maxX - minX - nucleusSize) / 2 + this.margin;
-      const y = (maxY - minY - nucleusSize) / 2 + this.margin;
+      const x =
+        (maxX - minX - nucleusSize) / 2 + this.margin + (this.diameter - w) / 2;
+      const y =
+        (maxY - minY - nucleusSize) / 2 + this.margin + (this.diameter - h) / 2;
       draw
         .ellipse(nucleusSize, nucleusSize)
         .fill(this.features.nucleus.color)
