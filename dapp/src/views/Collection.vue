@@ -8,6 +8,9 @@
             v-card-title {{ i }}
             v-card-text
               Cell(:id="i" :mass="c.mass" :features="c.features")
+              h3 
+                span Mass: {{ c.mass }} &nbsp;
+                span Level: {{ Math.floor(Math.log2(c.mass)) - 2 }}
             v-card-actions
               v-spacer
               v-btn(:to="'/cell/' + i") View
@@ -61,7 +64,7 @@ export default {
         }
       },
       {
-        mass: 66,
+        mass: 1046,
         features: {
           body: {
             rounded: false,
