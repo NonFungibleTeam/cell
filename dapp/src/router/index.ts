@@ -11,6 +11,12 @@ const routes = [
     component: Home
   },
   {
+    path: "/cell/:id",
+    name: "Cell",
+    component: () =>
+      import(/* webpackChunkName: "cell" */ "../views/CellPage.vue")
+  },
+  {
     path: "/collection",
     name: "Collection",
     component: () =>
