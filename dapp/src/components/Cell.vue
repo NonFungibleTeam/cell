@@ -11,7 +11,7 @@ export default Vue.extend({
   props: ["id", "mass", "features"],
   computed: {
     shapeID() {
-      return ".shape-" + this.id;
+      return "shape-" + this.id;
     },
     level() {
       return Math.floor(Math.log2(this.mass)) - 2;
@@ -78,7 +78,7 @@ export default Vue.extend({
     this.drawCell(
       this.wave,
       this.level,
-      ".shape",
+      "." + this.shapeID,
       this.diameter,
       this.diameter
     );
