@@ -1,17 +1,18 @@
 <template lang="pug">
-  v-container.collection
+  .collection
     Nav
-    v-row
-      v-col(align="center")
-        .cell(v-for="c,i in cells" :key="i")
-            v-card(width="360")
-              v-card-title {{ i }}
-              v-card-text
-                Cell(:id="i" :mass="c.mass" :features="c.features")
-              v-card-actions
-                v-spacer
-                v-btn(color="primary") Merge
-                v-btn(color="primary") Divide
+    v-container
+      v-row
+        v-col(align="center" cols=4 v-for="c,i in cells" :key="i")
+          v-card.cell
+            v-card-title {{ i }}
+            v-card-text
+              Cell(:id="i" :mass="c.mass" :features="c.features")
+            v-card-actions
+              v-spacer
+              v-btn(:to="'/cell/' + i") View
+              v-btn(color="primary") Merge
+              v-btn(color="primary") Divide
 </template>
 
 <script>
