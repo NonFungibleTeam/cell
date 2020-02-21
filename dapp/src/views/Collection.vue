@@ -69,7 +69,7 @@ export default {
         features: {
           body: {
             rounded: false,
-            waves: [0, 1, 2, 3],
+            waves: [1, 0, 2, 3],
             color: "#efcc35",
             gradient: ["#ccddcc", "#cc8899", "#aa5544"]
           },
