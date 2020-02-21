@@ -27,7 +27,7 @@
             h1 Generative Open Source Art 
             p An open source SVG renderer means you own your cells art
             p Simultaniously promoting a vibrant third party ecosystem
-            v-btn(color="primary" large target="_new" href="github.com/NonFungibleTeam/cell") View Source
+            v-btn(color="primary" large target="_new" href="https://github.com/NonFungibleTeam/cell") View Source
         v-col(align="center")
           v-card.details-card
             v-icon(large) mdi-check-decagram
