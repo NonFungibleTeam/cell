@@ -69,7 +69,8 @@ export default {
         body: {
           rounded: false,
           waves: [2, 1, 1, 0],
-          color: "#efcc35"
+          color: "#efcc35",
+          gradient: ["#ccddcc", "#773311", "#337744"]
         },
         nucleus: {
           color: "#f56",

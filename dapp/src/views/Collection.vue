@@ -31,12 +31,47 @@ export default {
   data: () => ({
     cells: [
       {
+        mass: 11,
+        features: {
+          body: {
+            rounded: false,
+            waves: [0, 1, 2, 3],
+            color: "#efcc35",
+            gradient: ["#ccddcc", "#9999ff", "#449944"]
+          },
+          nucleus: {
+            color: "#f56",
+            size: 60
+          },
+          endo: {
+            color: "#00f"
+          },
+          mitocondria: {
+            color: "#f33",
+            count: 6
+          },
+          chloroplasts: {
+            color: "#3f5",
+            count: 4
+          },
+          lisosomes: {
+            color: "#ff0",
+            count: 1
+          },
+          ribosomes: {
+            color: "#66f",
+            count: 4
+          }
+        }
+      },
+      {
         mass: 17,
         features: {
           body: {
             rounded: false,
             waves: [0, 1, 2, 3],
-            color: "#efcc35"
+            color: "#efcc35",
+            gradient: ["#ccddcc", "#cc8899", "#aa5544"]
           },
           nucleus: {
             color: "#f56",
@@ -69,7 +104,8 @@ export default {
           body: {
             rounded: false,
             waves: [3, 5, 6, 7],
-            color: "#efcc35"
+            color: "#efcc35",
+            gradient: ["#ccddcc", "#773311", "#337744"]
           },
           nucleus: {
             color: "#f56",
@@ -102,7 +138,8 @@ export default {
           body: {
             rounded: false,
             waves: [3, 5, 6, 7],
-            color: "#efcc35"
+            color: "#efcc35",
+            gradient: ["#332233", "#117733", "#99bb00"]
           },
           nucleus: {
             color: "#f56",
