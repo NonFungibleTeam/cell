@@ -24,9 +24,9 @@ export default Vue.extend({
     },
     gradientStops() {
       return [
-        { offset: 0.1, color: "#cc2200" },
-        { offset: 0.5, color: "#44eeaa" },
-        { offset: 0.9, color: "#444444" }
+        { offset: 0.1, color: "#ccddcc" },
+        { offset: 0.5, color: "#773311" },
+        { offset: 0.9, color: "#337744" }
       ];
     }
   },

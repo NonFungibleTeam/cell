@@ -13,7 +13,7 @@
     v-container
       v-row(cols=6).landing
         v-col(align="center")
-          v-img(src="/img/logo.svg").cell-img
+          Cell.cell(id="1" :mass="cell.mass" :features="cell.features")
           h1.title Microverse
           h3 Mint, merge, and divide NFT cells
           h3 Compete to make massive unique cells and avoid getting rekt!
@@ -117,8 +117,7 @@ export default {
     .details-card
       margin: 2rem
       padding: 2rem
-  .cell-img
-    width: 320px
+  .cell 
     margin-top: 3vh
   .title
     font-size: 4rem
