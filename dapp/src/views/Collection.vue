@@ -48,7 +48,7 @@ export default {
           endo: {
             color: "#00f"
           },
-          mitocondria: {
+          mitochondria: {
             color: "#f33",
             count: 6
           },
@@ -82,7 +82,7 @@ export default {
           endo: {
             color: "#00f"
           },
-          mitocondria: {
+          mitochondria: {
             color: "#f33",
             count: 6
           },
@@ -116,7 +116,7 @@ export default {
           endo: {
             color: "#00f"
           },
-          mitocondria: {
+          mitochondria: {
             color: "#f33",
             count: 6
           },
@@ -150,7 +150,7 @@ export default {
           endo: {
             color: "#00f"
           },
-          mitocondria: {
+          mitochondria: {
             color: "#f33",
             count: 6
           },

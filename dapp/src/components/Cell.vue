@@ -35,7 +35,7 @@ export default Vue.extend({
     margin: 10,
     smoothing: 0.2,
     bitDepthMax: 2 ** 5,
-    preserve: 0.55,
+    preserve: 0.6,
     waves: [
       [31, 23, 15, 7, 3, 0, 3, 7, 15, 23],
       [0, 7, 15, 23, 31, 23, 15, 7],
