@@ -5,16 +5,15 @@
 <script>
 import Vue from "vue";
 import { SVG } from "@svgdotjs/svg.js";
+import cellUtils from "@/mixins/cellUtils.js";
 
 export default Vue.extend({
   name: "Cell",
+  mixins: [cellUtils],
   props: ["id", "mass", "features"],
   computed: {
     shapeID() {
       return "shape-" + this.id;
-    },
-    level() {
-      return Math.floor(Math.log2(this.mass)) - 2;
     },
     wave() {
       //return this.mergeWaves(this.features.body.waves.map(i => this.waves[i]));
@@ -77,7 +76,7 @@ export default Vue.extend({
   mounted() {
     this.drawCell(
       this.wave,
-      this.level,
+      this.level(this.mass),
       "." + this.shapeID,
       this.diameter,
       this.diameter

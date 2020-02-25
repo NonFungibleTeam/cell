@@ -8,15 +8,7 @@
             v-card-title 
               span {{ "#" + i }}
               v-spacer 
-              .level
-                v-tooltip(left)
-                  template(v-slot:activator="{ on }")
-                    v-progress-circular(:value="levelProgress(cell)" size=40 width=6 rotate=-90 v-on="on" color="secondary")
-                      span {{ level(cell) }}
-                  .level-progress
-                    span {{ cell.mass }} of {{ 2 ** (level(cell)+3) }}
-                    br
-                    span to level {{ level(cell) + 1 }}
+              Level(:mass="cell.mass")
             v-card-text
               Cell(:id="i" :mass="cell.mass" :features="cell.features")
             v-divider
@@ -28,17 +20,16 @@
 </template>
 
 <script>
-import Cell from "@/components/Cell.vue";
 import Nav from "@/components/Nav.vue";
+import Cell from "@/components/Cell.vue";
+import Level from "@/components/Level.vue";
+
 import cellUtils from "@/mixins/cellUtils.js";
 
 export default {
   name: "Home",
   mixins: [cellUtils],
-  components: {
-    Nav,
-    Cell
-  },
+  components: { Nav, Cell, Level },
   data: () => ({
     cells: [
       {
