@@ -9,6 +9,17 @@
           v-col.cell-info
             h1 {{ "#" + $route.params.id }}
             Level(:mass="cell.mass")
+            .mass
+              span {{ cell.mass }}
+              v-icon(large) mdi-atom
+            h1 Features
+            .features
+              .feature(v-for="f in featureSet" :key="f.key")
+                v-chip(v-if="cell.features[f.key].count > 0" disable :color="cell.features[f.key].color") 
+                  v-avatar
+                    v-icon(v-if="f.bool" small) mdi-check
+                    span(v-else left) {{ cell.features[f.key].count }}
+                  |{{ f.title }}
 
     
 </template>
@@ -26,6 +37,15 @@ export default Vue.extend({
   mixins: [cellUtils],
   components: { Nav, Cell, Level },
   data: () => ({
+    featureSet: [
+      { title: "Nucleus", key: "nucleus", bool: true },
+      { title: "Endoplasmic Reticulum", key: "endo", bool: true },
+      { title: "Golgi Aparatus", key: "golgi", bool: true },
+      { title: "Mitochondria", key: "mitochondria" },
+      { title: "Chloroplasts", key: "chloroplasts" },
+      { title: "Lisosomes", key: "lisosomes" },
+      { title: "Ribosomes", key: "ribosomes" }
+    ],
     cell: {
       mass: 541,
       features: {
@@ -37,12 +57,18 @@ export default Vue.extend({
         },
         nucleus: {
           color: "#f56",
-          size: 60
+          size: 60,
+          count: 1
         },
         endo: {
-          color: "#00f"
+          color: "#00f",
+          count: 1
         },
-        mitocondria: {
+        golgi: {
+          color: "#00f",
+          count: 0
+        },
+        mitochondria: {
           color: "#f33",
           count: 6
         },
@@ -56,7 +82,7 @@ export default Vue.extend({
         },
         ribosomes: {
           color: "#66f",
-          count: 4
+          count: 3
         }
       }
     }

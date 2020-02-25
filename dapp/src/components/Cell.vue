@@ -47,7 +47,7 @@ export default Vue.extend({
       [0, 0, 0, 31]
     ],
     locations: {
-      mitocondria: [
+      mitochondria: [
         [-30, 35, 35],
         [-10, -20, 0],
         [80, -20, 158],
@@ -186,12 +186,12 @@ export default Vue.extend({
 
       // golgi aparatus
 
-      // mitocondria
+      // mitochondria
       const pattern = draw.pattern(
         10,
         10,
         function(add) {
-          add.rect(10, 10).fill(this.features.mitocondria.color);
+          add.rect(10, 10).fill(this.features.mitochondria.color);
           add
             .rect(10, 2)
             .move(5, 5)
@@ -204,9 +204,9 @@ export default Vue.extend({
       );
       this.drawFeature(
         draw,
-        this.locations.mitocondria,
+        this.locations.mitochondria,
         pattern,
-        this.features.mitocondria.count,
+        this.features.mitochondria.count,
         x,
         y,
         10,
