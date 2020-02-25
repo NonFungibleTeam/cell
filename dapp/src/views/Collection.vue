@@ -12,11 +12,11 @@
                 v-tooltip(left)
                   template(v-slot:activator="{ on }")
                     v-progress-circular(:value="levelProgress(c)" size=40 width=6 rotate=-90 v-on="on" color="secondary")
-                      span {{ Math.floor(Math.log2(c.mass)) - 2 }}
+                      span {{ level(c) }}
                   .level-progress
-                    span {{ c.mass }} of {{ 2 ** (Math.floor(Math.log2(c.mass)) + 1) }}
+                    span {{ c.mass }} of {{ 2 ** (level(c)+3) }}
                     br
-                    span to level up
+                    span to level {{ level(c) + 1 }}
             v-card-text
               Cell(:id="i" :mass="c.mass" :features="c.features")
             v-divider
@@ -33,9 +33,12 @@ import Nav from "@/components/Nav.vue";
 
 const cellUtils = {
   methods: {
-    levelProgress2(c) {
+    level(c) {
+      return Math.floor(Math.log2(c.mass)) - 2;
+    },
+    levelProgress(c) {
       const baseMass = 2 ** Math.floor(Math.log2(c.mass));
-      return ((c.mass - baseMass) / (baseMass * 2)) * 100;
+      return ((c.mass - baseMass) / baseMass) * 100;
     }
   }
 };
@@ -46,12 +49,6 @@ export default {
   components: {
     Nav,
     Cell
-  },
-  methods: {
-    levelProgress(c) {
-      const baseMass = 2 ** Math.floor(Math.log2(c.mass));
-      return ((c.mass - baseMass) / baseMass) * 100;
-    }
   },
   data: () => ({
     cells: [
