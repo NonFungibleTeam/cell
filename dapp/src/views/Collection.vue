@@ -3,7 +3,7 @@
     Nav
     v-container
       v-row
-        v-col(align="center" cols=4 v-for="c,i in cells" :key="i")
+        v-col(align="center" cols=4 v-for="cell,i in cells" :key="i")
           v-card.cell
             v-card-title 
               span {{ "#" + i }}
@@ -11,14 +11,14 @@
               .level
                 v-tooltip(left)
                   template(v-slot:activator="{ on }")
-                    v-progress-circular(:value="levelProgress(c)" size=40 width=6 rotate=-90 v-on="on" color="secondary")
-                      span {{ level(c) }}
+                    v-progress-circular(:value="levelProgress(cell)" size=40 width=6 rotate=-90 v-on="on" color="secondary")
+                      span {{ level(cell) }}
                   .level-progress
-                    span {{ c.mass }} of {{ 2 ** (level(c)+3) }}
+                    span {{ cell.mass }} of {{ 2 ** (level(cell)+3) }}
                     br
-                    span to level {{ level(c) + 1 }}
+                    span to level {{ level(cell) + 1 }}
             v-card-text
-              Cell(:id="i" :mass="c.mass" :features="c.features")
+              Cell(:id="i" :mass="cell.mass" :features="cell.features")
             v-divider
             v-card-actions
               v-spacer
@@ -30,18 +30,7 @@
 <script>
 import Cell from "@/components/Cell.vue";
 import Nav from "@/components/Nav.vue";
-
-const cellUtils = {
-  methods: {
-    level(c) {
-      return Math.floor(Math.log2(c.mass)) - 2;
-    },
-    levelProgress(c) {
-      const baseMass = 2 ** Math.floor(Math.log2(c.mass));
-      return ((c.mass - baseMass) / baseMass) * 100;
-    }
-  }
-};
+import cellUtils from "@/mixins/cellUtils.js";
 
 export default {
   name: "Home",

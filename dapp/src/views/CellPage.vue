@@ -7,8 +7,16 @@
           v-col(align="center").cell-graphic
             Cell(:id="$route.params.id" :mass="cell.mass" :features="cell.features")
           v-col.cell-info
-            h1 # {{ $route.params.id }}
-            h2 Level: {{ level }}
+            h1 {{ "#" + $route.params.id }}
+            .level
+              v-tooltip(left)
+                template(v-slot:activator="{ on }")
+                  v-progress-circular(:value="levelProgress(cell)" size=40 width=6 rotate=-90 v-on="on" color="secondary")
+                    span {{ level(cell) }}
+                .level-progress
+                  span {{ cell.mass }} of {{ 2 ** (level(cell)+3) }}
+                  br
+                  span to level {{ level(cell) + 1 }}
 
     
 </template>
@@ -17,15 +25,12 @@
 import Vue from "vue";
 import Cell from "@/components/Cell.vue";
 import Nav from "@/components/Nav.vue";
+import cellUtils from "@/mixins/cellUtils.js";
 
 export default Vue.extend({
   name: "CellPage",
+  mixins: [cellUtils],
   components: { Nav, Cell },
-  computed: {
-    level() {
-      return Math.floor(Math.log2(this.cell.mass)) - 2;
-    }
-  },
   data: () => ({
     cell: {
       mass: 541,
