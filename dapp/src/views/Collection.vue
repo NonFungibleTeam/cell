@@ -1,5 +1,7 @@
 <template lang="pug">
   .collection
+    v-app-bar(v-if="cells.length" absolute collapse dense)
+      v-btn Mint
     v-container
       v-row(no-gutters)
         v-col(v-for="cell,i in cells" :key="i" align="center" xl="3" lg="4" sm="6" xs="12")

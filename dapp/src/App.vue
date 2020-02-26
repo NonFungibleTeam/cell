@@ -18,6 +18,7 @@ export default Vue.extend({
 
 <style lang="sass">
 body
+  margin: 0
   background-color: #121212
   font-family: sans-serif
 .title
