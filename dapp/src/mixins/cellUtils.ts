@@ -1,9 +1,9 @@
-const cellUtils = {
+const cellUtils: any = {
   methods: {
-    level(mass) {
+    level(mass: any) {
       return Math.floor(Math.log2(mass)) - 2;
     },
-    levelProgress(mass) {
+    levelProgress(mass: any) {
       const baseMass = 2 ** Math.floor(Math.log2(mass));
       return ((mass - baseMass) / baseMass) * 100;
     }

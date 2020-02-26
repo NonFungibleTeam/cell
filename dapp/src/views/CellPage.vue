@@ -64,7 +64,7 @@ import Nav from "@/components/Nav.vue";
 import Cell from "@/components/Cell.vue";
 import Level from "@/components/Level.vue";
 
-import cellUtils from "@/mixins/cellUtils.js";
+import cellUtils from "@/mixins/cellUtils.ts";
 
 export default Vue.extend({
   name: "CellPage",
