@@ -73,7 +73,7 @@ export default {
   color: #ffffff
   text-decoration: none
 .mobile-menu-btn
-    display: none
+    display: none !important
 @media(max-width: 700px)
   .mobile-menu-btn
     display: block
