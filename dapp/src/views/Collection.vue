@@ -2,8 +2,8 @@
   .collection
     Nav
     v-container
-      v-row
-        v-col(align="center" cols=4 v-for="cell,i in cells" :key="i")
+      v-row(no-gutters)
+        v-col(align="center" xl="3" lg="4" sm="6" xs="12" v-for="cell,i in cells" :key="i")
           v-card.cell
             v-card-title 
               span {{ "#" + i }}
@@ -172,3 +172,8 @@ export default {
   })
 };
 </script>
+
+<style lang="sass" scoped>
+.cell
+  margin: 1rem
+</style>
