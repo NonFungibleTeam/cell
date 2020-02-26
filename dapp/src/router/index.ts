@@ -29,11 +29,6 @@ const routes = [
       import(/* webpackChunkName: "about" */ "../views/About.vue")
   },
   {
-    path: "/mint",
-    name: "Mint",
-    component: () => import(/* webpackChunkName: "mint" */ "../views/Mint.vue")
-  },
-  {
     path: "/*",
     name: "404",
     component: () => import(/* webpackChunkName: "404" */ "../views/404.vue")

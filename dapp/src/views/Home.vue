@@ -18,7 +18,7 @@
           h3 Mint, merge, and divide NFT cells
           h3 Compete to make massive unique cells and avoid getting rekt!
           .call-to-action
-            v-btn.btn(color="primary" large to="/mint") Play Now
+            v-btn.btn(color="primary" large to="/collection") Play Now
             v-btn.btn(color="tertiary" large to="/about") Learn More
       v-row(d-flex).details
         v-col(align="center")
