@@ -2,7 +2,7 @@
   .collection
     v-container
       v-row(no-gutters)
-        v-col(align="center" xl="3" lg="4" sm="6" xs="12" v-for="cell,i in cells" :key="i")
+        v-col(v-for="cell,i in cells" :key="i" align="center" xl="3" lg="4" sm="6" xs="12")
           v-card.cell
             v-card-title 
               span {{ "#" + i }}
@@ -16,6 +16,13 @@
               v-btn(:to="'/cell/' + i") View
               v-btn(color="primary") Merge
               v-btn(color="primary") Divide
+        v-col(v-if="!cells.length").get-started
+          v-card(align="center").get-started-card
+            p You dont have any cells yet!
+            v-btn(outlined color="secondary") Mint
+            span &nbsp;or&nbsp;
+            v-btn(outlined color="secondary") Buy
+            p one to get started
 </template>
 
 <script>
@@ -175,4 +182,11 @@ export default {
 <style lang="sass" scoped>
 .cell
   margin: 1rem
+.get-started
+  justify-content: center
+  margin-top: 20vh
+.get-started-card
+  display: flex
+  flex-direction: column
+  padding: 2rem 
 </style>
