@@ -1,60 +1,58 @@
 <template lang="pug">
   .cell-page
-    Nav
-    .page
-      v-container
-        v-row
-          v-col(align="center")
-            v-card
-              .cell-stats
-                span.id {{ "#" + id }}
-                .mass
-                  span {{ cell.mass }}
-                  v-icon(large) mdi-atom
-                Level(:mass="cell.mass")
-              v-divider
-              .cell-graphic
-                Cell(:id="id" :mass="cell.mass" :features="cell.features")
-              v-divider
-              .cell-info
-                h3 Born: {{ cell.born.toLocaleDateString() + " at " + cell.born.toLocaleTimeString() }}
-                .ribbons
-                  v-chip(outlined color="primary" v-if="id < founders")
-                    v-icon(left) mdi-compass-rose
-                    span Founder {{ parseInt(id) + 1 }} of {{ founders }}
-                  v-chip(outlined color="primary")
-                    v-icon(left) mdi-crystal-ball
-                    span Mythical
-                  v-chip(outlined color="primary")
-                    v-icon(left) mdi-egg-easter
-                    span Exclusive
-                  v-chip(outlined color="primary")
-                    v-icon(left) mdi-radioactive
-                    span Mutant
-                  v-chip(outlined color="primary")
-                    v-icon(left) mdi-dna
-                    span Pure
-                  v-chip(outlined color="primary")
-                    v-icon(left) mdi-checkbox-marked-circle-outline
-                    span Complete
-          v-col
-            h1 Family
-            p Add a chart (maybe from google visualization API?) here showing the family type distribution of features
-            v-icon mdi-bacteria
-            v-icon mdi-leaf
-            v-icon mdi-cat
-            v-icon mdi-mushroom
-            v-icon mdi-robot
-            v-icon mdi-battery
+    v-container
+      v-row
+        v-col(align="center")
+          v-card
+            .cell-stats
+              span.id {{ "#" + id }}
+              .mass
+                span {{ cell.mass }}
+                v-icon(large) mdi-atom
+              Level(:mass="cell.mass")
+            v-divider
+            .cell-graphic
+              Cell(:id="id" :mass="cell.mass" :features="cell.features")
+            v-divider
+            .cell-info
+              h3 Born: {{ cell.born.toLocaleDateString() + " at " + cell.born.toLocaleTimeString() }}
+              .ribbons
+                v-chip(outlined color="primary" v-if="id < founders")
+                  v-icon(left) mdi-compass-rose
+                  span Founder {{ parseInt(id) + 1 }} of {{ founders }}
+                v-chip(outlined color="primary")
+                  v-icon(left) mdi-crystal-ball
+                  span Mythical
+                v-chip(outlined color="primary")
+                  v-icon(left) mdi-egg-easter
+                  span Exclusive
+                v-chip(outlined color="primary")
+                  v-icon(left) mdi-radioactive
+                  span Mutant
+                v-chip(outlined color="primary")
+                  v-icon(left) mdi-dna
+                  span Pure
+                v-chip(outlined color="primary")
+                  v-icon(left) mdi-checkbox-marked-circle-outline
+                  span Complete
+        v-col
+          h1 Family
+          p Add a chart (maybe from google visualization API?) here showing the family type distribution of features
+          v-icon mdi-bacteria
+          v-icon mdi-leaf
+          v-icon mdi-paw
+          v-icon mdi-mushroom
+          v-icon mdi-robot
+          v-icon mdi-battery
 
-            h1 Features
-            .features
-              .feature(v-for="f in featureSet" :key="f.key")
-                v-chip(v-if="cell.features[f.key].count > 0" outlined :color="cell.features[f.key].color") 
-                  v-avatar
-                    v-icon(v-if="f.bool" small) mdi-check
-                    .count(v-else left) {{ cell.features[f.key].count }}
-                  span {{ f.title }}
+          h1 Features
+          .features
+            .feature(v-for="f in featureSet" :key="f.key")
+              v-chip(v-if="cell.features[f.key].count > 0" outlined :color="cell.features[f.key].color") 
+                v-avatar
+                  v-icon(v-if="f.bool" small) mdi-check
+                  .count(v-else left) {{ cell.features[f.key].count }}
+                span {{ f.title }}
     
 </template>
 

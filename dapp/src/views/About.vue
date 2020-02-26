@@ -1,124 +1,103 @@
-<template>
-  <v-container class="about">
-    <Nav />
-    <v-card>
-      <v-toolbar flat color="primary" dark>
-        <v-toolbar-title>How To Play:</v-toolbar-title>
-      </v-toolbar>
-      <v-tabs vertical>
-        <v-tab>
-          <v-icon left>mdi-biohazard</v-icon>Minting
-        </v-tab>
-        <v-tab>
-          <v-icon left>mdi-call-merge</v-icon>Merging
-        </v-tab>
-        <v-tab>
-          <v-icon left>mdi-call-split</v-icon>Dividing
-        </v-tab>
-        <v-tab>
-          <v-icon left>mdi-menu</v-icon>Levels
-        </v-tab>
-        <v-tab>
-          <v-icon left>mdi-dice-6</v-icon>Get Rekt?
-        </v-tab>
+<template lang="pug">
+  v-container.about
+    v-card
+      v-toolbar(flat='' color='primary' dark='')
+        v-toolbar-title How To Play:
+      v-tabs(vertical='')
+        v-tab
+          v-icon(left='') mdi-biohazard
+          | Minting
+        v-tab
+          v-icon(left='') mdi-call-merge
+          | Merging
+        v-tab
+          v-icon(left='') mdi-call-split
+          | Dividing
+        v-tab
+          v-icon(left='') mdi-menu
+          | Levels
+        v-tab
+          v-icon(left='') mdi-dice-6
+          | Get Rekt?
+        v-tab-item
+          v-card(flat='')
+            v-card-text
+              .text--primary
+                | Mint new cells directly from the contract at a cost of .008 per
+                | cell.
+                br
+                | Cell art is procedurally generated using the random values
+                |                 assigned during minting.
+                br
+                | The visual complexity of the cell
+                |                 depends in part on the total mass of the cell.
+                br
+                | Cells are
+                |                 minted with a mass of 8.
+                br
+                | Any cell with a mass of 8 or less
+                |                 is a level 1 cell.
+                br
+                | The mass threshold for each level is
+                |                 twice the previous level.
+        v-tab-item
+          v-card(flat='')
+            v-card-text
+              .text--primary
+                | A player may merge any two cells they own into a new cell.
+                br
+                | The genetics of the merged cell are sampled from the input
+                |                 cells based on their proportion of the total mass being
+                |                 combined.
+                br
+                | E.G. A cell with a mass of 8 has a small chance
+                |                 of influencing the genetic outcome when merging with a cell with
+                |                 a mass of 100.
+                br
+                | When merging cells, the resulting mass can
+                |                 vary greatly. The table below describes the probability of
+                |                 different mass altering outcomes.
+                br
+        v-tab-item
+          v-card(flat='')
+            v-card-text
+              .text--primary
+                | A player may divide any cell they own into two cells of smaller
+                | mass with identical genetics.
+                br
+                | The distribution of mass between these divided cells will
+                |                 range from 50-50 to 70-30 at most.
+                br
+                | The total mass of the
+                |                 resulting cells is equal to the mass of the parent cell.
+                br
+        v-tab-item
+          v-card(flat='')
+            table
+              thead
+                tr
+                  th.text-left Level
+                  th.text-left Mass
+              tbody
+                tr(v-for='item in masslevels' :key='item.level')
+                  td {{ item.level }}
+                  td {{ item.mass }}
+        v-tab-item
+          v-card(flat='')
+            table
+              thead
+                tr
+                  th.text-left Merge Result
+                  th.text-left Probability
+                  th.text-left Loss(% of Cell Mass)
+                  th.text-left Gain(% of Mass Pool)
+              tbody
+                tr(v-for='item in rekt' :key='item.mergeresult')
+                  td {{ item.mergeresult }}
+                  td {{ item.probability }}
+                  td {{ item.loss }}
+                  td {{ item.gain }}
 
-        <v-tab-item>
-          <v-card flat>
-            <v-card-text>
-              <div class="text--primary">
-                Mint new cells directly from the contract at a cost of .008 per
-                cell.
-                <br />Cell art is procedurally generated using the random values
-                assigned during minting.
-                <br />The visual complexity of the cell
-                depends in part on the total mass of the cell.
-                <br />Cells are
-                minted with a mass of 8.
-                <br />Any cell with a mass of 8 or less
-                is a level 1 cell.
-                <br />The mass threshold for each level is
-                twice the previous level.
-              </div>
-            </v-card-text>
-          </v-card>
-        </v-tab-item>
-        <v-tab-item>
-          <v-card flat>
-            <v-card-text>
-              <div class="text--primary">
-                A player may merge any two cells they own into a new cell.
-                <br />The genetics of the merged cell are sampled from the input
-                cells based on their proportion of the total mass being
-                combined.
-                <br />E.G. A cell with a mass of 8 has a small chance
-                of influencing the genetic outcome when merging with a cell with
-                a mass of 100.
-                <br />When merging cells, the resulting mass can
-                vary greatly. The table below describes the probability of
-                different mass altering outcomes.
-                <br />
-              </div>
-            </v-card-text>
-          </v-card>
-        </v-tab-item>
-        <v-tab-item>
-          <v-card flat>
-            <v-card-text>
-              <div class="text--primary">
-                A player may divide any cell they own into two cells of smaller
-                mass with identical genetics.
-                <br />The distribution of mass between these divided cells will
-                range from 50-50 to 70-30 at most.
-                <br />The total mass of the
-                resulting cells is equal to the mass of the parent cell.
-                <br />
-              </div>
-            </v-card-text>
-          </v-card>
-        </v-tab-item>
-        <v-tab-item>
-          <v-card flat>
-            <table>
-              <thead>
-                <tr>
-                  <th class="text-left">Level</th>
-                  <th class="text-left">Mass</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="item in masslevels" :key="item.level">
-                  <td>{{ item.level }}</td>
-                  <td>{{ item.mass }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </v-card>
-        </v-tab-item>
-        <v-tab-item>
-          <v-card flat>
-            <table>
-              <thead>
-                <tr>
-                  <th class="text-left">Merge Result</th>
-                  <th class="text-left">Probability</th>
-                  <th class="text-left">Loss(% of Cell Mass)</th>
-                  <th class="text-left">Gain(% of Mass Pool)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="item in rekt" :key="item.mergeresult">
-                  <td>{{ item.mergeresult }}</td>
-                  <td>{{ item.probability }}</td>
-                  <td>{{ item.loss }}</td>
-                  <td>{{ item.gain }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </v-card>
-        </v-tab-item>
-      </v-tabs>
-    </v-card>
-  </v-container>
 </template>
 
 <script lang="ts">

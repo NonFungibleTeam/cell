@@ -1,11 +1,10 @@
 <template lang="pug">
   v-container.about
-    Nav
     v-row(cols=6).landing
-        v-col(align="center").content
-          h1 404 Error
-          h2 Page not found!
-          v-btn(to="/") Return to Home
+      v-col(align="center").content
+        h1 404 Error
+        h2 Page not found!
+        v-btn(to="/") Return to Home
     
 </template>
 
@@ -14,7 +13,7 @@ import Vue from "vue";
 import Nav from "@/components/Nav.vue";
 
 export default Vue.extend({
-  name: "404",
+  name: "Error404",
   components: { Nav }
 });
 </script>

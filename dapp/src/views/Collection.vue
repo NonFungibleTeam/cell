@@ -1,6 +1,5 @@
 <template lang="pug">
   .collection
-    Nav
     v-container
       v-row(no-gutters)
         v-col(align="center" xl="3" lg="4" sm="6" xs="12" v-for="cell,i in cells" :key="i")
