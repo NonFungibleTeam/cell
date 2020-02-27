@@ -10,7 +10,7 @@
               span {{ "#" + i }}
               v-spacer 
               Level(:mass="cell.mass")
-            v-card-text
+            v-card-text.cell-wrapper
               Cell(:id="i" :mass="cell.mass" :features="cell.features")
             v-divider
             v-card-actions
@@ -188,6 +188,8 @@ export default {
 <style lang="sass" scoped>
 .cell
   margin: 1rem
+.cell-wrapper
+  padding: 0
 .get-started
   justify-content: center
   margin-top: 20vh
