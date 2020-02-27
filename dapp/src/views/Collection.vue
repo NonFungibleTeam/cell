@@ -32,7 +32,7 @@ import Nav from "@/components/Nav.vue";
 import Cell from "@/components/Cell.vue";
 import Level from "@/components/Level.vue";
 
-import cellUtils from "@/mixins/cellUtils.ts";
+import cellUtils from "@/mixins/cellUtils";
 
 export default {
   name: "Home",

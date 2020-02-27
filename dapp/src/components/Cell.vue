@@ -5,7 +5,7 @@
 <script>
 import Vue from "vue";
 import { SVG } from "@svgdotjs/svg.js";
-import cellUtils from "@/mixins/cellUtils.ts";
+import cellUtils from "@/mixins/cellUtils";
 
 export default Vue.extend({
   name: "Cell",

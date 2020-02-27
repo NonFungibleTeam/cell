@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import cellUtils from "@/mixins/cellUtils.ts";
+import cellUtils from "@/mixins/cellUtils";
 
 export default {
   name: "Level",

@@ -10,7 +10,7 @@
       :moveSpeed="1"
       :hoverEffect="false"
       :clickEffect="false").particles
-    v-container
+    v-container(fluid)
       v-row(cols=6).landing
         v-col(align="center")
           Cell.cell(id="1" :mass="cell.mass" :features="cell.features")
@@ -122,6 +122,8 @@ export default {
     .details-card
       margin: 2rem
       padding: 2rem
+  .container
+    padding: 0
   .cell 
     margin-top: 3vh
   .title
