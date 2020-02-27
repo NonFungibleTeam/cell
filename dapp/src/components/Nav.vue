@@ -21,15 +21,21 @@
           span.mr-2 {{ l.text }}
         v-btn(v-else-if="l.type === 'link'" :href="l.path" target="_blank" icon)
           v-icon {{ l.icon }}
+      Gravatar.gravatar(size="40" hash="268b87E4F6B7e7BEB58e3128138D4F6b768E1b17")
       v-btn(@click="drawer = !drawer" text).mobile-menu-btn
         v-icon mdi-menu
         
 </template>
 
 <script>
+import Vue from "vue";
 import { mapGetters } from "vuex";
+import Gravatar from "vue-gravatar";
+
+Vue.component("v-gravatar", Gravatar);
 
 export default {
+  components: { Gravatar },
   data: () => ({
     drawer: false,
     links: [
@@ -72,6 +78,8 @@ export default {
   font-size: 2rem
   color: #ffffff
   text-decoration: none
+.gravatar
+  border-radius: 50%
 .mobile-menu-btn
     display: none !important
 @media(max-width: 700px)
