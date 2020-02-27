@@ -21,7 +21,7 @@
           span.mr-2 {{ l.text }}
         v-btn(v-else-if="l.type === 'link'" :href="l.path" target="_blank" icon)
           v-icon {{ l.icon }}
-      Gravatar.gravatar(size=40 :email="address")
+      Gravatar.gravatar(v-if="isDrizzleInitialized" size=40 :email="activeAccount")
       v-btn(@click="drawer = !drawer" text).mobile-menu-btn
         v-icon mdi-menu
         
@@ -38,7 +38,6 @@ export default {
   components: { Gravatar },
   data: () => ({
     drawer: false,
-    address: "268b87E4F6B7e7BEB58e3128138D4F6b768E1b17",
     links: [
       {
         type: "page",
