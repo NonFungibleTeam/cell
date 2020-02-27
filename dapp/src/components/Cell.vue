@@ -158,15 +158,15 @@ export default Vue.extend({
       // endoplasmic reticulum
       const layers = [
         {
-          path: "M 10 70 A 35 35 -45 0 1 70 50",
+          path: "10 70",
           dashes: "5,3,9"
         },
         {
-          path: "M 0 80 A 40 40 -45 0 1 70 50",
+          path: "0 80",
           dashes: "3,9,7"
         },
         {
-          path: "M -5 85 A 45 45 -45 0 1 70 50",
+          path: "-5 85",
           dashes: "2,7,5"
         }
       ];
@@ -176,12 +176,15 @@ export default Vue.extend({
         linecap: "round",
         linejoin: "round"
       };
+      const erScale = (1 / 55) * this.diameter;
       if (this.features.endo.count) {
         for (let i = 0; i < layers.length; i++) {
-          const ER = draw.path(layers[i].path);
+          const angle = 35 + 5 * i;
+          const layerPath = `M ${layers[i].path} A ${angle} ${angle} -45 0 1 70 50`;
+          const ER = draw.path(layerPath);
           const layerStroke = endoStroke;
           layerStroke.dasharray = layers[i].dashes;
-          ER.move(x - 5 * (i + 1), y - 5 * (i + 1))
+          ER.move(x - erScale * (i + 1), y - erScale * (i + 1))
             .stroke(layerStroke)
             .fill("none");
         }
