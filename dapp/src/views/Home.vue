@@ -117,6 +117,9 @@ export default {
   .landing
     padding-top: 10vh
     min-height: 100vh
+  @media(max-width: 700px)
+    .landing
+      padding-top: 0
   .details
     height: 50vh
     .details-card
