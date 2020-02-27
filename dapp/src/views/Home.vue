@@ -77,10 +77,11 @@ export default {
         },
         nucleus: {
           color: "#f56",
-          size: 60
+          count: 1
         },
         endo: {
-          color: "#00f"
+          color: "#00f",
+          count: 1
         },
         mitochondria: {
           color: "#f33",

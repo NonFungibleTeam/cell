@@ -143,16 +143,17 @@ export default Vue.extend({
         });
 
       // nucleus
-      const nucleusSize = this.features.nucleus.size;
+      const nucleusSize = 0.2 * this.diameter;
       const x =
         (maxX - minX - nucleusSize) / 2 + this.margin + (this.diameter - w) / 2;
       const y =
         (maxY - minY - nucleusSize) / 2 + this.margin + (this.diameter - h) / 2;
-      draw
-        .ellipse(nucleusSize, nucleusSize)
-        .fill(this.features.nucleus.color)
-        .move(x, y)
-        .stroke(this.stroke);
+      if (this.features.nucleus.count)
+        draw
+          .ellipse(nucleusSize, nucleusSize)
+          .fill(this.features.nucleus.color)
+          .move(x, y)
+          .stroke(this.stroke);
 
       // endoplasmic reticulum
       const layers = [
@@ -175,13 +176,15 @@ export default Vue.extend({
         linecap: "round",
         linejoin: "round"
       };
-      for (let i = 0; i < layers.length; i++) {
-        const ER = draw.path(layers[i].path);
-        const layerStroke = endoStroke;
-        layerStroke.dasharray = layers[i].dashes;
-        ER.move(x - 5 * (i + 1), y - 5 * (i + 1))
-          .stroke(layerStroke)
-          .fill("none");
+      if (this.features.endo.count) {
+        for (let i = 0; i < layers.length; i++) {
+          const ER = draw.path(layers[i].path);
+          const layerStroke = endoStroke;
+          layerStroke.dasharray = layers[i].dashes;
+          ER.move(x - 5 * (i + 1), y - 5 * (i + 1))
+            .stroke(layerStroke)
+            .fill("none");
+        }
       }
 
       // golgi aparatus

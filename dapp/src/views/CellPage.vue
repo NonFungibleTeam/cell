@@ -96,7 +96,6 @@ export default Vue.extend({
         },
         nucleus: {
           color: "#f56",
-          size: 60,
           count: 1
         },
         endo: {
