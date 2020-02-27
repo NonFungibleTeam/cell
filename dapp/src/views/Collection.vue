@@ -14,9 +14,9 @@
               Cell(:id="'merge' + i" :mass="cell.mass" :features="cell.features")
             v-divider
             v-card-actions
-              v-spacer
               v-btn(:to="'/cell/' + i") View
-              v-btn(color="primary" @click="sheet = !sheet") Merge
+              v-spacer
+              v-btn(color="primary" @click="mergeCompare = !mergeCompare") Merge
               v-btn(color="primary") Divide
         v-col(v-if="!cells.length").get-started
           v-card(align="center").get-started-card
@@ -25,8 +25,8 @@
             span &nbsp;or&nbsp;
             v-btn(outlined color="secondary") Buy
             p one to get started
-    v-bottom-sheet(v-model="sheet" inset)
-      v-sheet(align="center" height="430px")
+    v-bottom-sheet(v-model="mergeCompare" inset persistent)
+      v-sheet(v-if="mergeCompare" align="center" height="430px")
         v-container
           v-row
             v-col
@@ -47,8 +47,18 @@
                 Level(:mass="cells[merge[1]].mass")
               Cell(:id="merge[1]" :mass="cells[merge[1]].mass" :features="cells[merge[1]].features")
         .merge-btns
-          v-btn(class="mt-6" text color="success" @click="sheet = !sheet") Merge
-          v-btn(class="mt-6" text color="error" @click="sheet = !sheet") Cancel
+          v-btn(class="mt-6" text color="success" @click="mergeCompare = false; dialog = true") Merge
+          v-btn(class="mt-6" text color="error" @click="mergeCompare = false") Cancel
+    v-dialog(v-model="dialog" persistent max-width="600px")
+      v-card.tx-preview
+        v-card-title Transaction Preview
+        v-card-text.tx-preview-form
+          .form-content
+            h4 test 123
+        v-card-actions
+          v-btn(class="mt-6" text color="success" @click="dialog = false") Submit
+          v-spacer
+          v-btn(class="mt-6" text color="error" @click="dialog = false") Cancel
 </template>
 
 <script>
@@ -63,8 +73,9 @@ export default {
   mixins: [cellUtils],
   components: { Nav, Cell, Level },
   data: () => ({
-    sheet: true,
-    merge: [1, 3],
+    dialog: false,
+    mergeCompare: false,
+    merge: [1, 2],
     cells: [
       {
         mass: 15,
@@ -232,4 +243,8 @@ export default {
 .merge-btns
   display: flex
   justify-content: space-around
+.v-dialog > .v-card > .tx-preview-form
+  padding: 0 !important
+  .form-content
+    padding: 1rem
 </style>
