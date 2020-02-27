@@ -21,7 +21,7 @@
           span.mr-2 {{ l.text }}
         v-btn(v-else-if="l.type === 'link'" :href="l.path" target="_blank" icon)
           v-icon {{ l.icon }}
-      Gravatar.gravatar(size="40" :email="address")
+      Gravatar.gravatar(size=40 :email="address")
       v-btn(@click="drawer = !drawer" text).mobile-menu-btn
         v-icon mdi-menu
         

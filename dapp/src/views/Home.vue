@@ -52,9 +52,13 @@
 </template>
 
 <script>
-// @ is an alias to /src
-import Cell from "@/components/Cell.vue";
+import Vue from "vue";
 import { mapGetters } from "vuex";
+
+import Cell from "@/components/Cell.vue";
+
+import VueParticles from "vue-particles";
+Vue.use(VueParticles);
 
 export default {
   name: "Home",
