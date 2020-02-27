@@ -80,6 +80,7 @@ export default {
   color: #ffffff
   text-decoration: none
 .gravatar
+  margin-top: -7px
   border-radius: 50%
 .mobile-menu-btn
     display: none !important
