@@ -2,7 +2,7 @@
   .nav
     v-navigation-drawer(app right temporary v-model="drawer")
       v-list(nav dense)
-        template(v-if="!isDrizzleInitialized")
+        template(v-if="isDrizzleInitialized")
           v-list-item(two-line)
             Gravatar.gravatar.gravatar-mobile(:size="50" :email="activeAccount !== '' ? activeAccount : defaultAccount")
             v-list-item-content 
@@ -27,7 +27,10 @@
           span.mr-2 {{ l.text }}
         v-btn(v-else-if="l.type === 'link'" :href="l.path" target="_blank" icon)
           v-icon {{ l.icon }}
-      Gravatar.gravatar(v-if="isDrizzleInitialized" :size="40" :email="activeAccount")
+      v-tooltip(v-if="isDrizzleInitialized" bottom)
+        template(v-slot:activator="{ on }")
+          Gravatar.gravatar(v-on="on" :size="40" :email="activeAccount")
+        span.address {{ formatAccount(activeAccount !== '' ? activeAccount : defaultAccount) }}
       v-btn(@click="drawer = !drawer" text).mobile-menu-btn
         v-icon mdi-menu
         
