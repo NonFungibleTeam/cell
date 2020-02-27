@@ -16,6 +16,7 @@
             v-divider
             .cell-info
               h3 Born: {{ cell.born.toLocaleDateString() + " at " + cell.born.toLocaleTimeString() }}
+              h3 2 Merges & 5 Divides
               .ribbons
                 v-chip(outlined color="primary" v-if="id < founders")
                   v-icon(left) mdi-compass-rose
