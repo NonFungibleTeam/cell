@@ -3,11 +3,17 @@
     v-navigation-drawer(app right temporary v-model="drawer")
       v-list(nav dense)
         template(v-if="isDrizzleInitialized")
-          v-list-item(two-line)
-            Gravatar.gravatar.gravatar-mobile(:size="50" :email="activeAccount !== '' ? activeAccount : defaultAccount")
-            v-list-item-content 
-              span.address {{ formatAccount(activeAccount !== '' ? activeAccount : defaultAccount) }}
+          .mobile-link
+            v-list-item(two-line)
+              Gravatar.gravatar.gravatar-mobile(:size="50" :email="activeAccount !== '' ? activeAccount : defaultAccount")
+              v-list-item-content 
+                span.address {{ formatAccount(activeAccount !== '' ? activeAccount : defaultAccount) }}
           v-divider
+        .mobile-link
+          v-list-item(link to="/")
+            v-list-item-icon
+              v-icon mdi-home
+            v-list-item-content Home
         .mobile-link(v-for="l,i in links" :key="i")
           v-list-item(v-if="l.type === 'page'" :to="l.path" link)
             v-list-item-icon
@@ -56,6 +62,12 @@ export default {
     links: [
       {
         type: "page",
+        icon: "mdi-information",
+        text: "About",
+        path: "/about"
+      },
+      {
+        type: "page",
         icon: "mdi-scatter-plot-outline",
         text: "Collection",
         path: "/collection"
@@ -63,8 +75,8 @@ export default {
       {
         type: "page",
         icon: "mdi-book-open-page-variant",
-        text: "About",
-        path: "/about"
+        text: "Guide",
+        path: "/guide"
       },
       {
         type: "link",
