@@ -5,7 +5,7 @@
     v-container
       v-row(no-gutters)
         v-col(v-for="cell,i in cells" :key="i" align="center" xl="3" lg="4" sm="6" xs="12")
-          v-card.cell
+          v-card.cell(:class="{ 'selected-cell': (merge[0] === i || merge[1] === i) }")
             v-card-title 
               span {{ "#" + i }}
               v-spacer 
@@ -16,7 +16,8 @@
             v-card-actions
               v-btn(:to="'/cell/' + i") View
               v-spacer
-              v-btn(color="primary" @click="mergeCompare = !mergeCompare") Merge
+              v-btn(v-if="merge[0]" color="success" @click="setMerge(1, i); mergeCompare = true") Select
+              v-btn(v-else color="primary" @click="setMerge(0, i)") Merge
               v-btn(color="primary") Divide
         v-col(v-if="!cells.length").get-started
           v-card(align="center").get-started-card
@@ -48,7 +49,7 @@
               Cell(:id="merge[1]" :mass="cells[merge[1]].mass" :features="cells[merge[1]].features")
         .merge-btns
           v-btn(class="mt-6" text color="success" @click="mergeCompare = false; dialog = true") Merge
-          v-btn(class="mt-6" text color="error" @click="mergeCompare = false") Cancel
+          v-btn(class="mt-6" text color="error" @click="clearMerge(); mergeCompare = false") Cancel
     v-dialog(v-model="dialog" persistent max-width="600px")
       v-card.tx-preview
         v-card-title Transaction Preview
@@ -56,9 +57,9 @@
           .form-content
             h4 test 123
         v-card-actions
-          v-btn(class="mt-6" text color="success" @click="dialog = false") Submit
+          v-btn(class="mt-6" text color="success" @click="clearMerge(); dialog = false") Submit
           v-spacer
-          v-btn(class="mt-6" text color="error" @click="dialog = false") Cancel
+          v-btn(class="mt-6" text color="error" @click="clearMerge(); dialog = false") Cancel
 </template>
 
 <script>
@@ -72,10 +73,23 @@ export default {
   name: "Collection",
   mixins: [cellUtils],
   components: { Nav, Cell, Level },
+  computed: {
+    selecting() {
+      return this.merge[0] !== null;
+    }
+  },
+  methods: {
+    clearMerge() {
+      this.merge = [null, null];
+    },
+    setMerge(x, i) {
+      this.merge[x] = i;
+    }
+  },
   data: () => ({
     dialog: false,
     mergeCompare: false,
-    merge: [1, 2],
+    merge: [null, null],
     cells: [
       {
         mass: 15,
@@ -227,6 +241,9 @@ export default {
   margin: 1rem
 .cell-wrapper
   padding: 0
+.selected-cell
+  border: solid #ffc107 2px
+  box-shadow: 0 0 20px 0 rgba(255,255,255,0.2)
 .get-started
   justify-content: center
   margin-top: 20vh
