@@ -63,7 +63,6 @@
 </template>
 
 <script>
-import Nav from "@/components/Nav.vue";
 import Cell from "@/components/Cell.vue";
 import Level from "@/components/Level.vue";
 
@@ -72,7 +71,7 @@ import cellUtils from "@/mixins/cellUtils";
 export default {
   name: "Collection",
   mixins: [cellUtils],
-  components: { Nav, Cell, Level },
+  components: { Cell, Level },
   computed: {
     selecting() {
       return this.merge[0] !== null;
