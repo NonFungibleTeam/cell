@@ -67,18 +67,6 @@ export default {
         path: "/about"
       },
       {
-        type: "page",
-        icon: "mdi-scatter-plot-outline",
-        text: "Collection",
-        path: "/collection"
-      },
-      {
-        type: "page",
-        icon: "mdi-book-open-page-variant",
-        text: "Guide",
-        path: "/guide"
-      },
-      {
         type: "link",
         icon: "mdi-discord",
         text: "Discord",

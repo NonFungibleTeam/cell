@@ -10,28 +10,10 @@ const routes = [
     component: () => import(/* webpackChunkName: "home" */ "../views/Home.vue")
   },
   {
-    path: "/cell/:id",
-    name: "Cell",
-    component: () =>
-      import(/* webpackChunkName: "cell" */ "../views/CellPage.vue")
-  },
-  {
-    path: "/collection",
-    name: "Collection",
-    component: () =>
-      import(/* webpackChunkName: "collection" */ "../views/Collection.vue")
-  },
-  {
     path: "/about",
     name: "About",
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/About.vue")
-  },
-  {
-    path: "/guide/:topic?",
-    name: "Guide",
-    component: () =>
-      import(/* webpackChunkName: "guide" */ "../views/Guide.vue")
   },
   {
     path: "/*",
