@@ -19,7 +19,7 @@
           h3 Compete to make massive unique cells and avoid getting rekt!
           br
           p Coming Soon!
-          p Stay posted on our social channels below
+          p Stay posted on our social channels
           .social
             v-btn(icon target="_blank" href="https://twitter.com/MicroverseLife")
               v-icon(large) mdi-twitter
@@ -109,12 +109,10 @@ export default {
     margin-top: 3vh
   .title
     font-size: 4rem
-  .social
-    margin-top: 5vh
-    .v-btn
-      margin: 15px
+  .social .v-btn
+    margin: 15px
   .call-to-action
-    margin-bottom: 5vh
+    margin-top: 1vh
     color: #121212
     .btn
       margin: 15px
