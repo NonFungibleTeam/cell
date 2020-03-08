@@ -11,10 +11,9 @@ const options: any = {
 
   // The contracts to monitor
   contracts: [Cell],
-  // events: {
-  //   // monitor Cell.Mint events
-  //   Cell: ["Mint"]
-  // },
+  events: {
+    Cell: ["LogMintQuery"]
+  },
   polls: {
     // check accounts ever 15 seconds
     accounts: 15000
