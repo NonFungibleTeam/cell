@@ -103,8 +103,7 @@ export default {
     }
   }),
   computed: {
-    ...mapGetters("accounts", ["activeAccount", "activeBalance"]),
-    ...mapGetters("drizzle", ["isDrizzleInitialized"])
+    //...mapGetters(),
   }
 };
 </script>
