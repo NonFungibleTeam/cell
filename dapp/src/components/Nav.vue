@@ -2,12 +2,12 @@
   .nav
     v-navigation-drawer(app right temporary v-model="drawer")
       v-list(nav dense)
-        template(v-if="isDrizzleInitialized")
+        template(v-if="web3Status === 'active'")
           .mobile-link
             v-list-item(two-line)
-              Gravatar.gravatar.gravatar-mobile(:size="50" :email="activeAccount !== '' ? activeAccount : defaultAccount")
+              Gravatar.gravatar.gravatar-mobile(:size="50" :email="currentAccount !== '' ? currentAccount : defaultAccount")
               v-list-item-content 
-                span.address {{ formatAccount(activeAccount !== '' ? activeAccount : defaultAccount) }}
+                span.address {{ formatAccount(currentAccount !== '' ? currentAccount : defaultAccount) }}
           v-divider
         .mobile-link
           v-list-item(link to="/")
@@ -33,10 +33,10 @@
           span.mr-2 {{ l.text }}
         v-btn(v-else-if="l.type === 'link'" :href="l.path" target="_blank" icon)
           v-icon {{ l.icon }}
-      v-tooltip(v-if="isDrizzleInitialized" bottom)
+      v-tooltip(v-if="web3Status === 'active'" bottom)
         template(v-slot:activator="{ on }")
-          Gravatar.gravatar(v-on="on" :size="40" :email="activeAccount")
-        span.address {{ formatAccount(activeAccount !== '' ? activeAccount : defaultAccount) }}
+          Gravatar.gravatar(v-on="on" :size="40" :email="currentAccount")
+        span.address {{ formatAccount(currentAccount !== '' ? currentAccount : defaultAccount) }}
       v-btn(@click="drawer = !drawer" text).mobile-menu-btn
         v-icon mdi-menu
         
@@ -53,7 +53,7 @@ export default {
   components: { Gravatar },
   methods: {
     formatAccount(account) {
-      return "0x" + account.slice(0, 4) + "...." + account.slice(-5, -1);
+      return "0x" + account.slice(2, 6) + "...." + account.slice(-4);
     }
   },
   data: () => ({
@@ -93,7 +93,7 @@ export default {
     ]
   }),
   computed: {
-    //...mapGetters(),
+    ...mapGetters(['currentAccount', 'web3Status']),
   }
 };
 </script>

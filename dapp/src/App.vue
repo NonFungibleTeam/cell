@@ -12,7 +12,10 @@ import Nav from "@/components/Nav.vue";
 export default Vue.extend({
   name: "App",
   components: { Nav },
-  data: () => ({})
+  data: () => ({}),
+  mounted: function() {
+    this.$store.dispatch('initialize');
+  },
 });
 </script>
 
