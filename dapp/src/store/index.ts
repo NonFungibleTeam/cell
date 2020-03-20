@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import Web3 from "web3";
-import { cellAddress, cellABI } from "../ContractAddresses";
+import { cellAddress, cellABI } from "../CellContract";
 
 Vue.use(Vuex);
 

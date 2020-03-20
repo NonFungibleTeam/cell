@@ -1,7 +1,7 @@
 <template lang="pug">
   .collection
     v-app-bar(v-if="cells.length" absolute collapse dense)
-      v-btn Mint
+      v-btn(@click="mint()") Mint
     v-container
       v-row(no-gutters)
         v-col(v-for="cell,i in cells" :key="i" align="center" xl="3" lg="4" sm="6" xs="12")
@@ -65,6 +65,8 @@
 <script>
 import Cell from "@/components/Cell.vue";
 import Level from "@/components/Level.vue";
+import { cellAddress, cellABI } from "../CellContract";
+import { mapGetters } from "vuex";
 
 import cellUtils from "@/mixins/cellUtils";
 
@@ -75,7 +77,8 @@ export default {
   computed: {
     selecting() {
       return this.merge[0] !== null;
-    }
+    },
+    ...mapGetters(['currentAccount']),
   },
   methods: {
     clearMerge() {
@@ -83,7 +86,37 @@ export default {
     },
     setMerge(x, i) {
       this.merge[x] = i;
-    }
+    },
+    lookupCell: function(id) {
+      return this.$store.state.contracts.cell.methods.get(id).call();
+    },
+    listenForCells: function() {
+      const cellsSubscription = this.$store.state.web3.eth.subscribe('logs', {
+          address: cellAddress,
+          topics: [
+            '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef', 
+            '0x0000000000000000000000000000000000000000000000000000000000000000',
+            '0x000000000000000000000000' + this.currentAccount.slice(2)
+          ],
+      })
+      .on("data", function(log){
+        const index = parseInt(log.topics[3], 16)
+        this.lookupCell(index).then((err, result) => alert(result.data));
+      })
+      // .on("error", function(log){});
+    },
+    mint: function() {
+      this.$store.state.web3.eth.sendTransaction(
+        {
+          from: this.currentAccount,
+          to: cellAddress,
+          value: this.$store.state.web3.utils.toWei("8", "finney"),
+          data: this.$store.state.contracts.cell.methods
+            .mint(699823429231)
+            .encodeABI()
+        }
+      ).then(() => this.listenForCells());
+    },
   },
   data: () => ({
     dialog: false,
