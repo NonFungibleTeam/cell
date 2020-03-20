@@ -13,9 +13,6 @@ export default Vue.extend({
   name: "App",
   components: { Nav },
   data: () => ({}),
-  mounted: function() {
-    this.$store.dispatch('initialize');
-  },
 });
 </script>
 

@@ -1,7 +1,7 @@
 <template lang="pug">
   .collection
     v-app-bar(v-if="cells.length" absolute collapse dense)
-      v-btn(@click="mint()") Mint
+      v-btn(@click="mintCell()") Mint
     v-container
       v-row(no-gutters)
         v-col(v-for="cell,i in cells" :key="i" align="center" xl="3" lg="4" sm="6" xs="12")
@@ -18,7 +18,7 @@
               v-spacer
               v-btn(v-if="merge[0]" color="success" @click="setMerge(1, i); mergeCompare = true") Select
               v-btn(v-else color="primary" @click="setMerge(0, i)") Merge
-              v-btn(color="primary") Divide
+              v-btn(color="primary" @click="divideCell(i)") Divide
         v-col(v-if="!cells.length").get-started
           v-card(align="center").get-started-card
             p You dont have any cells yet!
@@ -48,7 +48,7 @@
                 Level(:mass="cells[merge[1]].mass")
               Cell(:id="merge[1]" :mass="cells[merge[1]].mass" :features="cells[merge[1]].features")
         .merge-btns
-          v-btn(class="mt-6" text color="success" @click="mergeCompare = false; dialog = true") Merge
+          v-btn(class="mt-6" text color="success" @click="mergeCells(merge[0],merge[1]); mergeCompare = false; dialog = true") Merge
           v-btn(class="mt-6" text color="error" @click="clearMerge(); mergeCompare = false") Cancel
     v-dialog(v-model="dialog" persistent max-width="600px")
       v-card.tx-preview
@@ -80,6 +80,10 @@ export default {
     },
     ...mapGetters(['currentAccount']),
   },
+  mounted: async function() {
+    await this.$store.dispatch('initialize');
+    await this.loadCells();
+  },
   methods: {
     clearMerge() {
       this.merge = [null, null];
@@ -89,6 +93,14 @@ export default {
     },
     lookupCell: function(id) {
       return this.$store.state.contracts.cell.methods.get(id).call();
+    },
+    loadCells: async function() {
+      const count = await this.$store.state.contracts.cell.methods.balanceOf(this.currentAccount).call();
+      for (let i = 0; i < count; i++) {
+        const cellID = await this.$store.state.contracts.cell.methods.tokenOfOwnerByIndex(this.currentAccount, i).call();
+        const cell = await this.lookupCell(cellID);
+        this.cellsRaw[cellID] = cell;
+      }
     },
     listenForCells: function() {
       const cellsSubscription = this.$store.state.web3.eth.subscribe('logs', {
@@ -101,11 +113,11 @@ export default {
       })
       .on("data", function(log){
         const index = parseInt(log.topics[3], 16)
-        this.lookupCell(index).then((err, result) => alert(result.data));
-      })
+        this.lookupCell(index).then((resp) => this.cellsRaw[index] = resp);
+      }.bind(this))
       // .on("error", function(log){});
     },
-    mint: function() {
+    mintCell: function() {
       this.$store.state.web3.eth.sendTransaction(
         {
           from: this.currentAccount,
@@ -115,13 +127,41 @@ export default {
             .mint(699823429231)
             .encodeABI()
         }
-      ).then(() => this.listenForCells());
+      );
+      this.listenForCells()
+    },
+    divideCell: function(id) {
+      this.$store.state.web3.eth.sendTransaction(
+        {
+          from: this.currentAccount,
+          to: cellAddress,
+          value: this.$store.state.web3.utils.toWei("2", "finney"),
+          data: this.$store.state.contracts.cell.methods
+            .split(id)
+            .encodeABI()
+        }
+      );
+      this.listenForCells()
+    },
+    mergeCells: function(id1, id2) {
+      this.$store.state.web3.eth.sendTransaction(
+        {
+          from: this.currentAccount,
+          to: cellAddress,
+          value: this.$store.state.web3.utils.toWei("2", "finney"),
+          data: this.$store.state.contracts.cell.methods
+            .merge(id1, id2)
+            .encodeABI()
+        }
+      );
+      this.listenForCells()
     },
   },
   data: () => ({
     dialog: false,
     mergeCompare: false,
     merge: [null, null],
+    cellsRaw: {},
     cells: [
       {
         mass: 15,

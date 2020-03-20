@@ -56,6 +56,9 @@ export default {
       return "0x" + account.slice(2, 6) + "...." + account.slice(-4);
     }
   },
+  mounted: async function() {
+    await this.$store.dispatch('initialize');
+  },
   data: () => ({
     drawer: false,
     defaultAccount: "268b87E4F6B7e7BEB58e3128138D4F6b768E1b17",
