@@ -4,14 +4,14 @@
       v-btn(@click="mintCell()") Mint
     v-container
       v-row(no-gutters)
-        v-col(v-for="cell,i in cells" :key="i" align="center" xl="3" lg="4" sm="6" xs="12")
+        v-col(v-for="cell,i in cellsRaw" :key="i" align="center" xl="3" lg="4" sm="6" xs="12")
           v-card.cell(:class="{ 'selected-cell': (merge[0] === i || merge[1] === i) }")
             v-card-title 
               span {{ "#" + i }}
               v-spacer 
-              Level(:mass="cell.mass")
+              Level(:mass="cells[0].mass")
             v-card-text.cell-wrapper
-              Cell(:id="'merge' + i" :mass="cell.mass" :features="cell.features")
+              Cell(:id="'merge' + i" :mass="cell.mass" :features="cells[i % cells.length].features")
             v-divider
             v-card-actions
               v-btn(:to="'/cell/' + i") View
