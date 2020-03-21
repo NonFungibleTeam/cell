@@ -7,6 +7,7 @@
         v-col(align="center").cells-loading
           v-progress-circular(indeterminate size="75" color="primary")
           h1 Fetching Your Cells
+          h3 This may take a little while
       v-row(v-else no-gutters)
         v-col(v-for="cell,i in cells" :key="i" align="center" xl="3" lg="4" sm="6" xs="12")
           v-card.cell(:class="{ 'selected-cell': (merge[0] === i || merge[1] === i) }")
