@@ -10,7 +10,7 @@ import cellUtils from "@/mixins/cellUtils";
 export default Vue.extend({
   name: "Cell",
   mixins: [cellUtils],
-  props: ["id", "mass", "features"],
+  props: ["id", "data"],
   computed: {
     shapeID() {
       return "shape-" + this.id;
@@ -36,6 +36,7 @@ export default Vue.extend({
     smoothing: 0.2,
     bitDepthMax: 2 ** 5,
     preserve: 0.6,
+    features: {},
     waves: [
       [31, 23, 15, 7, 3, 0, 3, 7, 15, 23],
       [0, 7, 15, 23, 31, 23, 15, 7],
@@ -61,7 +62,7 @@ export default Vue.extend({
         [48, 73, 277],
         [85, 39, 13]
       ],
-      lisosomes: [
+      vacuoles: [
         [80, 10, 23],
         [-40, -30, 312]
       ],
@@ -70,19 +71,82 @@ export default Vue.extend({
         [-32, 20, 85],
         [75, -32, 165],
         [70, -5, 57]
+      ],
+      microtubules: [
+        [-12, 54, 285],
+        [-32, 20, 85],
+        [75, -32, 165],
+        [70, -5, 57]
+      ],
+      vesicles: [
+        [-12, 54, 285],
+        [-32, 20, 85],
+        [75, -32, 165],
+        [70, -5, 57]
       ]
     }
   }),
-  mounted() {
+  async mounted() {
+    await this.parseData();
     this.drawCell(
       this.wave,
-      this.level(this.mass),
+      this.level(this.data.mass),
       "." + this.shapeID,
       this.diameter,
       this.diameter
     );
   },
   methods: {
+    parseData() {
+      return new Promise((resolve, reject) => {
+        const cell = this.data;
+        this.features = {
+          body: {
+            rounded: cell.wallRound,
+            waves: [0, 1, 2, 3],
+            color: cell.wallColor,
+            gradient: ["#ccddcc", "#9999ff", "#449944"]
+          },
+          nucleus: {
+            color: cell.nucleusColor,
+            hidden: cell.nucleusHidden,
+          },
+          endo: {
+            color: "#00f",
+            count: 0
+          },
+          golgi: {
+            color: "#66f",
+            count: 4
+          },
+          mitochondria: {
+            color: "#f33",
+            count: 6
+          },
+          chloroplasts: {
+            color: "#3f5",
+            count: 4
+          },
+          ribosomes: {
+            color: "#66f",
+            count: 4
+          },
+          vacuoles: {
+            color: "#66f",
+            count: 4
+          },
+          microtubules: {
+            color: "#ff0",
+            count: 1
+          },
+          vesicles: {
+            color: "#66f",
+            count: 4
+          },
+        };
+        resolve();
+      });
+    },
     drawCell(waveform, count, target, width, height) {
       // draw, style and position the SVG path
       const draw = SVG()
@@ -148,7 +212,7 @@ export default Vue.extend({
         (maxX - minX - nucleusSize) / 2 + this.margin + (this.diameter - w) / 2;
       const y =
         (maxY - minY - nucleusSize) / 2 + this.margin + (this.diameter - h) / 2;
-      if (this.features.nucleus.count)
+      if (!this.features.nucleus.hidden)
         draw
           .ellipse(nucleusSize, nucleusSize)
           .fill(this.features.nucleus.color)
@@ -231,12 +295,12 @@ export default Vue.extend({
         16
       );
 
-      // lisosome
+      // vacuoles
       this.drawFeature(
         draw,
-        this.locations.lisosomes,
-        this.features.lisosomes.color,
-        this.features.lisosomes.count,
+        this.locations.vacuoles,
+        this.features.vacuoles.color,
+        this.features.vacuoles.count,
         x,
         y,
         20,
@@ -249,6 +313,30 @@ export default Vue.extend({
         this.locations.ribosomes,
         this.features.ribosomes.color,
         this.features.ribosomes.count,
+        x,
+        y,
+        4,
+        10
+      );
+
+      // microtubules
+      this.drawFeature(
+        draw,
+        this.locations.microtubules,
+        this.features.microtubules.color,
+        this.features.microtubules.count,
+        x,
+        y,
+        4,
+        10
+      );
+
+      // vesicles
+      this.drawFeature(
+        draw,
+        this.locations.vesicles,
+        this.features.vesicles.color,
+        this.features.vesicles.count,
         x,
         y,
         4,
