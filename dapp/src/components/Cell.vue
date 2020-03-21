@@ -6,10 +6,11 @@
 import Vue from "vue";
 import { SVG } from "@svgdotjs/svg.js";
 import cellUtils from "@/mixins/cellUtils";
+import cellRender from "@/mixins/cellRender";
 
 export default Vue.extend({
   name: "Cell",
-  mixins: [cellUtils],
+  mixins: [cellUtils, cellRender],
   props: ["id", "data"],
   computed: {
     shapeID() {
@@ -31,10 +32,8 @@ export default Vue.extend({
   },
   data: () => ({
     tao: 2 * Math.PI,
-    diameter: 300,
+    size: 300,
     margin: 10,
-    smoothing: 0.2,
-    bitDepthMax: 2 ** 5,
     preserve: 0.6,
     features: {},
     waves: [
@@ -47,142 +46,75 @@ export default Vue.extend({
       [0, 31],
       [0, 0, 0, 31]
     ],
-    locations: {
-      mitochondria: [
-        [-30, 35, 35],
-        [-10, -20, 0],
-        [80, -20, 158],
-        [75, 65, 287],
-        [-25, -15, 187],
-        [-15, 75, 77]
-      ],
-      chloroplasts: [
-        [50, -45, 145],
-        [-35, -3, 95],
-        [48, 73, 277],
-        [85, 39, 13]
-      ],
-      vacuoles: [
-        [80, 10, 23],
-        [-40, -30, 312]
-      ],
-      ribosomes: [
-        [-12, 54, 285],
-        [-32, 20, 85],
-        [75, -32, 165],
-        [70, -5, 57]
-      ],
-      microtubules: [
-        [-12, 54, 285],
-        [-32, 20, 85],
-        [75, -32, 165],
-        [70, -5, 57]
-      ],
-      vesicles: [
-        [-12, 54, 285],
-        [-32, 20, 85],
-        [75, -32, 165],
-        [70, -5, 57]
-      ]
+    featureBase: {
+      mitochondria: {
+        locations: [
+          [-30, 35, 35],
+          [-10, -20, 0],
+          [80, -20, 158],
+          [75, 65, 287],
+          [-25, -15, 187],
+          [-15, 75, 77]
+        ],
+        size: [10, 18],
+      },
+      chloroplasts: {
+        locations: [
+          [50, -45, 145],
+          [-35, -3, 95],
+          [48, 73, 277],
+          [85, 39, 13]
+        ],
+        size: [8, 16],
+      },
+      vacuoles: {
+        locations: [
+          [80, 10, 23],
+          [-40, -30, 312]
+        ],
+        size: [20, 28],
+      },
+      ribosomes: {
+        locations: [
+          [-12, 54, 285],
+          [-32, 20, 85],
+          [75, -32, 165],
+          [70, -5, 57]
+        ],
+        size: [4, 10],
+      },
+      microtubules: {
+        locations: [
+          [-12, 54, 285],
+          [-32, 20, 85],
+          [75, -32, 165],
+          [70, -5, 57]
+        ],
+        size: [1, 15],
+      },
+      vesicles: {
+        locations: [
+          [-12, 54, 285],
+          [-32, 20, 85],
+          [75, -32, 165],
+          [70, -5, 57]
+        ],
+        size: [4, 4],
+      },
     }
   }),
   async mounted() {
-    await this.parseData();
+    this.features = this.parseData(this.data, this.waves);
     this.drawCell(
       this.wave,
       this.level(this.data.mass),
+      this.size,
       "." + this.shapeID,
-      this.diameter,
-      this.diameter
     );
   },
   methods: {
-    intToColor: function (number) {
-        //converts to a integer
-        let intnumber = number - 0;
-
-        const red = (intnumber&0x0000ff) << 16;
-        const green = intnumber&0x00ff00;
-        const blue = (intnumber&0xff0000) >>> 16;
-    
-        // mask out each color and reverse the order
-        intnumber = red|green|blue;
-    
-        // toString converts a number to a hexstring
-        let HTMLcolor = intnumber.toString(16);
-
-        // zero fill on left & add #
-        const template = "#000000";
-        HTMLcolor = template.substring(0,7 - HTMLcolor.length) + HTMLcolor;
-    
-        return HTMLcolor;
-    },
-    parseData() {
-      return new Promise((resolve, reject) => {
-        const cell = this.data;
-        this.features = {
-          body: {
-            rounded: cell.wallRound,
-            waves: [(cell.wallWave % this.waves.length), 1, 2, 3],
-            color: cell.wallColor,
-            gradient: ["#ccddcc", "#9999ff", "#449944"]
-          },
-          nucleus: {
-            color: this.intToColor(cell.nucleusColor),
-            hidden: cell.nucleusHidden,
-          },
-          endo: {
-            color: "#00f",
-            count: 0
-          },
-          golgi: {
-            color: "#66f",
-            count: 4
-          },
-          mitochondria: {
-            color: "#f33",
-            count: 6
-          },
-          chloroplasts: {
-            color: "#3f5",
-            count: 4
-          },
-          ribosomes: {
-            color: "#66f",
-            count: 4
-          },
-          vacuoles: {
-            color: "#66f",
-            count: 1
-          },
-          microtubules: {
-            color: "#ff0",
-            count: 4
-          },
-          vesicles: {
-            color: "#66f",
-            count: 4
-          },
-        };
-        resolve();
-      });
-    },
-    drawCell(waveform, count, target, width, height) {
-      // draw, style and position the SVG path
-      const draw = SVG()
-        .addTo(target)
-        .size(width + this.margin * 2, height + this.margin * 2);
-
-      // plot shape from wave
-      const shape = this.plotShape(
-        this.diameter,
-        waveform,
-        count,
-        this.preserve
-      );
-
-      // center varaible sized body
-      const [xRange, yRange] = shape.reduce(
+    wallRange(shape) {
+      return shape.reduce(
         function(result, cords) {
           const [x, y] = cords;
           const [lX, lY] = result;
@@ -191,13 +123,19 @@ export default Vue.extend({
             [lY[0] < y ? lY[0] : y, lY[1] > y ? lY[1] : y]
           ];
         },
-        [
-          [0, 0],
-          [0, 0]
-        ]
+        [ [0, 0], [0, 0] ]
       );
-      const [minX, maxX] = xRange;
-      const [minY, maxY] = yRange;
+    },
+    drawBody(draw, waveform, count, size) {
+      // plot shape from wave
+      const shape = this.plotShape(
+        size,
+        waveform,
+        count,
+        this.preserve
+      );
+
+      const [[minX, maxX],[minY, maxY]] = this.wallRange(shape);
       const w = maxX - minX;
       const h = maxY - minY;
 
@@ -209,14 +147,14 @@ export default Vue.extend({
         }.bind(this)
       );
 
-      // placement, fill, stroke of body
-      const svg = this.features.body.rounded
+      // body - draw cell wall and fill
+      const body = this.features.body.rounded
         ? draw.path(this.svgPath(shape, this.bezierCommand))
         : draw.polygon(shape);
-      svg
+      body
         .move(
-          this.margin + (this.diameter - w) / 2,
-          this.margin + (this.diameter - h) / 2
+          this.margin + (size - w) / 2,
+          this.margin + (size - h) / 2
         )
         .fill(gradient)
         .stroke({
@@ -226,33 +164,14 @@ export default Vue.extend({
           linejoin: "round"
         });
 
-      // nucleus
-      const nucleusSize = 0.2 * this.diameter;
-      const x =
-        (maxX - minX - nucleusSize) / 2 + this.margin + (this.diameter - w) / 2;
-      const y =
-        (maxY - minY - nucleusSize) / 2 + this.margin + (this.diameter - h) / 2;
-      if (!this.features.nucleus.hidden)
-        draw
-          .ellipse(nucleusSize, nucleusSize)
-          .fill(this.features.nucleus.color)
-          .move(x, y)
-          .stroke(this.stroke);
-
+      return shape;
+    },
+    drawEndo(draw, size, center) {
       // endoplasmic reticulum
       const layers = [
-        {
-          path: "10 70",
-          dashes: "5,3,9"
-        },
-        {
-          path: "0 80",
-          dashes: "3,9,7"
-        },
-        {
-          path: "-5 85",
-          dashes: "2,7,5"
-        }
+        { path: "10 70", dashes: "5,3,9" },
+        { path: "0 80", dashes: "3,9,7" },
+        { path: "-5 85", dashes: "2,7,5" }
       ];
       const endoStroke = {
         width: 3,
@@ -260,19 +179,53 @@ export default Vue.extend({
         linecap: "round",
         linejoin: "round"
       };
-      const erScale = (1 / 55) * this.diameter;
+      const erScale = (1 / 55) * size;
       if (this.features.endo.count) {
         for (let i = 0; i < layers.length; i++) {
+          endoStroke.dasharray = layers[i].dashes;
           const angle = 35 + 5 * i;
           const layerPath = `M ${layers[i].path} A ${angle} ${angle} -45 0 1 70 50`;
           const ER = draw.path(layerPath);
-          const layerStroke = endoStroke;
-          layerStroke.dasharray = layers[i].dashes;
-          ER.move(x - erScale * (i + 1), y - erScale * (i + 1))
-            .stroke(layerStroke)
+          ER.move(center.x - erScale * (i + 1), center.y - erScale * (i + 1))
+            .stroke(endoStroke)
             .fill("none");
         }
       }
+    },
+    drawNucleus(draw, size, center) {
+      draw
+          .ellipse(size, size)
+          .fill(this.features.nucleus.color)
+          .move(center.x, center.y)
+          .stroke({
+            width: 3,
+            color: this.features.body.color,
+            linecap: "round",
+            linejoin: "round"
+          });
+    },
+    drawCell(waveform, count, size, target) {
+      // draw, style and position the SVG path
+      const draw = SVG()
+        .addTo(target)
+        .size(size + this.margin * 2, size + this.margin * 2);
+
+      const shape = this.drawBody(draw, waveform, count, size);
+
+      // find cell range and center
+      const [[minX, maxX],[minY, maxY]] = this.wallRange(shape);
+      const w = maxX - minX;
+      const h = maxY - minY;
+      const nucleusSize = 0.2 * size;
+      const findCenter = d => ((d - nucleusSize) / 2 + this.margin + (size - d) / 2);
+      const center = {
+        x: findCenter(w),
+        y: findCenter(h),
+      };
+
+      if (!this.features.nucleus.hidden) this.drawNucleus(draw, nucleusSize, center); // nucleus
+
+      this.drawEndo(draw, size, center); // endoplasmic reticulum
 
       // golgi aparatus
 
@@ -294,213 +247,51 @@ export default Vue.extend({
       );
       this.drawFeature(
         draw,
-        this.locations.mitochondria,
-        pattern,
-        this.features.mitochondria.count,
-        x,
-        y,
-        10,
-        18
+        center,
+        {fill: pattern, count: this.features.mitochondria.count},
+        this.featureBase.mitochondria,
       );
 
       // chloroplasts
       this.drawFeature(
         draw,
-        this.locations.chloroplasts,
-        this.features.chloroplasts.color,
-        this.features.chloroplasts.count,
-        x,
-        y,
-        8,
-        16
+        center,
+        this.features.chloroplasts,
+        this.featureBase.chloroplasts
       );
 
       // vacuoles
       this.drawFeature(
         draw,
-        this.locations.vacuoles,
-        this.features.vacuoles.color,
-        this.features.vacuoles.count,
-        x,
-        y,
-        20,
-        28
+        center,
+        this.features.vacuoles,
+        this.featureBase.vacuoles,
       );
 
       // ribosomes
       this.drawFeature(
         draw,
-        this.locations.ribosomes,
-        this.features.ribosomes.color,
-        this.features.ribosomes.count,
-        x,
-        y,
-        4,
-        10
+        center,
+        this.features.ribosomes,
+        this.featureBase.ribosomes,
       );
 
       // microtubules
       this.drawFeature(
         draw,
-        this.locations.microtubules,
-        this.features.microtubules.color,
-        this.features.microtubules.count,
-        x,
-        y,
-        1,
-        15
+        center,
+        this.features.microtubules,
+        this.featureBase.microtubules,
       );
 
       // vesicles
       this.drawFeature(
         draw,
-        this.locations.vesicles,
-        this.features.vesicles.color,
-        this.features.vesicles.count,
-        x,
-        y,
-        4,
-        4
+        center,
+        this.features.vesicles,
+        this.featureBase.vesicles,
       );
     },
-
-    mergeWaves(waves) {
-      const waveLengths = waves.map(w => w.length);
-      const lcm = this.lcmNumbers(waveLengths); // least common multiple of the length of the wave arrays
-      let compoundWave;
-      for (let i = 0; i < lcm; i++) {
-        compoundWave[i] = 0;
-        for (const wave in waves) {
-          const j = Math.floor(i / (lcm / wave.length));
-          compoundWave[i] += wave[j] / (this.bitDepthMax - 1);
-        }
-      }
-      return compoundWave;
-    },
-
-    drawFeature(draw, positions, fill, count, x, y, w, h) {
-      for (let i = 0; i < count; i++) {
-        draw
-          .ellipse(w, h)
-          .fill(fill)
-          .move(x + positions[i][0], y + positions[i][1])
-          .transform({ rotate: positions[i][2] })
-          .stroke("none");
-      }
-    },
-
-    // function parameters ( size, wave, repeat, mod )
-    // returns an array of points for a polygon
-    plotShape(size, wave, repeat, mod) {
-      const radius = size / 2;
-      const segments = repeat * wave.length;
-      const points = [];
-      for (let i = 0; i <= segments; i++)
-        points[i] = this.radialWavePlotter(i, radius, mod, wave, segments);
-      return points;
-    },
-
-    radialWavePlotter(i, radius, mod, wave, segments) {
-      const scale = radius * mod + radius * (1 - mod) * wave[i % wave.length];
-      const x = Math.round(Math.sin((this.tao * i) / segments) * scale);
-      const y = Math.round(Math.cos((this.tao * i) / segments) * scale * -1);
-      return [x, y];
-    },
-
-    // Properties of a line
-    // I:  - pointA (array) [x,y]: coordinates
-    //     - pointB (array) [x,y]: coordinates
-    // O:  - (object) { length: l, angle: a }: properties of the line
-    line(pointA, pointB) {
-      const lengthX = pointB[0] - pointA[0];
-      const lengthY = pointB[1] - pointA[1];
-      return {
-        length: Math.sqrt(Math.pow(lengthX, 2) + Math.pow(lengthY, 2)),
-        angle: Math.atan2(lengthY, lengthX)
-      };
-    },
-
-    // Position of a control point
-    // I:  - current (array) [x, y]: current point coordinates
-    //     - previous (array) [x, y]: previous point coordinates
-    //     - next (array) [x, y]: next point coordinates
-    //     - reverse (boolean, optional): sets the direction
-    // O:  - (array) [x,y]: a tuple of coordinates
-    controlPoint(current, previous, next, reverse) {
-      // When 'current' is the first or last point of the array
-      // 'previous' or 'next' don't exist.
-      // Replace with 'current'
-      const p = previous || current;
-      const n = next || current;
-
-      // Properties of the opposed-line
-      const o = this.line(p, n);
-
-      // If is end-control-point, add PI to the angle to go backward
-      const angle = o.angle + (reverse ? Math.PI : 0);
-      const length = o.length * this.smoothing;
-
-      // The control point position is relative to the current point
-      const x = current[0] + Math.cos(angle) * length;
-      const y = current[1] + Math.sin(angle) * length;
-      return [x, y];
-    },
-
-    // Create the bezier curve command
-    // I:  - point (array) [x,y]: current point coordinates
-    //     - i (integer): index of 'point' in the array 'a'
-    //     - a (array): complete array of points coordinates
-    // O:  - (string) 'C x2,y2 x1,y1 x,y': SVG cubic bezier C command
-    bezierCommand(point, i, a) {
-      // start control point
-      const cps = this.controlPoint(a[i - 1], a[i - 2], point);
-
-      // end control point
-      const cpe = this.controlPoint(point, a[i - 1], a[i + 1], true);
-      return `C ${cps[0]},${cps[1]} ${cpe[0]},${cpe[1]} ${point[0]},${point[1]}`;
-    },
-
-    // Render the svg <path> element
-    // I:  - points (array): points coordinates
-    //     - command (function)
-    //       I:  - point (array) [x,y]: current point coordinates
-    //           - i (integer): index of 'point' in the array 'a'
-    //           - a (array): complete array of points coordinates
-    //       O:  - (string) a svg path command
-    // O:  - (string): a Svg <path> element
-    svgPath(points, command) {
-      // build the d attributes by looping over the points
-      const d = points.reduce(
-        (acc, point, i, a) =>
-          i === 0
-            ? `M ${point[0]},${point[1]}`
-            : `${acc} ${command(point, i, a)}`,
-        ""
-      );
-      return d;
-    },
-
-    lcmNumbers(inputArray) {
-      if (toString.call(inputArray) !== "[object Array]") return false;
-      let r1 = 0,
-        r2 = 0;
-      const l = inputArray.length;
-      for (let i = 0; i < l; i++) {
-        r1 = inputArray[i] % inputArray[i + 1];
-        if (r1 === 0) {
-          inputArray[i + 1] =
-            (inputArray[i] * inputArray[i + 1]) / inputArray[i + 1];
-        } else {
-          r2 = inputArray[i + 1] % r1;
-          if (r2 === 0) {
-            inputArray[i + 1] = (inputArray[i] * inputArray[i + 1]) / r1;
-          } else {
-            inputArray[i + 1] = (inputArray[i] * inputArray[i + 1]) / r2;
-          }
-        }
-      }
-      return inputArray[l - 1];
-    }
   }
 });
 </script>
