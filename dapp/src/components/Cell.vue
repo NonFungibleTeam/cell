@@ -347,8 +347,8 @@ export default Vue.extend({
         this.features.microtubules.count,
         x,
         y,
-        4,
-        10
+        1,
+        15
       );
 
       // vesicles
@@ -360,7 +360,7 @@ export default Vue.extend({
         x,
         y,
         4,
-        10
+        4
       );
     },
 
