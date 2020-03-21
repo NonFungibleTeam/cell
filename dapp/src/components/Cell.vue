@@ -97,6 +97,26 @@ export default Vue.extend({
     );
   },
   methods: {
+    intToColor: function (number) {
+        //converts to a integer
+        let intnumber = number - 0;
+
+        const red = (intnumber&0x0000ff) << 16;
+        const green = intnumber&0x00ff00;
+        const blue = (intnumber&0xff0000) >>> 16;
+    
+        // mask out each color and reverse the order
+        intnumber = red|green|blue;
+    
+        // toString converts a number to a hexstring
+        let HTMLcolor = intnumber.toString(16);
+
+        // zero fill on left & add #
+        const template = "#000000";
+        HTMLcolor = template.substring(0,7 - HTMLcolor.length) + HTMLcolor;
+    
+        return HTMLcolor;
+    },
     parseData() {
       return new Promise((resolve, reject) => {
         const cell = this.data;
@@ -108,7 +128,7 @@ export default Vue.extend({
             gradient: ["#ccddcc", "#9999ff", "#449944"]
           },
           nucleus: {
-            color: cell.nucleusColor,
+            color: this.intToColor(cell.nucleusColor),
             hidden: cell.nucleusHidden,
           },
           endo: {
