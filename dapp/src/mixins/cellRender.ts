@@ -235,8 +235,8 @@ const cellRender: any = {
         .fill(this.intToColor(data.nucleusColor))
         .move(center.x, center.y)
         .stroke({
-          width: 3,
-          color: data.wallColor,
+          width: 2,
+          color: this.intToColor(data.wallColor),
           linecap: "round",
           linejoin: "round"
         });
