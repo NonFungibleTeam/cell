@@ -123,7 +123,7 @@ export default Vue.extend({
         this.features = {
           body: {
             rounded: cell.wallRound,
-            waves: [0, 1, 2, 3],
+            waves: [(cell.wallWave % this.waves.length), 1, 2, 3],
             color: cell.wallColor,
             gradient: ["#ccddcc", "#9999ff", "#449944"]
           },
