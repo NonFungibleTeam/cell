@@ -133,11 +133,11 @@ export default Vue.extend({
           },
           vacuoles: {
             color: "#66f",
-            count: 4
+            count: 1
           },
           microtubules: {
             color: "#ff0",
-            count: 1
+            count: 4
           },
           vesicles: {
             color: "#66f",
