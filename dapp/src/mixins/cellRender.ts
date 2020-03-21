@@ -1,68 +1,68 @@
+import { SVG, Pattern } from "@svgdotjs/svg.js";
+
 const tao = 2 * Math.PI;
 const smoothing = 0.2;
-const bitDepthMax = 2 ** 5;
+const preserve = 0.6;
+
+const featureBase: any = {
+  mitochondria: {
+    locations: [
+      [-30, 35, 35],
+      [-10, -20, 0],
+      [80, -20, 158],
+      [75, 65, 287],
+      [-25, -15, 187],
+      [-15, 75, 77]
+    ],
+    size: [10, 18],
+  },
+  chloroplasts: {
+    locations: [
+      [50, -45, 145],
+      [-35, -3, 95],
+      [48, 73, 277],
+      [85, 39, 13]
+    ],
+    size: [8, 16],
+  },
+  vacuoles: {
+    locations: [
+      [80, 10, 23],
+      [-40, -30, 312]
+    ],
+    size: [20, 28],
+  },
+  ribosomes: {
+    locations: [
+      [-12, 54, 285],
+      [-32, 20, 85],
+      [75, -32, 165],
+      [70, -5, 57]
+    ],
+    size: [4, 10],
+  },
+  microtubules: {
+    locations: [
+      [-12, 54, 285],
+      [-32, 20, 85],
+      [75, -32, 165],
+      [70, -5, 57]
+    ],
+    size: [1, 15],
+  },
+  vesicles: {
+    locations: [
+      [-12, 54, 285],
+      [-32, 20, 85],
+      [75, -32, 165],
+      [70, -5, 57]
+    ],
+    size: [4, 4],
+  },
+};
 
 const cellRender: any = {
   methods: {
-    parseData(data: any, waves: Array<Array<number>>) {
-      const cell = data;
-      const types = [
-        "endo",
-        "golgi",
-        "mitochondria",
-        "chloroplasts",
-        "ribosomes",
-        "vacuoles",
-        "microtubules",
-        "vesicles",
-      ];
-      const features = {
-        body: {
-          rounded: cell.wallRound,
-          waves: [(cell.wallWave % waves.length), 1, 2, 3],
-          color: cell.wallColor,
-          gradient: ["#ccddcc", "#9999ff", "#449944"]
-        },
-        nucleus: {
-          color: this.intToColor(cell.nucleusColor),
-          hidden: cell.nucleusHidden,
-        },
-        endo: {
-          color: "#00f",
-          count: 0
-        },
-        golgi: {
-          color: "#66f",
-          count: 4
-        },
-        mitochondria: {
-          color: "#f33",
-          count: 6
-        },
-        chloroplasts: {
-          color: "#3f5",
-          count: 4
-        },
-        ribosomes: {
-          color: "#66f",
-          count: 4
-        },
-        vacuoles: {
-          color: "#66f",
-          count: 1
-        },
-        microtubules: {
-          color: "#ff0",
-          count: 4
-        },
-        vesicles: {
-          color: "#66f",
-          count: 4
-        },
-      };
-      return features;
-    },
-
     intToColor: function (intnumber: number) {
       // bit shift color channel components
       const red = (intnumber & 0x0000ff) << 16;
@@ -113,19 +113,186 @@ const cellRender: any = {
       }
       return inputArray[l - 1];
     },
+    
+    drawCell(data: any, waveform: Array<number>, level: number, size: number, margin: number, target: string) {
+      // draw, style and position the SVG path
+      const draw = SVG()
+        .addTo(target)
+        .size(size + margin * 2, size + margin * 2);
 
-    drawFeature(draw: any, center: { x: number, y: number }, features: { count: number, fill: object }, base: { positions: Array<Array<number>>, size: Array<number> }) {
-      const { fill, count } = features;
-      const { positions, size } = base;
-      const [w, h] = size;
-      for (let i = 0; i < count; i++) {
+      const shape = this.drawBody(draw, waveform, level, size, data, margin);
+
+      // find cell range and center
+      const [[minX, maxX], [minY, maxY]] = this.wallRange(shape);
+      const w = maxX - minX;
+      const h = maxY - minY;
+      const nucleusSize = 0.2 * size;
+      const findCenter = d => ((d - nucleusSize) / 2 + margin + (size - d) / 2);
+      const center = {
+        x: findCenter(w),
+        y: findCenter(h),
+      };
+
+      if (!data.nucleusHidden) this.drawNucleus(draw, nucleusSize, data, center); // nucleus
+
+      if (data.featureCategories.includes(0)) this.drawEndo(draw, size, center); // endoplasmic reticulum
+
+      //if (data.featureCategories.includes(1)) // goligi apparatus
+
+      const mitoPattern = draw.pattern(
+        10,
+        10,
+        function (add) {
+          add.rect(10, 10).fill("#f44");
+          add
+            .rect(10, 2)
+            .move(5, 5)
+            .fill("#fff");
+          add
+            .rect(7, 2)
+            .move(0, 0)
+            .fill("#fff");
+        }
+      );
+
+      // render feature types by ids
+      const types = [
+        "endo",
+        "golgi",
+        "mitochondria",
+        "chloroplasts",
+        "ribosomes",
+        "vacuoles",
+        "microtubules",
+        "vesicles",
+      ];
+      for (const i of data.featureCategories) {
+        if (i > 1) {
+          const feature = {
+            count: data.featureCounts[i] as number,
+            fill: (i === 2) ? mitoPattern : this.intToColor(data.featureColors[i]),
+          };
+          this.drawFeature(
+            draw,
+            center,
+            feature,
+            featureBase[types[i]]
+          );
+          if (featureBase[types[i]].locations === undefined) alert(featureBase[types[i]])
+        }
+      }
+    },
+
+    drawBody(draw: any, waveform: Array<number>, count: number, size: number, data: any, margin: number) {
+      // plot shape from wave
+      const shape = this.plotShape(
+        size,
+        waveform,
+        count,
+        preserve
+      );
+
+      const [[minX, maxX], [minY, maxY]] = this.wallRange(shape);
+      const w = maxX - minX;
+      const h = maxY - minY;
+
+      // gradient
+      const gradientStops = [
+        { offset: 0.1, color: "#ccddcc" },
+        { offset: 0.5, color: "#9999ff" },
+        { offset: 0.9, color: "#449944" }
+      ];
+      const gradient = draw.gradient(
+        "radial",
+        function (add: any) {
+          for (const c of gradientStops) add.stop(c);
+        }
+      );
+
+      // body - draw cell wall and fill
+      const body = data.wallRound
+        ? draw.path(this.svgPath(shape, this.bezierCommand))
+        : draw.polygon(shape);
+      body
+        .move(
+          margin + (size - w) / 2,
+          margin + (size - h) / 2
+        )
+        .fill(gradient)
+        .stroke({
+          width: 3,
+          color: this.intToColor(data.wallColor),
+          linecap: "round",
+          linejoin: "round"
+        });
+
+      return shape;
+    },
+
+    drawNucleus(draw: any, size: number, data: any, center: { x: number, y: number }) {
+      draw
+        .ellipse(size, size)
+        .fill(this.intToColor(data.nucleusColor))
+        .move(center.x, center.y)
+        .stroke({
+          width: 3,
+          color: data.wallColor,
+          linecap: "round",
+          linejoin: "round"
+        });
+    },
+
+    drawEndo(draw: any, size: number, center: { x: number, y: number}) {
+      // endoplasmic reticulum
+      const layers = [
+        { path: "10 70", dashes: "5,3,9" },
+        { path: "0 80", dashes: "3,9,7" },
+        { path: "-5 85", dashes: "2,7,5" }
+      ];
+      const endoStroke = {
+        width: 3,
+        color: "#00f", // find endo entry with largest count and use that color
+        linecap: "round",
+        linejoin: "round",
+        dasharray: "",
+      };
+      const erScale = (1 / 55) * size;
+      for (let i = 0; i < layers.length; i++) {
+        endoStroke.dasharray = layers[i].dashes;
+        const angle = 35 + 5 * i;
+        const layerPath = `M ${layers[i].path} A ${angle} ${angle} -45 0 1 70 50`;
+        const ER = draw.path(layerPath);
+        ER.move(center.x - erScale * (i + 1), center.y - erScale * (i + 1))
+          .stroke(endoStroke)
+          .fill("none");
+      }
+    },
+
+    drawFeature(draw: any, center: { x: number, y: number }, features: { count: number, fill: (string | Pattern) }, base: { locations: Array<Array<number>>, size: Array<number> }) {
+      const [w, h] = base.size;
+      for (let i = 0; i < features.count; i++) {
+        const location = base.locations[i % base.locations.length];
         draw
           .ellipse(w, h)
-          .fill(fill)
-          .move(center.x + positions[i][0], center.y + positions[i][1])
-          .transform({ rotate: positions[i][2] })
+          .fill(features.fill)
+          .move(center.x + location[0], center.y + location[1])
+          .transform({ rotate: location[2] })
           .stroke("none");
       }
+    },
+
+    wallRange(shape: Array<Array<number>>) {
+      return shape.reduce(
+        function (result: Array<Array<number>>, cords: Array<number>) {
+          const [x, y] = cords;
+          const [lX, lY] = result;
+          return [
+            [lX[0] < x ? lX[0] : x, lX[1] > x ? lX[1] : x],
+            [lY[0] < y ? lY[0] : y, lY[1] > y ? lY[1] : y]
+          ];
+        },
+        [[0, 0], [0, 0]]
+      );
     },
 
     // function parameters ( size, wave, repeat, mod )
