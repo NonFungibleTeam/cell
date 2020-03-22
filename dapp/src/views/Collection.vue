@@ -102,19 +102,43 @@ export default {
       return this.$store.state.contracts.cell.methods.get(id).call();
     },
     loadCells: async function() {
-      this.count = await this.$store.state.contracts.cell.methods.balanceOf(this.currentAccount).call();
+      let count;
+      if (this.$store.state.count) {
+        count = this.$store.state.count;
+      } else {
+        count = await this.$store.state.contracts.cell.methods.balanceOf(this.currentAccount).call();
+        this.count = count;
+        this.$store.commit('setCount', count);
+      }
       const start = this.page * this.itemsPerPage;
-      for (let i = 0; i < this.itemsPerPage; i++) {
+      for (let i = 0; i < this.itemsPerPage && (start + i) < count; i++) {
         const index = start + i;
-        const cellID = await this.$store.state.contracts.cell.methods.tokenOfOwnerByIndex(this.currentAccount, index).call();
-        this.$set(this.cellIDs, i, cellID);
-        this.$set(this.cellsLoading, cellID, true);
+        if (this.$store.state.cellIDs[i]) {
+          const cellID = this.$store.state.cellIDs[i];
+          this.$set(this.cellIDs, i, cellID);
+          this.$set(this.cellsLoading, cellID, true);
+        } else {
+          const cellID = await this.$store.state.contracts.cell.methods.tokenOfOwnerByIndex(this.currentAccount, index).call();
+          this.$set(this.cellIDs, i, cellID);
+          this.$set(this.cellsLoading, cellID, true);
+          this.$store.commit('setCellID', {index: i, id: cellID});
+        }
       }
       this.loading = false;
-      for (let i = 0; i < this.itemsPerPage; i++) {
-        const cell = await this.lookupCell(this.cellIDs[i]);
-        this.$set(this.cells, this.cellIDs[i], cell);
-        this.$set(this.cellsLoading, this.cellIDs[i], false);
+      for (let i = 0; i < this.itemsPerPage && (start + i) < count; i++) {
+        // check store for cell data first
+        const data = this.$store.state.cachedCells[this.cellIDs[i]];
+        if (data) {
+          this.$set(this.cells, this.cellIDs[i], data);
+          this.$set(this.cellsLoading, this.cellIDs[i], false);
+        } else {
+          // otherwise lookup cell data on chain and cache to store 
+          this.lookupCell(this.cellIDs[i]).then((resp) => {
+            this.$store.commit('setCell', {id: this.cellIDs[i], data: resp});
+            this.$set(this.cells, this.cellIDs[i], resp);
+            this.$set(this.cellsLoading, this.cellIDs[i], false);
+          });
+        }
       }
     },
     listenForCells: function() {

@@ -10,13 +10,22 @@ const store = new Vuex.Store({
     currentAccount: "",
     web3Status: "loading",
     web3: null,
+    count: null,
+    cellIDs: {},
+    cachedCells: {},
     contracts: {
       cells: null
     }
   },
   mutations: {
-    setFaces(state, faces) {
-      state.faces = faces;
+    setCount(state, count) {
+      state.count = count;
+    },
+    setCellID(state, payload) {
+      state.cellIDs[payload.index] = payload.id;
+    },
+    setCell(state, payload) {
+      state.cachedCells[payload.id] = payload.data;
     },
     setContract(state, payload) {
       state.contracts[payload.id] = payload.contract;
@@ -32,7 +41,7 @@ const store = new Vuex.Store({
     }
   },
   actions: {
-    async initialize(context, dispatch) {
+    async initialize(context) {
       await context.dispatch("loadWeb3");
       await context.dispatch("loadAccount");
       await context.dispatch("registerContracts");
@@ -82,7 +91,7 @@ const store = new Vuex.Store({
           }
         });
       });
-    }
+    },
   },
   getters: {
     currentAccount: state => {
