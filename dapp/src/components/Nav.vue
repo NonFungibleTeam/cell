@@ -26,8 +26,10 @@
             v-list-item-content {{ l.text }}
         
     v-app-bar(app color="primary" dark)
+      router-link(to="/")
+        v-img.logo(src="/img/logo.svg" width="55" height="55")
       v-toolbar-title
-        router-link(to="/" text color="accent").mr-2.title Microverse
+        router-link(to="/" text).mr-2.title Microverse
       v-spacer
       .link(v-for="l in links")
         v-btn(v-if="l.type === 'page'" :to="l.path" text)
@@ -104,6 +106,8 @@ export default {
 </script>
 
 <style lang="sass">
+.logo
+  margin: 0 4px 8px 0
 .account-label, .address-tooltip
   margin: 0 0
 .title
