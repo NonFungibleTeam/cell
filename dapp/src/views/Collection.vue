@@ -237,7 +237,7 @@ export default {
           to: cellAddress,
           value: this.$store.state.web3.utils.toWei("2", "finney"),
           data: this.$store.state.contracts.cell.methods
-            .merge(this.merge[0], this.merge[0])
+            .merge(this.merge[0], this.merge[1])
             .encodeABI()
         }
       );
