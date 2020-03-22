@@ -143,11 +143,8 @@ export default {
       const start = (this.page - 1) * this.itemsPerPage;
       for (let i = 0; i < this.itemsPerPage && (start + i) < this.count; i++) {
         const index = start + i;
-        let cellID = this.$store.state.cellIDs[index];
-        if (!cellID) {
-          cellID = await this.$store.state.contracts.cell.methods.tokenOfOwnerByIndex(this.currentAccount, index).call();
-          this.$store.commit('setCellID', {index: index, id: cellID});
-        }
+        const cellID = await this.$store.state.contracts.cell.methods.tokenOfOwnerByIndex(this.currentAccount, index).call();
+        this.$store.commit('setCellID', {index: index, id: cellID});
         this.$set(this.cellsLoading, cellID, true);
         this.$set(this.cellIDs, index, cellID);
         this.loading = false;
