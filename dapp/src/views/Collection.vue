@@ -231,7 +231,6 @@ export default {
       this.listenForCells()
     },
     mergeCells: function() {
-      this.clearMerge();
       this.$store.state.web3.eth.sendTransaction(
         {
           from: this.currentAccount,
@@ -242,6 +241,7 @@ export default {
             .encodeABI()
         }
       );
+      this.clearMerge();
       this.listenForCells()
     },
   },
