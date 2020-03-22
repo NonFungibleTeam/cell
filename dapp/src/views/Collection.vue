@@ -8,31 +8,39 @@
           v-progress-circular(indeterminate size="75" color="primary")
           h1 Fetching Your Cells
           h3 Please Wait...
-      v-row(v-else no-gutters)
-        v-col(v-for="i in cellIDs" :key="i" align="center" xl="3" lg="4" sm="6" xs="12")
-          v-card.cell(:class="{ 'selected-cell': (merge[0] === i || merge[1] === i) }")
-            v-card-title 
-              span {{ "#" + i }}
-              v-spacer 
-              v-skeleton-loader(v-if="cellsLoading[i]" transition-group="fade-transition" height="50" type="avatar")
-              Level(v-else :mass="cells[i].mass")
-            v-card-text.cell-wrapper
-              v-skeleton-loader(:loading="cellsLoading[i]" transition-group="fade-transition" height="320" type="image")
-                Cell(:id="i" :data="cells[i]")
-            v-divider
-            v-card-actions
-              v-btn(:to="'/cell/' + i") View
-              v-spacer
-              v-btn(v-if="merge[0]" color="success" @click="setMerge(1, i); mergeCompare = true") Select
-              v-btn(v-else color="primary" @click="setMerge(0, i)") Merge
-              v-btn(color="primary" @click="divideCell(i)") Divide
-        v-col(v-if="count === 0").get-started
-          v-card(align="center").get-started-card
-            p You dont have any cells yet!
-            v-btn(outlined color="secondary") Mint
-            span &nbsp;or&nbsp;
-            v-btn(outlined color="secondary") Buy
-            p one to get started
+      template(v-else)
+        v-row
+          v-col(align="center")
+            v-pagination(v-model="page" circle @input="loadPage" :length="pages")
+        v-row(no-gutters)
+          v-col(v-for="i in cellIDs" :key="i" align="center" xl="3" lg="4" sm="6" xs="12")
+            v-card.cell(:class="{ 'selected-cell': (merge[0] === i || merge[1] === i) }")
+              v-card-title 
+                span {{ "#" + i }}
+                v-spacer 
+                v-skeleton-loader(v-if="cellsLoading[i]" transition-group="fade-transition" height="50" type="avatar")
+                Level(v-else :mass="cells[i].mass")
+              v-card-text.cell-wrapper
+                v-skeleton-loader(:loading="cellsLoading[i]" transition-group="fade-transition" height="320" type="image")
+                  Cell(:id="i" :data="cells[i]")
+              v-divider
+              v-card-actions
+                v-btn(:to="'/cell/' + i") View
+                v-spacer
+                v-btn(v-if="merge[0]" color="success" @click="setMerge(1, i); mergeCompare = true") Select
+                v-btn(v-else color="primary" @click="setMerge(0, i)") Merge
+                v-btn(color="primary" @click="divideCell(i)") Divide
+          v-col(v-if="count === 0").get-started
+            v-card(align="center").get-started-card
+              p You dont have any cells yet!
+              v-btn(outlined color="secondary") Mint
+              span &nbsp;or&nbsp;
+              v-btn(outlined color="secondary") Buy
+              p one to get started
+        v-row(justify="center")
+          v-col(align="center" md="2" offset-sm="5" xs="4" offset-xs="4")
+            v-pagination(v-model="page" circle @click="loadPage" :length="pages")
+            v-combobox.page-items(:value="itemsPerPage" @change="loadPage" dense hint="Cells per page" label="Cells per page" menu-props="top" :items='["12","18","24","36","48","96"]')
     v-bottom-sheet(v-model="mergeCompare" inset persistent)
       v-sheet(v-if="mergeCompare" align="center" height="430px")
         v-container
@@ -85,6 +93,9 @@ export default {
     selecting() {
       return this.merge[0] !== null;
     },
+    pages() {
+      return (this.count / this.itemsPerPage + 1);
+    },
     ...mapGetters(['currentAccount']),
   },
   mounted: async function() {
@@ -101,16 +112,19 @@ export default {
     lookupCell: function(id) {
       return this.$store.state.contracts.cell.methods.get(id).call();
     },
+    loadPage() {
+      this.loadCells();
+    },
     loadCells: async function() {
       let count;
       if (this.$store.state.count) {
         count = this.$store.state.count;
       } else {
         count = await this.$store.state.contracts.cell.methods.balanceOf(this.currentAccount).call();
-        this.count = count;
         this.$store.commit('setCount', count);
       }
-      const start = this.page * this.itemsPerPage;
+      this.count = count;
+      const start = (this.page - 1) * this.itemsPerPage;
       for (let i = 0; i < this.itemsPerPage && (start + i) < count; i++) {
         const index = start + i;
         if (this.$store.state.cellIDs[i]) {
@@ -197,7 +211,7 @@ export default {
     },
   },
   data: () => ({
-    page: 0,
+    page: 1,
     itemsPerPage: 12,
     dialog: false,
     mergeCompare: false,
@@ -228,6 +242,10 @@ export default {
   display: flex
   flex-direction: column
   padding: 2rem 
+.page-items
+  margin-top: 1rem
+  .theme--dark.v-input input
+    color: #222 !important
 .container
   padding: 0
 .stats-bar
