@@ -27,7 +27,8 @@
               v-card-actions
                 v-btn(:to="'/cell/' + i") View
                 v-spacer
-                v-btn(v-if="!merge[0] || i === merge[0]" :disabled="i === merge[0]" color="primary" @click="setMerge(0, i)") Merge
+                v-btn(v-if="!merge[0]" :disabled="i === merge[0]" color="primary" @click="setMerge(0, i)") Merge
+                v-btn(v-else-if="i === merge[0]" color="warning" @click="setMerge(0, i)") Cancel
                 v-btn(v-else color="success" @click="setMerge(1, i)") Select
                 v-btn(color="primary" @click="divide = i; previewTX('divide')") Divide
           v-col(v-if="count === 0").get-started
