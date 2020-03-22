@@ -104,8 +104,12 @@ export default Vue.extend({
       { title: "Golgi Aparatus", key: "golgi", bool: true },
       { title: "Mitochondria", key: "mitochondria" },
       { title: "Chloroplasts", key: "chloroplasts" },
-      { title: "Lisosomes", key: "lisosomes" },
-      { title: "Ribosomes", key: "ribosomes" }
+      { title: "Vacuoles", key: "vacuoles" },
+      { title: "Ribosomes", key: "ribosomes" },
+      { title: "Microtubules", key: "microtubules" },
+      { title: "Vesicles", key: "vesicles" },
+      
+      
     ],
     loading: true,
     data: {},
