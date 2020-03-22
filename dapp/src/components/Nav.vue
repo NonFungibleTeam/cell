@@ -7,6 +7,7 @@
             v-list-item(two-line)
               Gravatar.gravatar.gravatar-mobile(:size="50" :email="currentAccount !== '' ? currentAccount : defaultAccount")
               v-list-item-content 
+                h4.account-label Active Account
                 span.address {{ formatAccount(currentAccount !== '' ? currentAccount : defaultAccount) }}
           v-divider
         .mobile-link
@@ -35,8 +36,9 @@
           v-icon {{ l.icon }}
       v-tooltip(v-if="web3Status === 'active'" bottom)
         template(v-slot:activator="{ on }")
-          Gravatar.gravatar(v-on="on" :size="40" :email="currentAccount")
-        span.address {{ formatAccount(currentAccount !== '' ? currentAccount : defaultAccount) }}
+          Gravatar.gravatar.gravatar-desktop(v-on="on" :size="40" :email="currentAccount")
+        h4.account-label Active Account
+        span.address.address-tooltip {{ formatAccount(currentAccount !== '' ? currentAccount : defaultAccount) }}
       v-btn(@click="drawer = !drawer" text).mobile-menu-btn
         v-icon mdi-menu
         
@@ -102,6 +104,8 @@ export default {
 </script>
 
 <style lang="sass">
+.account-label, .address-tooltip
+  margin: 0 0
 .title
   font-family: "Pangolin"
   font-size: 2rem
@@ -117,6 +121,6 @@ export default {
 @media(max-width: 700px)
   .mobile-menu-btn
     display: block !important
-  .link
+  .link, .gravatar-desktop
     display: none !important
 </style>
