@@ -13,7 +13,7 @@
           v-col(align="center")
             v-pagination(v-model="page" circle @input="loadPage" :length="pages")
         v-row(no-gutters)
-          v-col(v-for="i in cellIDs" :key="i" align="center" xl="3" lg="4" sm="6" xs="12")
+          v-col(v-for="i in pageCells" :key="i" align="center" xl="3" lg="4" sm="6" xs="12")
             v-card.cell(:class="{ 'selected-cell': (merge[0] === i || merge[1] === i) }")
               v-card-title 
                 span {{ "#" + i }}
@@ -40,7 +40,7 @@
         v-row(justify="center")
           v-col(align="center" md="2" offset-sm="5" xs="4" offset-xs="4")
             v-pagination(v-model="page" circle @click="loadPage" :length="pages")
-            v-combobox.page-items(:value="itemsPerPage" @change="loadPage" dense hint="Cells per page" label="Cells per page" menu-props="top" :items='["12","18","24","36","48","96"]')
+            v-combobox.page-items(v-model="itemsPerPage" @change="loadPage" dense hint="Cells per page" label="Cells per page" menu-props="top" :items='["12","18","24","36","48","96"]')
     v-bottom-sheet(v-model="mergeCompare" inset persistent)
       v-sheet(v-if="mergeCompare" align="center" height="430px")
         v-container
@@ -96,10 +96,15 @@ export default {
     pages() {
       return (this.count / this.itemsPerPage + 1);
     },
+    pageCells() {
+      const start = (this.page - 1) * this.itemsPerPage;
+      return this.cellIDs.slice(start, (start + this.itemsPerPage));
+    },
     ...mapGetters(['currentAccount']),
   },
   mounted: async function() {
     await this.$store.dispatch('initialize');
+    this.page = this.$route.params.page ? parseInt(this.$route.params.page) : 1;
     await this.loadCells();
   },
   methods: {
@@ -116,10 +121,8 @@ export default {
       this.loadCells();
     },
     loadCells: async function() {
-      let count;
-      if (this.$store.state.count) {
-        count = this.$store.state.count;
-      } else {
+      let count = this.$store.state.count;
+      if (!this.$store.state.count) {
         count = await this.$store.state.contracts.cell.methods.balanceOf(this.currentAccount).call();
         this.$store.commit('setCount', count);
       }
@@ -127,30 +130,23 @@ export default {
       const start = (this.page - 1) * this.itemsPerPage;
       for (let i = 0; i < this.itemsPerPage && (start + i) < count; i++) {
         const index = start + i;
-        if (this.$store.state.cellIDs[i]) {
-          const cellID = this.$store.state.cellIDs[i];
-          this.$set(this.cellIDs, i, cellID);
-          this.$set(this.cellsLoading, cellID, true);
-        } else {
-          const cellID = await this.$store.state.contracts.cell.methods.tokenOfOwnerByIndex(this.currentAccount, index).call();
-          this.$set(this.cellIDs, i, cellID);
-          this.$set(this.cellsLoading, cellID, true);
-          this.$store.commit('setCellID', {index: i, id: cellID});
+        let cellID = this.$store.state.cellIDs[index];
+        if (!cellID) {
+          cellID = await this.$store.state.contracts.cell.methods.tokenOfOwnerByIndex(this.currentAccount, index).call();
+          this.$store.commit('setCellID', {index: index, id: cellID});
         }
-      }
-      this.loading = false;
-      for (let i = 0; i < this.itemsPerPage && (start + i) < count; i++) {
-        // check store for cell data first
-        const data = this.$store.state.cachedCells[this.cellIDs[i]];
+        this.$set(this.cellsLoading, cellID, true);
+        this.$set(this.cellIDs, index, cellID);
+        this.loading = false;
+        const data = this.$store.state.cachedCells[this.cellIDs[index]];
         if (data) {
-          this.$set(this.cells, this.cellIDs[i], data);
-          this.$set(this.cellsLoading, this.cellIDs[i], false);
+          this.$set(this.cells, this.cellIDs[index], data);
+          this.$set(this.cellsLoading, this.cellIDs[index], false);
         } else {
-          // otherwise lookup cell data on chain and cache to store 
-          this.lookupCell(this.cellIDs[i]).then((resp) => {
-            this.$store.commit('setCell', {id: this.cellIDs[i], data: resp});
-            this.$set(this.cells, this.cellIDs[i], resp);
-            this.$set(this.cellsLoading, this.cellIDs[i], false);
+          this.lookupCell(this.cellIDs[index]).then((resp) => {
+            this.$store.commit('setCell', {id: this.cellIDs[index], data: resp});
+            this.$set(this.cells, this.cellIDs[index], resp);
+            this.$set(this.cellsLoading, this.cellIDs[index], false);
           });
         }
       }

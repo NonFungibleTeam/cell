@@ -1,11 +1,24 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import Web3 from "web3";
+import VuexPersist from "vuex-persist";
+
 import { cellAddress, cellABI } from "../CellContract";
 
 Vue.use(Vuex);
 
+const vuexLocalStorage = new VuexPersist({
+  key: "microverse",
+  storage: window.localStorage,
+  reducer: state => ({
+    count: state.count,
+    cellIDs: state.cellIDs,
+    cachedCells: state.cachedCells,
+  })
+});
+
 const store = new Vuex.Store({
+  plugins: [vuexLocalStorage.plugin],
   state: {
     currentAccount: "",
     web3Status: "loading",

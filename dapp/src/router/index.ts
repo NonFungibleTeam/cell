@@ -16,7 +16,7 @@ const routes = [
       import(/* webpackChunkName: "cell" */ "../views/CellPage.vue")
   },
   {
-    path: "/collection",
+    path: "/collection/:page?",
     name: "Collection",
     component: () =>
       import(/* webpackChunkName: "collection" */ "../views/Collection.vue")
