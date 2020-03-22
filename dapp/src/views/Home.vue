@@ -13,7 +13,7 @@
     v-container(fluid)
       v-row(cols=6).landing
         v-col(align="center")
-          Cell.cell(id="1" :mass="cell.mass" :features="cell.features")
+          Cell.cell(id="1" :data="data")
           h1.title Microverse
           h3 Mint, merge, and divide NFT cells
           h3 Compete to make massive unique cells and avoid getting rekt!
@@ -66,41 +66,18 @@ export default {
     Cell
   },
   data: () => ({
-    cell: {
-      mass: 541,
-      features: {
-        body: {
-          rounded: false,
-          waves: [2, 1, 1, 0],
-          color: "#efcc35",
-          gradient: ["#ccddcc", "#773311", "#337744"]
-        },
-        nucleus: {
-          color: "#f56",
-          count: 1
-        },
-        endo: {
-          color: "#00f",
-          count: 1
-        },
-        mitochondria: {
-          color: "#f33",
-          count: 6
-        },
-        chloroplasts: {
-          color: "#3f5",
-          count: 4
-        },
-        lisosomes: {
-          color: "#ff0",
-          count: 1
-        },
-        ribosomes: {
-          color: "#66f",
-          count: 4
-        }
-      }
-    }
+    data: {
+      "mass": "754",
+      "wallWave": "10330701",
+      "wallRound": true,
+      "wallColor": "6371645",
+      "nucleusHidden": false,
+      "nucleusColor": "91030709",
+      "featureCategories": ["0","1","2","3","4","5","6","7"],
+      "featureFamilies": ["1","3","4","6","7","4","4","1"],
+      "featureCounts": ["5","9","1","3","7","11","13","2"],
+      "featureColors": ["12276130","15004091","9558604","13202218","579032","16426533","14842158","568390"]
+    },
   }),
   computed: {
     //...mapGetters(),
