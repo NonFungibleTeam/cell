@@ -94,7 +94,7 @@ export default {
       return this.merge[0] !== null;
     },
     pages() {
-      return (this.count / this.itemsPerPage + 1);
+      return Math.floor(this.count / this.itemsPerPage + 1);
     },
     pageCells() {
       const start = (this.page - 1) * this.itemsPerPage;
