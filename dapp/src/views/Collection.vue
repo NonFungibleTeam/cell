@@ -28,7 +28,7 @@
                 v-btn(:to="'/cell/' + i") View
                 v-spacer
                 v-btn(v-if="!merge[0]" :disabled="i === merge[0]" color="primary" @click="setMerge(0, i)") Merge
-                v-btn(v-else-if="i === merge[0]" color="warning" @click="setMerge(0, i)") Cancel
+                v-btn(v-else-if="i === merge[0]" color="warning" @click="setMerge(0, null)") Cancel
                 v-btn(v-else color="success" @click="setMerge(1, i)") Select
                 v-btn(color="primary" @click="divide = i; previewTX('divide')") Divide
           v-col(v-if="count === 0").get-started
@@ -224,7 +224,9 @@ export default {
             .split(this.divide)
             .encodeABI()
         }
-      );
+      ).then((err, result) => {
+        this.loadCells();
+      });
       this.divide = null;
       this.listenForCells()
     },
@@ -238,7 +240,9 @@ export default {
             .merge(this.merge[0], this.merge[1])
             .encodeABI()
         }
-      );
+      ).then((err, result) => {
+        this.loadCells();
+      });
       this.clearMerge();
       this.listenForCells()
     },
