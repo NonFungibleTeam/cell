@@ -11,7 +11,7 @@
       template(v-else)
         v-row
           v-col(align="center")
-            v-pagination(v-model="page" circle @input="loadPage" :length="pages")
+            v-pagination(v-model="page" circle @input="loadCells" :length="pages")
         v-row(no-gutters)
           v-col(v-for="i in pageCells" :key="i" align="center" xl="3" lg="4" sm="6" xs="12")
             v-card.cell(:class="{ 'selected-cell': (merge[0] === i || merge[1] === i) }")
@@ -39,8 +39,8 @@
               p one to get started
         v-row(justify="center")
           v-col(align="center" md="2" offset-sm="5" xs="4" offset-xs="4")
-            v-pagination(v-model="page" circle @click="loadPage" :length="pages")
-            v-combobox.page-items(v-model="itemsPerPage" @change="loadPage" dense hint="Cells per page" label="Cells per page" menu-props="top" :items='["12","18","24","36","48","96"]')
+            v-pagination(v-model="page" circle @click="loadCells" :length="pages")
+            v-combobox.page-items(v-model="itemsPerPage" @change="loadCells" dense hint="Cells per page" label="Cells per page" menu-props="top" :items='["12","18","24","36","48","96"]')
     v-bottom-sheet(v-model="mergeCompare" inset persistent)
       v-sheet(v-if="mergeCompare" align="center" height="430px")
         v-container
@@ -104,6 +104,7 @@ export default {
   },
   mounted: async function() {
     await this.$store.dispatch('initialize');
+    // TODO - check if page param is within range
     this.page = this.$route.params.page ? parseInt(this.$route.params.page) : 1;
     await this.loadCells();
   },
@@ -117,9 +118,6 @@ export default {
     lookupCell: function(id) {
       return this.$store.state.contracts.cell.methods.get(id).call();
     },
-    loadPage() {
-      this.loadCells();
-    },
     loadCells: async function() {
       let count = this.$store.state.count;
       if (!this.$store.state.count) {
@@ -127,6 +125,7 @@ export default {
         this.$store.commit('setCount', count);
       }
       this.count = count;
+      if (this.page > this.pages) this.page = this.pages;
       const start = (this.page - 1) * this.itemsPerPage;
       for (let i = 0; i < this.itemsPerPage && (start + i) < count; i++) {
         const index = start + i;
