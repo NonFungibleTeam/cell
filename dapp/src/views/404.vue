@@ -10,11 +10,9 @@
 
 <script lang="ts">
 import Vue from "vue";
-import Nav from "@/components/Nav.vue";
 
 export default Vue.extend({
   name: "Error404",
-  components: { Nav }
 });
 </script>
 

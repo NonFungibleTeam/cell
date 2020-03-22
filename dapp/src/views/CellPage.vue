@@ -1,7 +1,12 @@
 <template lang="pug">
   .cell-page
     v-container
-      v-row
+      v-row(v-if="loading")
+        v-col(align="center").cell-loading
+            v-progress-circular(indeterminate size="75" color="primary")
+            h1 Fetching Cell {{ "#" + id }}
+            h3 This may take a little while
+      v-row(v-else)
         v-col(align="center")
           v-card
             .cell-stats
@@ -12,7 +17,7 @@
               Level(:mass="cell.mass")
             v-divider
             .cell-graphic
-              Cell(:id="id" :mass="cell.mass" :features="cell.features")
+              Cell(:id="id" :data="data")
             v-divider
             .cell-info
               h3 Born: {{ cell.born.toLocaleDateString() + " at " + cell.born.toLocaleTimeString() }}
@@ -59,20 +64,37 @@
 
 <script lang="ts">
 import Vue from "vue";
-import Nav from "@/components/Nav.vue";
+import { mapGetters } from "vuex";
 import Cell from "@/components/Cell.vue";
 import Level from "@/components/Level.vue";
+import { cellAddress, cellABI } from "../CellContract";
 
 import cellUtils from "@/mixins/cellUtils";
 
 export default Vue.extend({
   name: "CellPage",
   mixins: [cellUtils],
-  components: { Nav, Cell, Level },
+  components: { Cell, Level },
   computed: {
     id() {
       return this.$route.params.id;
-    }
+    },
+    ...mapGetters(['currentAccount']),
+  },
+  mounted: async function() {
+    await this.$store.dispatch('initialize');
+    await this.loadCell();
+  },
+  methods: {
+    lookupCell: function(id) {
+      return this.$store.state.contracts.cell.methods.get(id).call();
+    },
+    loadCell: async function() {
+      this.lookupCell(this.id).then((result) => {
+        this.data = result;
+        this.loading = false;
+      });
+    },
   },
   data: () => ({
     founders: 100,
@@ -85,6 +107,8 @@ export default Vue.extend({
       { title: "Lisosomes", key: "lisosomes" },
       { title: "Ribosomes", key: "ribosomes" }
     ],
+    loading: true,
+    data: {},
     cell: {
       mass: 541,
       born: new Date(),
@@ -137,6 +161,8 @@ export default Vue.extend({
   margin-top: 35vh
 .id
   font-size: 2rem
+.cell-loading
+  padding-top: 40vh
 .cell-stats
   padding: 1rem
   display: flex
