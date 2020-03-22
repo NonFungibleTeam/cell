@@ -3,20 +3,22 @@
     v-app-bar(v-if="cells !== {}" absolute collapse dense)
       v-btn(@click="mintCell()") Mint
     v-container
-      v-row(v-if="cellsLoading")
+      v-row(v-if="loading")
         v-col(align="center").cells-loading
           v-progress-circular(indeterminate size="75" color="primary")
           h1 Fetching Your Cells
-          h3 This may take a little while
+          h3 Please Wait...
       v-row(v-else no-gutters)
-        v-col(v-for="cell,i in cells" :key="i" align="center" xl="3" lg="4" sm="6" xs="12")
+        v-col(v-for="i in cellIDs" :key="i" align="center" xl="3" lg="4" sm="6" xs="12")
           v-card.cell(:class="{ 'selected-cell': (merge[0] === i || merge[1] === i) }")
             v-card-title 
               span {{ "#" + i }}
               v-spacer 
-              Level(:mass="cell.mass")
+              v-skeleton-loader(v-if="cellsLoading[i]" transition-group="fade-transition" height="50" type="avatar")
+              Level(v-else :mass="cells[i].mass")
             v-card-text.cell-wrapper
-              Cell(:id="i" :data="cell")
+              v-skeleton-loader(:loading="cellsLoading[i]" transition-group="fade-transition" height="320" type="image")
+                Cell(:id="i" :data="cells[i]")
             v-divider
             v-card-actions
               v-btn(:to="'/cell/' + i") View
@@ -24,7 +26,7 @@
               v-btn(v-if="merge[0]" color="success" @click="setMerge(1, i); mergeCompare = true") Select
               v-btn(v-else color="primary" @click="setMerge(0, i)") Merge
               v-btn(color="primary" @click="divideCell(i)") Divide
-        v-col(v-if="cells === {}").get-started
+        v-col(v-if="count === 0").get-started
           v-card(align="center").get-started-card
             p You dont have any cells yet!
             v-btn(outlined color="secondary") Mint
@@ -100,13 +102,20 @@ export default {
       return this.$store.state.contracts.cell.methods.get(id).call();
     },
     loadCells: async function() {
-      const count = await this.$store.state.contracts.cell.methods.balanceOf(this.currentAccount).call();
-      for (let i = 0; i < count; i++) {
-        const cellID = await this.$store.state.contracts.cell.methods.tokenOfOwnerByIndex(this.currentAccount, i).call();
-        const cell = await this.lookupCell(cellID);
-        this.cells[cellID] = cell;
+      this.count = await this.$store.state.contracts.cell.methods.balanceOf(this.currentAccount).call();
+      const start = this.page * this.itemsPerPage;
+      for (let i = 0; i < this.itemsPerPage; i++) {
+        const index = start + i;
+        const cellID = await this.$store.state.contracts.cell.methods.tokenOfOwnerByIndex(this.currentAccount, index).call();
+        this.$set(this.cellIDs, i, cellID);
+        this.$set(this.cellsLoading, cellID, true);
       }
-      this.cellsLoading = false;
+      this.loading = false;
+      for (let i = 0; i < this.itemsPerPage; i++) {
+        const cell = await this.lookupCell(this.cellIDs[i]);
+        this.$set(this.cells, this.cellIDs[i], cell);
+        this.$set(this.cellsLoading, this.cellIDs[i], false);
+      }
     },
     listenForCells: function() {
       const cellsSubscription = this.$store.state.web3.eth.subscribe('logs', {
@@ -164,11 +173,16 @@ export default {
     },
   },
   data: () => ({
+    page: 0,
+    itemsPerPage: 12,
     dialog: false,
     mergeCompare: false,
     merge: [null, null],
+    count: null,
+    loading: true,
+    cellIDs: [],
+    cellsLoading: {},
     cells: {},
-    cellsLoading: true
   })
 };
 </script>
