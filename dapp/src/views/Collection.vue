@@ -13,7 +13,7 @@
           v-col(align="center")
             v-pagination(v-model="page" circle @input="loadCells" :length="pages")
         v-row(no-gutters)
-          v-col(v-for="i in pageCells" :key="i" align="center" xl="3" lg="4" sm="6" xs="12")
+          v-col(v-for="i in pageCells" :key="i + '-' + cells[i].mass" align="center" xl="3" lg="4" sm="6" xs="12")
             v-card.cell(:class="{ 'selected-cell': (merge[0] === i || merge[1] === i) }")
               v-card-title 
                 span {{ "#" + i }}
@@ -28,7 +28,7 @@
                 v-btn(:to="'/cell/' + i") View
                 v-spacer
                 v-btn(v-if="!merge[0]" :disabled="i === merge[0]" color="primary" @click="setMerge(0, i)") Merge
-                v-btn(v-else-if="i === merge[0]" color="warning" @click="setMerge(0, null)") Cancel
+                v-btn(v-else-if="i === merge[0]" color="warning" @click="clearMerge") Cancel
                 v-btn(v-else color="success" @click="setMerge(1, i)") Select
                 v-btn(color="primary" @click="divide = i; previewTX('divide')") Divide
           v-col(v-if="count === 0").get-started
@@ -138,6 +138,8 @@ export default {
       return this.$store.state.contracts.cell.methods.get(id).call();
     },
     loadCells: async function() {
+      this.cells = {};
+      this.cellIDs = [];
       this.count = await this.$store.state.contracts.cell.methods.balanceOf(this.currentAccount).call();
       this.$store.commit('setCount', this.count);
       if (this.page > this.pages) this.page = this.pages;
@@ -174,8 +176,11 @@ export default {
       .on("data", function(log){
         const index = parseInt(log.topics[3], 16)
         this.lookupCell(index).then((resp) => this.cells[index] = resp);
+        this.loadCells();
       }.bind(this))
-      // .on("error", function(log){});
+      .on("error", function(log){
+        this.listenForCells();
+      });
     },
     previewTX(type) {
       const types = {
@@ -241,6 +246,8 @@ export default {
             .encodeABI()
         }
       ).then((err, result) => {
+        this.$delete(this.cells, this.merge[0]);
+        this.$delete(this.cells, this.merge[1]);
         this.loadCells();
       });
       this.clearMerge();
