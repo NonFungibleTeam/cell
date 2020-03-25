@@ -86,11 +86,11 @@ export default Vue.extend({
     await this.loadCell();
   },
   methods: {
-    lookupCell: function(id) {
+    lookupCell: function(id: number) {
       return this.$store.state.contracts.cell.methods.get(id).call();
     },
-    loadCell: async function() {
-      this.lookupCell(this.id).then((result) => {
+    loadCell: function() {
+      this.lookupCell(this.id).then((result: any) => {
         this.data = result;
         this.loading = false;
       });

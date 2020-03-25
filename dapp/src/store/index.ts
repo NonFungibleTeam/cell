@@ -3,14 +3,14 @@ import Vuex from "vuex";
 import Web3 from "web3";
 import VuexPersist from "vuex-persist";
 
-import { cellAddress, cellABI } from "../CellContract";
+import { cellAddress, cellABI } from "../CellContract.js";
 
 Vue.use(Vuex);
 
 const vuexLocalStorage = new VuexPersist({
   key: "microverse",
   storage: window.localStorage,
-  reducer: state => ({
+  reducer: (state: any) => ({
     count: state.count,
     cellIDs: state.cellIDs,
     cachedCells: state.cachedCells,
@@ -61,11 +61,11 @@ const store = new Vuex.Store({
     },
     loadWeb3(context) {
       return new Promise((resolve, reject) => {
-        if (window.ethereum) {
-          context.commit("setWeb3", new Web3(window.ethereum));
+        if ((window as any).ethereum) {
+          context.commit("setWeb3", new Web3((window as any).ethereum));
           try {
             // Request account access if needed
-            window.ethereum.enable().then(() => {
+            (window as any).ethereum.enable().then(() => {
               context.commit("setWeb3Status", "active");
               resolve();
             });
@@ -73,9 +73,9 @@ const store = new Vuex.Store({
             context.commit("setWeb3Status", "denied");
             resolve();
           }
-        } else if (window.web3) {
+        } else if ((window as any).web3) {
           // Legacy dapp browsers...
-          context.commit("setWeb3", new Web3(window.web3.currentProvider));
+          context.commit("setWeb3", new Web3((window as any).web3.currentProvider));
           context.commit("setWeb3Status", "active");
           resolve();
         } else {
@@ -96,7 +96,7 @@ const store = new Vuex.Store({
     },
     loadAccount(context) {
       return new Promise((resolve, reject) => {
-        context.state.web3.eth.getAccounts((err, resp) => {
+        context.state.web3.eth.getAccounts((err: any, resp: any) => {
           if (err) reject(err);
           else {
             context.commit("setAccount", resp[0]);

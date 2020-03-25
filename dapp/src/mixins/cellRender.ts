@@ -78,13 +78,13 @@ const cellRender: any = {
       return template.substring(0, 7 - HTMLcolor.length) + HTMLcolor;
     },
 
-    mergeWaves(waves: Array<Array<number>>) {
+    mergeWaves(waves: Array<Array<number>>, bitDepthMax: number) {
       const waveLengths = waves.map(w => w.length);
       const lcm = this.lcmNumbers(waveLengths); // least common multiple of the length of the wave arrays
       const compoundWave: Array<number> = [];
       for (let i = 0; i < lcm; i++) {
         compoundWave[i] = 0;
-        for (const wave in waves) {
+        for (const wave of waves) {
           const j = Math.floor(i / (lcm / wave.length));
           compoundWave[i] += wave[j] / (bitDepthMax - 1);
         }
@@ -92,8 +92,8 @@ const cellRender: any = {
       return compoundWave;
     },
 
-    lcmNumbers(inputArray: Array<number>) {
-      if (toString.call(inputArray) !== "[object Array]") return false;
+    lcmNumbers(inputArray: Array<number>): number {
+      if (toString.call(inputArray) !== "[object Array]") return -1;
       let r1 = 0,
         r2 = 0;
       const l = inputArray.length;
@@ -127,7 +127,7 @@ const cellRender: any = {
       const w = maxX - minX;
       const h = maxY - minY;
       const nucleusSize = 0.2 * size;
-      const findCenter = d => ((d - nucleusSize) / 2 + margin + (size - d) / 2);
+      const findCenter = (d: number) => ((d - nucleusSize) / 2 + margin + (size - d) / 2);
       const center = {
         x: findCenter(w),
         y: findCenter(h),
@@ -319,7 +319,7 @@ const cellRender: any = {
     // I:  - pointA (array) [x,y]: coordinates
     //     - pointB (array) [x,y]: coordinates
     // O:  - (object) { length: l, angle: a }: properties of the line
-    line(pointA: Array<number>, pointB: Array<number>): object {
+    line(pointA: Array<number>, pointB: Array<number>): {angle: number, length: number} {
       const lengthX = pointB[0] - pointA[0];
       const lengthY = pointB[1] - pointA[1];
       return {
@@ -361,7 +361,7 @@ const cellRender: any = {
     // O:  - (string) 'C x2,y2 x1,y1 x,y': SVG cubic bezier C command
     bezierCommand(point: Array<number>, i: number, a: Array<Array<number>>): string {
       // start control point
-      const cps = this.controlPoint(a[i - 1], a[i - 2], point);
+      const cps = this.controlPoint(a[i - 1], a[i - 2], point, false);
 
       // end control point
       const cpe = this.controlPoint(point, a[i - 1], a[i + 1], true);

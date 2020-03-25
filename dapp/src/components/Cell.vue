@@ -17,7 +17,7 @@ export default Vue.extend({
     },
     wave() {
       const bitDepthMax = 2 ** 5;
-      //return this.mergeWaves(this.features.body.waves.map(i => this.waves[i]));
+      //return this.mergeWaves(this.features.body.waves.map(i => this.waves[i]), bitDepthMax);
       const i = this.data.wallWave % this.waves.length;
       return this.waves[i].map(
         s => s / (bitDepthMax - 1)
