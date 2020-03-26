@@ -28,14 +28,14 @@ const features = [
   { title: "Resource Bundles", key: "bundles" },
 ];
 const families = [
-  { title: "Plant", features: [0, 1, 2, 3, 4, 5, 6, 7] },
-  { title: "Animal", features: [0, 1, 2, 8, 4, 5, 6, 7] },
-  { title: "Fungi", features: [0, 1, 2, 9, 4, 5, 6, 7] },
-  { title: "Bacteria", features: [10, 11, 12, 13, 4, 5, 6, 7] },
-  { title: "Nanite", features: [14, 15, 16, 17, 18, 19, 20, 21] },
-  { title: "Battery", features: [0, 1, 2, 3, 4, 5, 6, 7] },
-  { title: "Amoeba", features: [0, 1, 2, 3, 4, 5, 6, 7] },
-  { title: "Protist", features: [0, 1, 2, 3, 4, 5, 6, 7] },
+  { title: "Plant", color: "#00ff00", features: [0, 1, 2, 3, 4, 5, 6, 7] },
+  { title: "Animal", color: "#ff0000", features: [0, 1, 2, 8, 4, 5, 6, 7] },
+  { title: "Fungi", color: "#ffffff", features: [0, 1, 2, 9, 4, 5, 6, 7] },
+  { title: "Bacteria", color: "#00ffff", features: [10, 11, 12, 13, 4, 5, 6, 7] },
+  { title: "Nanite", color: "#000000", features: [14, 15, 16, 17, 18, 19, 20, 21] },
+  { title: "Battery", color: "#ffff00", features: [0, 1, 2, 3, 4, 5, 6, 7] },
+  { title: "Amoeba", color: "#0000ff", features: [0, 1, 2, 3, 4, 5, 6, 7] },
+  { title: "Protist", color: "#ff00ff", features: [0, 1, 2, 3, 4, 5, 6, 7] },
 ];
 const featureBase: any = {
   mitochondria: {
@@ -227,16 +227,15 @@ const cellRender: any = {
       const w = maxX - minX;
       const h = maxY - minY;
 
-      // gradient
-      const gradientStops = [
-        { offset: 0.1, color: "#ccddcc" },
-        { offset: 0.5, color: "#9999ff" },
-        { offset: 0.9, color: "#449944" }
-      ];
+      // calculate gradient
       const gradient = draw.gradient(
         "radial",
         function (add: any) {
-          for (const c of gradientStops) add.stop(c);
+          // sort by family with most features
+          for (let i = 0; i < 8; i++) {
+            const f = parseInt(data.featureFamilies[i]);
+            add.stop({ offset: (i / 10 + 0.25), color: families[f].color });
+          }
         }
       );
 
