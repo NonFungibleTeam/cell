@@ -168,7 +168,7 @@ const cellRender: any = {
 
       if (!data.nucleusHidden) this.drawNucleus(draw, nucleusSize, data, center); // nucleus
 
-      if (data.featureCategories.includes(0)) this.drawEndo(draw, size, center); // endoplasmic reticulum
+      if (data.featureCategories.includes("0")) this.drawEndo(draw, size, center); // endoplasmic reticulum
 
       //if (data.featureCategories.includes(1)) // goligi apparatus
 
