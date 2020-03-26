@@ -13,7 +13,7 @@
           v-col(align="center")
             v-pagination(v-model="page" circle @input="loadCells" :length="pages")
         v-row(no-gutters)
-          v-col(v-for="i in pageCells" :key="i + '-' + cells[i].mass" align="center" xl="3" lg="4" sm="6" xs="12")
+          v-col(v-for="i in pageCells" :key="i + '-' + cells[i].mass" align="center" xl="3" lg="4" md="6" sm="12")
             v-card.cell(:class="{ 'selected-cell': (merge[0] === i || merge[1] === i) }")
               v-card-title 
                 span {{ "#" + i }}
