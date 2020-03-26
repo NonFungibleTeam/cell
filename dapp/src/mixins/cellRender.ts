@@ -3,7 +3,40 @@ import { SVG, Pattern } from "@svgdotjs/svg.js";
 const tao = 2 * Math.PI;
 const smoothing = 0.2;
 const preserve = 0.6;
-
+const features = [
+  { title: "Endoplasmic Reticulum", key: "endo" },
+  { title: "Golgi Aparatus", key: "golgi" },
+  { title: "Mitochondria", key: "mitochondria" },
+  { title: "Chloroplasts", key: "chloroplasts" },
+  { title: "Vacuoles", key: "vacuoles" },
+  { title: "Ribosomes", key: "ribosomes" },
+  { title: "Microtubules", key: "microtubules" },
+  { title: "Vesicles", key: "vesicles" },
+  { title: "Lysosomes", key: "lysosomes" },
+  { title: "Lipid Granule", key: "lipid" },
+  { title: "Crystals", key: "crystals" },
+  { title: "Magnetosomes", key: "magnetosomes" },
+  { title: "Carboxysomes", key: "carboxysomes" },
+  { title: "Chromatophores", key: "chromatophores" },
+  { title: "Logic Unit", key: "logic" },
+  { title: "RF Array", key: "rf" },
+  { title: "Memory Array", key: "memory" },
+  { title: "PV Junction", key: "pv" },
+  { title: "Balasts", key: "balasts" },
+  { title: "Micro Assembly Mechanism", key: "mam" },
+  { title: "Data Buses", key: "buses" },
+  { title: "Resource Bundles", key: "bundles" },
+];
+const families = [
+  { title: "Plant", features: [0, 1, 2, 3, 4, 5, 6, 7] },
+  { title: "Animal", features: [0, 1, 2, 8, 4, 5, 6, 7] },
+  { title: "Fungi", features: [0, 1, 2, 9, 4, 5, 6, 7] },
+  { title: "Bacteria", features: [10, 11, 12, 13, 4, 5, 6, 7] },
+  { title: "Nanite", features: [14, 15, 16, 17, 18, 19, 20, 21] },
+  { title: "Battery", features: [0, 1, 2, 3, 4, 5, 6, 7] },
+  { title: "Amoeba", features: [0, 1, 2, 3, 4, 5, 6, 7] },
+  { title: "Protist", features: [0, 1, 2, 3, 4, 5, 6, 7] },
+];
 const featureBase: any = {
   mitochondria: {
     locations: [
@@ -156,31 +189,30 @@ const cellRender: any = {
       );
 
       // render feature types by ids
-      const types = [
-        "endo",
-        "golgi",
-        "mitochondria",
-        "chloroplasts",
-        "ribosomes",
-        "vacuoles",
-        "microtubules",
-        "vesicles",
-      ];
       for (const i of data.featureCategories) {
         if (i > 1) {
           const feature = {
             count: data.featureCounts[i] as number,
             fill: (i === 2) ? mitoPattern : this.intToColor(data.featureColors[i]),
           };
+          const type = this.getFeatureType(i, 0).key; // TODO - change to use family id as second arg, once art is ready
           this.drawFeature(
             draw,
             center,
             feature,
-            featureBase[types[i]]
+            featureBase[type],
           );
-          if (featureBase[types[i]].locations === undefined) alert(featureBase[types[i]])
+          if (featureBase[type].locations === undefined) alert(featureBase[type])
         }
       }
+    },
+
+    getFeatureType(i: number, f: number): any { 
+      return features[families[f].features[i]];
+    },
+
+    getFeatureFamily(i: number): string {
+      return families[i].title;
     },
 
     drawBody(draw: any, waveform: Array<number>, count: number, size: number, data: any, margin: number) {

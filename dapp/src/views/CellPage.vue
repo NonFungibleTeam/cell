@@ -12,16 +12,15 @@
             .cell-stats
               span.id {{ "#" + id }}
               .mass
-                span {{ cell.mass }}
+                span {{ data.mass }}
                 v-icon(large) mdi-atom
-              Level(:mass="cell.mass")
+              Level(:mass="data.mass")
             v-divider
             .cell-graphic
               Cell(:id="id" :data="data")
             v-divider
             .cell-info
-              h3 Born: {{ cell.born.toLocaleDateString() + " at " + cell.born.toLocaleTimeString() }}
-              h3 2 Merges & 5 Divides
+              h3 Born: {{ new Date().toLocaleDateString() + " at " + new Date().toLocaleTimeString() }}
               .ribbons
                 v-chip(outlined color="primary" v-if="id < founders")
                   v-icon(left) mdi-compass-rose
@@ -53,12 +52,17 @@
 
           h1 Features
           .features
-            .feature(v-for="f in featureSet" :key="f.key")
-              v-chip(v-if="cell.features[f.key].count > 0" outlined :color="cell.features[f.key].color") 
+            .feature(v-if="!data.nucleusHidden")
+              v-chip(:color="intToColor(data.nucleusColor)") 
+                span Nucleus
+            .feature
+              v-chip(:color="intToColor(data.wallColor)") 
+                span Cell Wall {{ data.wallWave % 8 }} {{ data.wallRounded ? "Rounded" : "" }}
+            .feature(v-for="f,i in data.featureCategories" :key="i")
+              v-chip(:color="intToColor(data.featureColors[i])") 
                 v-avatar
-                  v-icon(v-if="f.bool" small) mdi-check
-                  .count(v-else left) {{ cell.features[f.key].count }}
-                span {{ f.title }}
+                  .count(left) {{ data.featureCounts[i] }}
+                span {{ getFeatureFamily(data.featureFamilies[i]) }} {{ getFeatureType(f, data.featureFamilies[i]).title }}
     
 </template>
 
@@ -70,10 +74,11 @@ import Level from "@/components/Level.vue";
 import { cellAddress, cellABI } from "../CellContract";
 
 import cellUtils from "@/mixins/cellUtils";
+import cellRender from "@/mixins/cellRender";
 
 export default Vue.extend({
   name: "CellPage",
-  mixins: [cellUtils],
+  mixins: [cellUtils, cellRender],
   components: { Cell, Level },
   computed: {
     id() {
@@ -86,73 +91,21 @@ export default Vue.extend({
     await this.loadCell();
   },
   methods: {
-    lookupCell: function(id: number) {
-      return this.$store.state.contracts.cell.methods.get(id).call();
-    },
     loadCell: function() {
-      this.lookupCell(this.id).then((result: any) => {
-        this.data = result;
-        this.loading = false;
-      });
+      this.$store.state.contracts.cell.methods.get(this.id).call()
+        .then((result: any) => {
+          this.data = result;
+          this.loading = false;
+        })
+        .catch( err => {
+          console.error(err);
+        });
     },
   },
   data: () => ({
     founders: 100,
-    featureSet: [
-      { title: "Nucleus", key: "nucleus", bool: true },
-      { title: "Endoplasmic Reticulum", key: "endo", bool: true },
-      { title: "Golgi Aparatus", key: "golgi", bool: true },
-      { title: "Mitochondria", key: "mitochondria" },
-      { title: "Chloroplasts", key: "chloroplasts" },
-      { title: "Vacuoles", key: "vacuoles" },
-      { title: "Ribosomes", key: "ribosomes" },
-      { title: "Microtubules", key: "microtubules" },
-      { title: "Vesicles", key: "vesicles" },
-      
-      
-    ],
     loading: true,
     data: {},
-    cell: {
-      mass: 541,
-      born: new Date(),
-      features: {
-        body: {
-          rounded: false,
-          waves: [2, 1, 1, 0],
-          color: "#efcc35",
-          gradient: ["#ccddcc", "#773311", "#337744"]
-        },
-        nucleus: {
-          color: "#f56",
-          count: 1
-        },
-        endo: {
-          color: "#00f",
-          count: 1
-        },
-        golgi: {
-          color: "#00f",
-          count: 0
-        },
-        mitochondria: {
-          color: "#f33",
-          count: 6
-        },
-        chloroplasts: {
-          color: "#3f5",
-          count: 4
-        },
-        lisosomes: {
-          color: "#ff0",
-          count: 1
-        },
-        ribosomes: {
-          color: "#66f",
-          count: 3
-        }
-      }
-    }
   })
 });
 </script>
