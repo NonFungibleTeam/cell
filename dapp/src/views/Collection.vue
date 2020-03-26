@@ -27,10 +27,14 @@
               v-card-actions
                 v-btn(:to="'/cell/' + i") View
                 v-spacer
-                v-btn(v-if="!merge[0]" :disabled="i === merge[0]" color="primary" @click="setMerge(0, i)") Merge
+                v-btn(v-if="!merge[0]" :disabled="i === merge[0]" color="primary" @click="setMerge(0, i)")
+                  v-icon mdi-call-merge
+                  span Merge
                 v-btn(v-else-if="i === merge[0]" color="warning" @click="clearMerge") Cancel
                 v-btn(v-else color="success" @click="setMerge(1, i)") Select
-                v-btn(color="primary" @click="divide = i; previewTX('divide')") Divide
+                v-btn(color="primary" @click="divide = i; previewTX('divide')")
+                  v-icon mdi-call-split
+                  span Divide
           v-col(v-if="count === 0").get-started
             v-card(align="center").get-started-card
               p You dont have any cells yet!
@@ -46,15 +50,16 @@
       v-sheet(v-if="mergeCompare" align="center" height="430px")
         v-container
           v-row
-            v-col(v-for="i in merge" key="i")
-              .stats-bar
-                span {{ "#" + i }}
-                .mass
-                  span {{ cells[i].mass }}
-                  v-icon(large) mdi-atom
-                Level(:mass="cells[i].mass")
-              Cell(:id="'merge' + i" :data="cells[i]")
-            v-divider(v-if="!$index" vertical)
+            template(v-for="i in merge")
+              v-col(:key="i")
+                .stats-bar
+                  span {{ "#" + i }}
+                  .mass
+                    span {{ cells[i].mass }}
+                    v-icon(large) mdi-atom
+                  Level(:mass="cells[i].mass")
+                Cell(:id="'merge' + i" :data="cells[i]")
+              v-divider(v-if="i === merge[0]" vertical)
         .merge-btns
           v-btn(class="mt-6" text color="success" @click="previewTX('merge'); mergeCompare = false") Merge
           v-btn(class="mt-6" text color="error" @click="clearMerge(); mergeCompare = false") Cancel
