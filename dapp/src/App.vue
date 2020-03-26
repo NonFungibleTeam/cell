@@ -3,6 +3,16 @@
     Nav(v-if="this.$route.path !== '/'")
     v-content
       router-view
+    v-bottom-navigation.bottom-nav(v-if="this.$route.path !== '/'" :value="page" @change="goto" color="secondary" app shift grow)
+      v-btn(value="About")
+        span About
+        v-icon mdi-information
+      v-btn(value="Collection")
+        span Collection
+        v-icon mdi-scatter-plot-outline
+      v-btn(value="Guide")
+        span Guide
+        v-icon mdi-book-open-page-variant
 </template>
 
 <script>
@@ -12,7 +22,17 @@ import Nav from "@/components/Nav.vue";
 export default Vue.extend({
   name: "App",
   components: { Nav },
+  computed: {
+    page() {
+      return this.$route.name;
+    }
+  },
   data: () => ({}),
+  methods: {
+    goto(path) {
+      this.$router.push(path);
+    }
+  }
 });
 </script>
 
@@ -26,5 +46,8 @@ body
   font-size: 2rem
   color: #ffffff !important
   text-decoration: none
+@media (min-width: 600px)
+  .v-bottom-navigation
+    visibility: hidden
   
 </style>
