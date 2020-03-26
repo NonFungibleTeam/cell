@@ -168,10 +168,6 @@ const cellRender: any = {
 
       if (!data.nucleusHidden) this.drawNucleus(draw, nucleusSize, data, center); // nucleus
 
-      if (data.featureCategories.includes("0")) this.drawEndo(draw, size, center); // endoplasmic reticulum
-
-      //if (data.featureCategories.includes(1)) // goligi apparatus
-
       const mitoPattern = draw.pattern(
         10,
         10,
@@ -188,9 +184,12 @@ const cellRender: any = {
         }
       );
 
-      // render feature types by ids
+      // render features
       for (const i of data.featureCategories) {
-        if (i > 1) {
+        if (i === "0") this.drawEndo(draw, size, center); // endoplasmic reticulum
+        else if (i === "1") this.drawGolgi(draw, center, { count: data.featureCounts[i], fill: this.intToColor(data.featureColors[i]) }, size) // golgi apparatus
+        else {
+          // this should be abstracted into a feature drawing function
           const feature = {
             count: data.featureCounts[i] as number,
             fill: (i === 2) ? mitoPattern : this.intToColor(data.featureColors[i]),
@@ -272,6 +271,16 @@ const cellRender: any = {
           linecap: "round",
           linejoin: "round"
         });
+    },
+
+    drawGolgi(draw: any, center: { x: number, y: number }, features: { count: number, fill: (string | Pattern) }, size: number) {
+      for (let i = 0; i < features.count; i++) {
+        draw.ellipse(30, 8)
+          .fill(features.fill)
+          .move(center.x + 70 + (i % 6 * 5), center.y + 50 + (i % 3 * 8))
+          .transform({ rotate: 165 })
+          .stroke("none");
+      }
     },
 
     drawEndo(draw: any, size: number, center: { x: number, y: number}) {
