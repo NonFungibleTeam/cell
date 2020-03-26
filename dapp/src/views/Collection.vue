@@ -46,23 +46,15 @@
       v-sheet(v-if="mergeCompare" align="center" height="430px")
         v-container
           v-row
-            v-col
+            v-col(v-for="i in merge" key="i")
               .stats-bar
-                span {{ "#" + merge[0] }}
+                span {{ "#" + i }}
                 .mass
-                  span {{ cells[merge[0]].mass }}
+                  span {{ cells[i].mass }}
                   v-icon(large) mdi-atom
-                Level(:mass="cells[merge[0]].mass")
-              Cell(:id="'merge' + merge[0]" :data="cells[merge[0]]")
-            v-divider(vertical)
-            v-col
-              .stats-bar
-                span {{ "#" + merge[1] }}
-                .mass
-                  span {{ cells[merge[1]].mass }}
-                  v-icon(large) mdi-atom
-                Level(:mass="cells[merge[1]].mass")
-              Cell(:id="'merge' + merge[1]" :data="cells[merge[1]]")
+                Level(:mass="cells[i].mass")
+              Cell(:id="'merge' + i" :data="cells[i]")
+            v-divider(v-if="!$index" vertical)
         .merge-btns
           v-btn(class="mt-6" text color="success" @click="previewTX('merge'); mergeCompare = false") Merge
           v-btn(class="mt-6" text color="error" @click="clearMerge(); mergeCompare = false") Cancel
