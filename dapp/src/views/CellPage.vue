@@ -95,12 +95,13 @@ export default Vue.extend({
       const cached = this.$store.state.cachedCells[this.id];
       if (cached) {
         this.data = cached;
+        this.loading = false;
       } else {
         this.$store.state.contracts.cell.methods.get(this.id).call()
           .then((result: any) => {
             this.$store.commit('setCell', {id: this.id, data: result});
             this.data = result;
-            this.loading = false;
+            this.$set(this.loading, false);
           })
           .catch( err => {
             console.error(err);
