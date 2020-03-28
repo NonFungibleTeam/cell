@@ -48,12 +48,12 @@
 
           h1 Features
           .features
-            .feature(v-if="!data.nucleusHidden")
-              v-chip(:color="intToColor(data.nucleusColor)") 
-                span Nucleus
             .feature
               v-chip(:color="intToColor(data.wallColor)") 
                 span Cell Wall {{ data.wallWave % 11 }} {{ data.wallRound ? "Rounded" : "" }}
+            .feature(v-if="!data.nucleusHidden")
+              v-chip(:color="intToColor(data.nucleusColor)") 
+                span Nucleus
             .feature(v-for="f,i in data.featureCategories" :key="i")
               v-chip(:color="intToColor(data.featureColors[i])") 
                 v-avatar
