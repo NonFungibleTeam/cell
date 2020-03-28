@@ -48,13 +48,13 @@
           h1 Features
           .features
             .feature
-              v-chip(:color="intToColor(data.wallColor)") 
+              v-chip(:color="intToColor(data.wallColor)" label) 
                 span Cell Wall {{ data.wallWave % walls }} {{ data.wallRound ? "Rounded" : "" }}
             .feature(v-if="!data.nucleusHidden")
-              v-chip(:color="intToColor(data.nucleusColor)") 
+              v-chip(:color="intToColor(data.nucleusColor)" label) 
                 span Nucleus
             .feature(v-for="f,i in data.featureCategories" :key="i")
-              v-chip(:color="intToColor(data.featureColors[i])") 
+              v-chip(:color="intToColor(data.featureColors[i])" label) 
                 v-avatar
                   .count(left) {{ data.featureCounts[i] }}
                 span {{ getFeatureFamily(data.featureFamilies[i]) }} {{ getFeatureType(f, data.featureFamilies[i]).title }}
@@ -155,4 +155,7 @@ export default Vue.extend({
   margin: 2hv 1vw
 .feature
   margin: 1vh 1vw
+  .v-chip
+    border: 1px solid rgba(255,255,255,0.3) !important
+    text-shadow: 0px 1px 5px #000000
 </style>
