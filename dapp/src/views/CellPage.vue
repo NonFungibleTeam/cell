@@ -20,25 +20,21 @@
               Cell(:id="id" :data="data")
             v-divider
             .cell-info
-              h3 Born: {{ new Date().toLocaleDateString() + " at " + new Date().toLocaleTimeString() }}
               .ribbons
-                v-chip(outlined color="primary" v-if="id < founders")
+                v-chip(outlined color="secondary" v-if="founder")
                   v-icon(left) mdi-compass-rose
-                  span Founder {{ parseInt(id) + 1 }} of {{ founders }}
-                v-chip(outlined color="primary")
+                  span Founder {{ parseInt(id) + 1 }} / 100
+                v-chip(outlined color="secondary" v-if="mythical")
                   v-icon(left) mdi-crystal-ball
                   span Mythical
-                v-chip(outlined color="primary")
-                  v-icon(left) mdi-egg-easter
-                  span Exclusive
-                v-chip(outlined color="primary")
-                  v-icon(left) mdi-radioactive
-                  span Mutant
-                v-chip(outlined color="primary")
+                v-chip(outlined color="secondary" v-if="cyborg")
+                  v-icon(left) mdi-chip
+                  span Cyborg
+                v-chip(outlined color="secondary" v-if="pure")
                   v-icon(left) mdi-dna
                   span Pure
-                v-chip(outlined color="primary")
-                  v-icon(left) mdi-checkbox-marked-circle-outline
+                v-chip(outlined color="secondary" v-if="complete")
+                  v-icon(left) mdi-asterisk
                   span Complete
         v-col
           h1 Family
@@ -83,6 +79,24 @@ export default Vue.extend({
   computed: {
     id() {
       return this.$route.params.id;
+    },
+    founder() {
+      return this.$route.params.id < this.founders;
+    },
+    mythical() {
+      // first cell to unlock a new family
+      return false;
+    },
+    cyborg() {
+      // cells with natural and artificial features
+      return false;
+    },
+    pure() {
+      return this.data.featureFamilies.reduce((acc,i) => acc && ( i === this.data.featureFamilies[0] ) );
+    },
+    complete() {
+      // has all manditory features for the family
+      return false;
     },
     ...mapGetters(['currentAccount']),
   },
