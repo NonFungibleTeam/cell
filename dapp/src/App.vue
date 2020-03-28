@@ -4,13 +4,13 @@
     v-content
       router-view
     v-bottom-navigation.bottom-nav(v-if="this.$route.path !== '/'" :value="page" color="secondary" app shift grow)
-      v-btn(to="about" value="About")
+      v-btn(to="/about" value="About")
         span About
         v-icon mdi-information
-      v-btn(to="collection" value="Collection")
+      v-btn(to="/collection" value="Collection")
         span Collection
         v-icon mdi-scatter-plot-outline
-      v-btn(to="guide" value="Guide")
+      v-btn(to="/guide" value="Guide")
         span Guide
         v-icon mdi-book-open-page-variant
 </template>
@@ -24,7 +24,9 @@ export default Vue.extend({
   components: { Nav },
   computed: {
     page() {
-      return this.$route.name;
+      const route = this.$route.name;
+      if (route === 'Cell') return "Collection"; // show cell page as collection route
+      else return route;
     }
   },
 });
