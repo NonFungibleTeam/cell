@@ -96,11 +96,9 @@ export default Vue.extend({
       if (cached) {
         this.data = cached;
       } else {
-        this.lookupCell(this.id).then((resp) => {
-          this.$store.commit('setCell', {id: this.id, data: resp});
-        });
         this.$store.state.contracts.cell.methods.get(this.id).call()
           .then((result: any) => {
+            this.$store.commit('setCell', {id: this.id, data: result});
             this.data = result;
             this.loading = false;
           })
