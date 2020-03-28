@@ -92,14 +92,22 @@ export default Vue.extend({
   },
   methods: {
     loadCell: function() {
-      this.$store.state.contracts.cell.methods.get(this.id).call()
-        .then((result: any) => {
-          this.data = result;
-          this.loading = false;
-        })
-        .catch( err => {
-          console.error(err);
+      const cached = this.$store.state.cachedCells[this.id];
+      if (cached) {
+        this.data = cached;
+      } else {
+        this.lookupCell(this.id).then((resp) => {
+          this.$store.commit('setCell', {id: this.id, data: resp});
         });
+        this.$store.state.contracts.cell.methods.get(this.id).call()
+          .then((result: any) => {
+            this.data = result;
+            this.loading = false;
+          })
+          .catch( err => {
+            console.error(err);
+          });
+      }
     },
   },
   data: () => ({
