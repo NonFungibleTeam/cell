@@ -3,14 +3,14 @@
     Nav(v-if="this.$route.path !== '/'")
     v-content
       router-view
-    v-bottom-navigation.bottom-nav(v-if="this.$route.path !== '/'" :value="page" @change="goto" color="secondary" app shift grow)
-      v-btn(value="About")
+    v-bottom-navigation.bottom-nav(v-if="this.$route.path !== '/'" :value="page" color="secondary" app shift grow)
+      v-btn(to="about" value="About")
         span About
         v-icon mdi-information
-      v-btn(value="Collection")
+      v-btn(to="collection" value="Collection")
         span Collection
         v-icon mdi-scatter-plot-outline
-      v-btn(value="Guide")
+      v-btn(to="guide" value="Guide")
         span Guide
         v-icon mdi-book-open-page-variant
 </template>
@@ -27,12 +27,6 @@ export default Vue.extend({
       return this.$route.name;
     }
   },
-  data: () => ({}),
-  methods: {
-    goto(path) {
-      this.$router.push(path);
-    }
-  }
 });
 </script>
 
