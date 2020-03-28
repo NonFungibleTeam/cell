@@ -5,7 +5,6 @@
         v-col(align="center").cell-loading
             v-progress-circular(indeterminate size="75" color="primary")
             h1 Fetching Cell {{ "#" + id }}
-            h3 This may take a little while
       v-row(v-else)
         v-col(align="center")
           v-card
@@ -50,7 +49,7 @@
           .features
             .feature
               v-chip(:color="intToColor(data.wallColor)") 
-                span Cell Wall {{ data.wallWave % 11 }} {{ data.wallRound ? "Rounded" : "" }}
+                span Cell Wall {{ data.wallWave % walls }} {{ data.wallRound ? "Rounded" : "" }}
             .feature(v-if="!data.nucleusHidden")
               v-chip(:color="intToColor(data.nucleusColor)") 
                 span Nucleus
@@ -89,7 +88,10 @@ export default Vue.extend({
     },
     cyborg() {
       // cells with natural and artificial features
-      return false;
+      const natural = [0,1,2,3];
+      const artificial = [4,5];
+      return natural.reduce((acc,i) => acc || this.data.featureFamilies.includes(i.toString()), false )
+        && artificial.reduce((acc,i) => acc || this.data.featureFamilies.includes(i.toString()), false );
     },
     pure() {
       return this.data.featureFamilies.reduce((acc,i) => acc && ( i === this.data.featureFamilies[0] ) );
@@ -125,6 +127,7 @@ export default Vue.extend({
   },
   data: () => ({
     founders: 100,
+    walls: 11,
     loading: true,
     data: {},
   })
