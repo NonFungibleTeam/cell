@@ -26,6 +26,14 @@ const features = [
   { title: "Micro Assembly Mechanism", key: "mam" },
   { title: "Data Buses", key: "buses" },
   { title: "Resource Bundles", key: "bundles" },
+  { title: "Anode", key: "anode" },
+  { title: "Cathode", key: "cathode" },
+  { title: "Charger", key: "charger" },
+  { title: "Fuse", key: "fuse" },
+  { title: "Separator", key: "separator" },
+  { title: "Electrolyte", key: "electrolyte" },
+  { title: "Wire", key: "wire" },
+  { title: "Electrons", key: "electrons" },
 ];
 const families = [
   { title: "Plant", color: "#00ff00", features: [0, 1, 2, 3, 4, 5, 6, 7] },
@@ -33,9 +41,9 @@ const families = [
   { title: "Fungi", color: "#ffffff", features: [0, 1, 2, 9, 4, 5, 6, 7] },
   { title: "Bacteria", color: "#00ffff", features: [10, 11, 12, 13, 4, 5, 6, 7] },
   { title: "Nanite", color: "#000000", features: [14, 15, 16, 17, 18, 19, 20, 21] },
-  { title: "Battery", color: "#ffff00", features: [0, 1, 2, 3, 4, 5, 6, 7] },
-  { title: "Amoeba", color: "#0000ff", features: [0, 1, 2, 3, 4, 5, 6, 7] },
-  { title: "Protist", color: "#ff00ff", features: [0, 1, 2, 3, 4, 5, 6, 7] },
+  { title: "Battery", color: "#ffff00", features: [22, 23, 24, 25, 26, 27, 28, 29] },
+  { title: "Amoeba", color: "#0000ff", features: [10, 9, 8, 3, 4, 5, 6, 7] },
+  { title: "Protist", color: "#ff00ff", features: [10, 9, 8, 3, 4, 5, 6, 7] },
 ];
 const featureBase: any = {
   mitochondria: {
