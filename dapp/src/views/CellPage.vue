@@ -76,27 +76,27 @@ export default Vue.extend({
   mixins: [cellUtils, cellRender],
   components: { Cell, Level },
   computed: {
-    id() {
-      return this.$route.params.id;
+    id(): number {
+      return parseInt(this.$route.params.id);
     },
-    founder() {
-      return this.$route.params.id < this.founders;
+    founder(): boolean {
+      return this.id < this.founders;
     },
-    mythical() {
+    mythical(): boolean {
       // first cell to unlock a new family
       return false;
     },
-    cyborg() {
+    cyborg(): boolean {
       // cells with natural and artificial features
       const natural = [0,1,2,3];
       const artificial = [4,5];
       return natural.reduce((acc,i) => acc || this.data.featureFamilies.includes(i.toString()), false )
         && artificial.reduce((acc,i) => acc || this.data.featureFamilies.includes(i.toString()), false );
     },
-    pure() {
-      return this.data.featureFamilies.reduce((acc,i) => acc && ( i === this.data.featureFamilies[0] ) );
+    pure(): boolean {
+      return this.data.featureFamilies.reduce((acc: boolean, i: number) => acc && ( i === this.data.featureFamilies[0] ) );
     },
-    complete() {
+    complete(): boolean {
       // has all manditory features for the family
       return false;
     },
@@ -117,9 +117,9 @@ export default Vue.extend({
           .then((result: any) => {
             this.$store.commit('setCell', {id: this.id, data: result});
             this.data = result;
-            this.$set(this.loading, false);
+            this.loading = false;
           })
-          .catch( err => {
+          .catch( (err: any) => {
             console.error(err);
           });
       }
@@ -129,7 +129,7 @@ export default Vue.extend({
     founders: 100,
     walls: 11,
     loading: true,
-    data: {},
+    data: {} as any,
   })
 });
 </script>
