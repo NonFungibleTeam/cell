@@ -80,7 +80,7 @@
 <script>
 import Cell from "@/components/Cell.vue";
 import Level from "@/components/Level.vue";
-import { cellAddress, cellABI } from "../CellContract";
+import { cellAddress, cellABI } from "../cell-contract";
 import { mapGetters } from "vuex";
 
 import cellUtils from "@/mixins/cellUtils";

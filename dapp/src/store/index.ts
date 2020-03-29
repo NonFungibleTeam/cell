@@ -3,7 +3,7 @@ import Vuex from "vuex";
 import Web3 from "web3";
 import VuexPersist from "vuex-persist";
 
-import { cellAddress, cellABI } from "../CellContract.js";
+import { cellAddress, cellABI } from "@/cell-contract.ts";
 
 Vue.use(Vuex);
 

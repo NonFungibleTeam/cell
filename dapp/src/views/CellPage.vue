@@ -66,7 +66,7 @@ import Vue from "vue";
 import { mapGetters } from "vuex";
 import Cell from "@/components/Cell.vue";
 import Level from "@/components/Level.vue";
-import { cellAddress, cellABI } from "../CellContract";
+import { cellAddress, cellABI } from "@/cell-contract";
 
 import cellUtils from "@/mixins/cellUtils";
 import cellRender from "@/mixins/cellRender";
