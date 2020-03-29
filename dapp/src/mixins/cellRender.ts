@@ -108,7 +108,7 @@ const featureBase: any = {
 
 const cellRender: any = {
   methods: {
-    intToColor: function(intnumber: number) {
+    intToColor(intnumber: number) {
       // bit shift color channel components
       const red = (intnumber & 0x0000ff) << 16;
       const green = intnumber & 0x00ff00;
@@ -121,6 +121,13 @@ const cellRender: any = {
       const HTMLcolor = intnumber.toString(16);
       const template = "#000000";
       return template.substring(0, 7 - HTMLcolor.length) + HTMLcolor;
+    },
+
+    contrastingColor(hex: string) {
+      const [ R, G, B ] = [0, 1, 2].map(i => parseInt(hex.substring((i * 2 + 1), (i * 2 + 3)), 16));
+      const cBrightness = ((R * 299) + (G * 587) + (B * 114)) / 1000;
+      const threshold = 100; /* about half of 256. Lower threshold equals more dark text on dark background  */
+			return (cBrightness > threshold) ? "#000000" : "#ffffff";
     },
 
     mergeWaves(waves: Array<Array<number>>, bitDepthMax: number) {
@@ -189,16 +196,16 @@ const cellRender: any = {
       if (!data.nucleusHidden)
         this.drawNucleus(draw, nucleusSize, data, center); // nucleus
 
-      const mitoPattern = (baseColor: string) => draw.pattern(10, 10, function(add) {
+      const mitoPattern = (baseColor: string) => draw.pattern(10, 10, (add: any) => {
         add.rect(10, 10).fill(baseColor);
         add
           .rect(10, 2)
           .move(5, 5)
-          .fill("#fff");
+          .fill(this.contrastingColor(baseColor));
         add
           .rect(7, 2)
           .move(0, 0)
-          .fill("#fff");
+          .fill(this.contrastingColor(baseColor));
       });
 
       // render features
