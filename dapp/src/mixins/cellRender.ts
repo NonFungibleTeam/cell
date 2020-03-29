@@ -1,3 +1,6 @@
+// Cell Renderer Functions
+// draw a cell tokens SVG art from its genetic information
+// Authored by Skyler Fly-Wilson 2020
 import { SVG, Pattern } from "@svgdotjs/svg.js";
 
 const tao = 2 * Math.PI;
@@ -124,10 +127,12 @@ const cellRender: any = {
     },
 
     contrastingColor(hex: string) {
-      const [ R, G, B ] = [0, 1, 2].map(i => parseInt(hex.substring((i * 2 + 1), (i * 2 + 3)), 16));
-      const cBrightness = ((R * 299) + (G * 587) + (B * 114)) / 1000;
+      const [R, G, B] = [0, 1, 2].map(i =>
+        parseInt(hex.substring(i * 2 + 1, i * 2 + 3), 16)
+      );
+      const cBrightness = (R * 299 + G * 587 + B * 114) / 1000;
       const threshold = 100; /* about half of 256. Lower threshold equals more dark text on dark background  */
-			return (cBrightness > threshold) ? "#000000" : "#ffffff";
+      return cBrightness > threshold ? "#000000" : "#ffffff";
     },
 
     mergeWaves(waves: Array<Array<number>>, bitDepthMax: number) {
@@ -196,17 +201,18 @@ const cellRender: any = {
       if (!data.nucleusHidden)
         this.drawNucleus(draw, nucleusSize, data, center); // nucleus
 
-      const mitoPattern = (baseColor: string) => draw.pattern(10, 10, (add: any) => {
-        add.rect(10, 10).fill(baseColor);
-        add
-          .rect(10, 2)
-          .move(5, 5)
-          .fill(this.contrastingColor(baseColor));
-        add
-          .rect(7, 2)
-          .move(0, 0)
-          .fill(this.contrastingColor(baseColor));
-      });
+      const mitoPattern = (baseColor: string) =>
+        draw.pattern(10, 10, (add: any) => {
+          add.rect(10, 10).fill(baseColor);
+          add
+            .rect(10, 2)
+            .move(5, 5)
+            .fill(this.contrastingColor(baseColor));
+          add
+            .rect(7, 2)
+            .move(0, 0)
+            .fill(this.contrastingColor(baseColor));
+        });
 
       // render features
       for (let i = 0; i < 8; i++) {
@@ -217,8 +223,10 @@ const cellRender: any = {
           count: data.featureCounts[i] as number,
           fill: c === "2" ? mitoPattern(color) : color
         };
-        if (c === "0") this.drawEndo(draw, feature, center, size); // endoplasmic reticulum
-        else if (c === "1") this.drawGolgi(draw, feature, center, size); // golgi apparatus
+        if (c === "0") this.drawEndo(draw, feature, center, size);
+        // endoplasmic reticulum
+        else if (c === "1") this.drawGolgi(draw, feature, center, size);
+        // golgi apparatus
         else {
           // this should be abstracted into a feature drawing function
           const type = this.getFeatureType(c, 0).key; // TODO - change to use family id as second arg, once art is ready
@@ -330,7 +338,7 @@ const cellRender: any = {
         dasharray: ""
       };
       const erScale = (1 / 55) * size;
-      for (let i = 0; i < (feature.count >> 2); i++) {
+      for (let i = 0; i < feature.count >> 2; i++) {
         endoStroke.dasharray = layers[i].dashes;
         const angle = 35 + 5 * i;
         const layerPath = `M ${layers[i].path} A ${angle} ${angle} -45 0 1 70 50`;
@@ -401,6 +409,8 @@ const cellRender: any = {
     },
 
     // -- Polygon To Curve Functions --
+    // credit to @francoisromain
+    // https://medium.com/@francoisromain/smooth-a-svg-path-with-cubic-bezier-curves-e37b49d46c74
 
     // Properties of a line
     // I:  - pointA (array) [x,y]: coordinates
