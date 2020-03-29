@@ -119,9 +119,9 @@ export default Vue.extend({
             this.data = result;
             this.loading = false;
           })
-          .catch( (err: any) => {
-            console.error(err);
-          });
+          // .catch( (err: any) => {
+          //   console.error(err);
+          // });
       }
     },
   },
