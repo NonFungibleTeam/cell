@@ -108,7 +108,7 @@ const featureBase: any = {
 
 const cellRender: any = {
   methods: {
-    intToColor: function (intnumber: number) {
+    intToColor: function(intnumber: number) {
       // bit shift color channel components
       const red = (intnumber & 0x0000ff) << 16;
       const green = intnumber & 0x00ff00;
@@ -158,8 +158,15 @@ const cellRender: any = {
       }
       return inputArray[l - 1];
     },
-    
-    drawCell(data: any, waveform: Array<number>, level: number, size: number, margin: number, target: string) {
+
+    drawCell(
+      data: any,
+      waveform: Array<number>,
+      level: number,
+      size: number,
+      margin: number,
+      target: string
+    ) {
       // draw, style and position the SVG path
       const draw = SVG()
         .addTo(target)
@@ -172,53 +179,48 @@ const cellRender: any = {
       const w = maxX - minX;
       const h = maxY - minY;
       const nucleusSize = 0.2 * size;
-      const findCenter = (d: number) => ((d - nucleusSize) / 2 + margin + (size - d) / 2);
+      const findCenter = (d: number) =>
+        (d - nucleusSize) / 2 + margin + (size - d) / 2;
       const center = {
         x: findCenter(w),
-        y: findCenter(h),
+        y: findCenter(h)
       };
 
-      if (!data.nucleusHidden) this.drawNucleus(draw, nucleusSize, data, center); // nucleus
+      if (!data.nucleusHidden)
+        this.drawNucleus(draw, nucleusSize, data, center); // nucleus
 
-      const mitoPattern = draw.pattern(
-        10,
-        10,
-        function (add) {
-          add.rect(10, 10).fill("#f44");
-          add
-            .rect(10, 2)
-            .move(5, 5)
-            .fill("#fff");
-          add
-            .rect(7, 2)
-            .move(0, 0)
-            .fill("#fff");
-        }
-      );
+      const mitoPattern = (baseColor: string) => draw.pattern(10, 10, function(add) {
+        add.rect(10, 10).fill(baseColor);
+        add
+          .rect(10, 2)
+          .move(5, 5)
+          .fill("#fff");
+        add
+          .rect(7, 2)
+          .move(0, 0)
+          .fill("#fff");
+      });
 
       // render features
-      for (const i of data.featureCategories) {
-        if (i === "0") this.drawEndo(draw, size, center); // endoplasmic reticulum
-        else if (i === "1") this.drawGolgi(draw, center, { count: data.featureCounts[i], fill: this.intToColor(data.featureColors[i]) }, size) // golgi apparatus
+      for (let i = 0; i < 8; i++) {
+        const c = data.featureCategories[i];
+        const f = data.featureFamilies[i];
+        const color = this.intToColor(data.featureColors[i]);
+        const feature = {
+          count: data.featureCounts[i] as number,
+          fill: c === "2" ? mitoPattern(color) : color
+        };
+        if (c === "0") this.drawEndo(draw, feature, center, size); // endoplasmic reticulum
+        else if (c === "1") this.drawGolgi(draw, feature, center, size); // golgi apparatus
         else {
           // this should be abstracted into a feature drawing function
-          const feature = {
-            count: data.featureCounts[i] as number,
-            fill: (i === 2) ? mitoPattern : this.intToColor(data.featureColors[i]),
-          };
-          const type = this.getFeatureType(i, 0).key; // TODO - change to use family id as second arg, once art is ready
-          this.drawFeature(
-            draw,
-            center,
-            feature,
-            featureBase[type],
-          );
-          if (featureBase[type].locations === undefined) alert(featureBase[type])
+          const type = this.getFeatureType(c, 0).key; // TODO - change to use family id as second arg, once art is ready
+          this.drawFeature(draw, center, feature, featureBase[type]);
         }
       }
     },
 
-    getFeatureType(i: number, f: number): any { 
+    getFeatureType(i: number, f: number): any {
       return features[families[f].features[i]];
     },
 
@@ -226,40 +228,36 @@ const cellRender: any = {
       return families[i].title;
     },
 
-    drawBody(draw: any, waveform: Array<number>, count: number, size: number, data: any, margin: number) {
+    drawBody(
+      draw: any,
+      waveform: Array<number>,
+      count: number,
+      size: number,
+      data: any,
+      margin: number
+    ) {
       // plot shape from wave
-      const shape = this.plotShape(
-        size,
-        waveform,
-        count,
-        preserve
-      );
+      const shape = this.plotShape(size, waveform, count, preserve);
 
       const [[minX, maxX], [minY, maxY]] = this.wallRange(shape);
       const w = maxX - minX;
       const h = maxY - minY;
 
       // calculate gradient
-      const gradient = draw.gradient(
-        "radial",
-        function (add: any) {
-          // sort by family with most features
-          for (let i = 0; i < 8; i++) {
-            const f = parseInt(data.featureFamilies[i]);
-            add.stop({ offset: (i / 10 + 0.25), color: families[f].color });
-          }
+      const gradient = draw.gradient("radial", function(add: any) {
+        // sort by family with most features
+        for (let i = 0; i < 8; i++) {
+          const f = parseInt(data.featureFamilies[i]);
+          add.stop({ offset: i / 10 + 0.25, color: families[f].color });
         }
-      );
+      });
 
       // body - draw cell wall and fill
       const body = data.wallRound
         ? draw.path(this.svgPath(shape, this.bezierCommand))
         : draw.polygon(shape);
       body
-        .move(
-          margin + (size - w) / 2,
-          margin + (size - h) / 2
-        )
+        .move(margin + (size - w) / 2, margin + (size - h) / 2)
         .fill(gradient)
         .stroke({
           width: 3,
@@ -271,7 +269,12 @@ const cellRender: any = {
       return shape;
     },
 
-    drawNucleus(draw: any, size: number, data: any, center: { x: number, y: number }) {
+    drawNucleus(
+      draw: any,
+      size: number,
+      data: any,
+      center: { x: number; y: number }
+    ) {
       draw
         .ellipse(size, size)
         .fill(this.intToColor(data.nucleusColor))
@@ -284,17 +287,28 @@ const cellRender: any = {
         });
     },
 
-    drawGolgi(draw: any, center: { x: number, y: number }, features: { count: number, fill: (string | Pattern) }, size: number) {
-      for (let i = 0; i < features.count; i++) {
-        draw.ellipse(30, 8)
-          .fill(features.fill)
-          .move(center.x + 70 + (i % 6 * 5), center.y + 50 + (i % 3 * 8))
+    drawGolgi(
+      draw: any,
+      feature: { count: number; fill: string | Pattern },
+      center: { x: number; y: number },
+      size: number
+    ) {
+      for (let i = 0; i < feature.count; i++) {
+        draw
+          .ellipse(30, 8)
+          .fill(feature.fill)
+          .move(center.x + 70 + (i % 6) * 5, center.y + 50 + (i % 3) * 8)
           .transform({ rotate: 165 })
           .stroke("none");
       }
     },
 
-    drawEndo(draw: any, size: number, center: { x: number, y: number}) {
+    drawEndo(
+      draw: any,
+      feature: { count: number; fill: string | Pattern },
+      center: { x: number; y: number },
+      size: number
+    ) {
       // endoplasmic reticulum
       const layers = [
         { path: "10 70", dashes: "5,3,9" },
@@ -303,13 +317,13 @@ const cellRender: any = {
       ];
       const endoStroke = {
         width: 3,
-        color: "#00f", // find endo entry with largest count and use that color
+        color: feature.fill, // find endo entry with largest count and use that color
         linecap: "round",
         linejoin: "round",
-        dasharray: "",
+        dasharray: ""
       };
       const erScale = (1 / 55) * size;
-      for (let i = 0; i < layers.length; i++) {
+      for (let i = 0; i < (feature.count >> 2); i++) {
         endoStroke.dasharray = layers[i].dashes;
         const angle = 35 + 5 * i;
         const layerPath = `M ${layers[i].path} A ${angle} ${angle} -45 0 1 70 50`;
@@ -320,7 +334,12 @@ const cellRender: any = {
       }
     },
 
-    drawFeature(draw: any, center: { x: number, y: number }, features: { count: number, fill: (string | Pattern) }, base: { locations: Array<Array<number>>, size: Array<number> }) {
+    drawFeature(
+      draw: any,
+      center: { x: number; y: number },
+      features: { count: number; fill: string | Pattern },
+      base: { locations: Array<Array<number>>; size: Array<number> }
+    ) {
       const [w, h] = base.size;
       for (let i = 0; i < features.count; i++) {
         const location = base.locations[i % base.locations.length];
@@ -335,7 +354,7 @@ const cellRender: any = {
 
     wallRange(shape: Array<Array<number>>) {
       return shape.reduce(
-        function (result: Array<Array<number>>, cords: Array<number>) {
+        function(result: Array<Array<number>>, cords: Array<number>) {
           const [x, y] = cords;
           const [lX, lY] = result;
           return [
@@ -343,7 +362,10 @@ const cellRender: any = {
             [lY[0] < y ? lY[0] : y, lY[1] > y ? lY[1] : y]
           ];
         },
-        [[0, 0], [0, 0]]
+        [
+          [0, 0],
+          [0, 0]
+        ]
       );
     },
 
@@ -358,7 +380,13 @@ const cellRender: any = {
       return points;
     },
 
-    radialWavePlotter(i: number, radius: number, mod: number, wave: Array<number>, segments: number) {
+    radialWavePlotter(
+      i: number,
+      radius: number,
+      mod: number,
+      wave: Array<number>,
+      segments: number
+    ) {
       const scale = radius * mod + radius * (1 - mod) * wave[i % wave.length];
       const x = Math.round(Math.sin((tao * i) / segments) * scale);
       const y = Math.round(Math.cos((tao * i) / segments) * scale * -1);
@@ -371,7 +399,10 @@ const cellRender: any = {
     // I:  - pointA (array) [x,y]: coordinates
     //     - pointB (array) [x,y]: coordinates
     // O:  - (object) { length: l, angle: a }: properties of the line
-    line(pointA: Array<number>, pointB: Array<number>): {angle: number, length: number} {
+    line(
+      pointA: Array<number>,
+      pointB: Array<number>
+    ): { angle: number; length: number } {
       const lengthX = pointB[0] - pointA[0];
       const lengthY = pointB[1] - pointA[1];
       return {
@@ -386,7 +417,12 @@ const cellRender: any = {
     //     - next (array) [x, y]: next point coordinates
     //     - reverse (boolean, optional): sets the direction
     // O:  - (array) [x,y]: a tuple of coordinates
-    controlPoint(current: Array<number>, previous: Array<number>, next: Array<number>, reverse: boolean): Array<number> {
+    controlPoint(
+      current: Array<number>,
+      previous: Array<number>,
+      next: Array<number>,
+      reverse: boolean
+    ): Array<number> {
       // When 'current' is the first or last point of the array
       // 'previous' or 'next' don't exist.
       // Replace with 'current'
@@ -411,7 +447,11 @@ const cellRender: any = {
     //     - i (integer): index of 'point' in the array 'a'
     //     - a (array): complete array of points coordinates
     // O:  - (string) 'C x2,y2 x1,y1 x,y': SVG cubic bezier C command
-    bezierCommand(point: Array<number>, i: number, a: Array<Array<number>>): string {
+    bezierCommand(
+      point: Array<number>,
+      i: number,
+      a: Array<Array<number>>
+    ): string {
       // start control point
       const cps = this.controlPoint(a[i - 1], a[i - 2], point, false);
 
@@ -431,14 +471,19 @@ const cellRender: any = {
     svgPath(points: Array<Array<number>>, command: any): string {
       // build the d attributes by looping over the points
       const d = points.reduce(
-        (acc: string, point: Array<number>, i: number, a: Array<Array<number>>) =>
+        (
+          acc: string,
+          point: Array<number>,
+          i: number,
+          a: Array<Array<number>>
+        ) =>
           i === 0
             ? `M ${point[0]},${point[1]}`
             : `${acc} ${command(point, i, a)}`,
         ""
       );
       return d;
-    },
+    }
   }
 };
 

@@ -49,7 +49,7 @@
           .features
             .feature
               v-chip(:color="intToColor(data.wallColor)" label) 
-                span Cell Wall {{ data.wallWave % walls }} {{ data.wallRound ? "Rounded" : "" }}
+                span Cell Wall Shape # {{ data.wallWave % walls }} {{ data.wallRound ? "Rounded" : "" }}
             .feature(v-if="!data.nucleusHidden")
               v-chip(:color="intToColor(data.nucleusColor)" label) 
                 span Nucleus
