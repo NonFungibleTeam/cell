@@ -3,12 +3,12 @@
 // Authored by Skyler Fly-Wilson 2020
 import { SVG, Pattern } from "@svgdotjs/svg.js";
 import {
-  smoothing,
   preserve,
   features,
   families,
   featureBase
 } from "./renderSettings";
+import { svgPath } from "./polyToCurve";
 
 const tao = 2 * Math.PI;
 
@@ -172,7 +172,7 @@ const cellRender: any = {
 
       // body - draw cell wall and fill
       const body = data.wallRound
-        ? draw.path(this.svgPath(shape, this.bezierCommand))
+        ? draw.path(svgPath(shape))
         : draw.polygon(shape);
       body
         .move(margin + (size - w) / 2, margin + (size - h) / 2)
@@ -310,100 +310,6 @@ const cellRender: any = {
       const y = Math.round(Math.cos((tao * i) / segments) * scale * -1);
       return [x, y];
     },
-
-    // -- Polygon To Curve Functions --
-    // credit to @francoisromain
-    // https://medium.com/@francoisromain/smooth-a-svg-path-with-cubic-bezier-curves-e37b49d46c74
-
-    // Properties of a line
-    // I:  - pointA (array) [x,y]: coordinates
-    //     - pointB (array) [x,y]: coordinates
-    // O:  - (object) { length: l, angle: a }: properties of the line
-    line(
-      pointA: Array<number>,
-      pointB: Array<number>
-    ): { angle: number; length: number } {
-      const lengthX = pointB[0] - pointA[0];
-      const lengthY = pointB[1] - pointA[1];
-      return {
-        length: Math.sqrt(Math.pow(lengthX, 2) + Math.pow(lengthY, 2)),
-        angle: Math.atan2(lengthY, lengthX)
-      };
-    },
-
-    // Position of a control point
-    // I:  - current (array) [x, y]: current point coordinates
-    //     - previous (array) [x, y]: previous point coordinates
-    //     - next (array) [x, y]: next point coordinates
-    //     - reverse (boolean, optional): sets the direction
-    // O:  - (array) [x,y]: a tuple of coordinates
-    controlPoint(
-      current: Array<number>,
-      previous: Array<number>,
-      next: Array<number>,
-      reverse: boolean
-    ): Array<number> {
-      // When 'current' is the first or last point of the array
-      // 'previous' or 'next' don't exist.
-      // Replace with 'current'
-      const p = previous || current;
-      const n = next || current;
-
-      // Properties of the opposed-line
-      const o = this.line(p, n);
-
-      // If is end-control-point, add PI to the angle to go backward
-      const angle = o.angle + (reverse ? Math.PI : 0);
-      const length = o.length * smoothing;
-
-      // The control point position is relative to the current point
-      const x = current[0] + Math.cos(angle) * length;
-      const y = current[1] + Math.sin(angle) * length;
-      return [x, y];
-    },
-
-    // Create the bezier curve command
-    // I:  - point (array) [x,y]: current point coordinates
-    //     - i (integer): index of 'point' in the array 'a'
-    //     - a (array): complete array of points coordinates
-    // O:  - (string) 'C x2,y2 x1,y1 x,y': SVG cubic bezier C command
-    bezierCommand(
-      point: Array<number>,
-      i: number,
-      a: Array<Array<number>>
-    ): string {
-      // start control point
-      const cps = this.controlPoint(a[i - 1], a[i - 2], point, false);
-
-      // end control point
-      const cpe = this.controlPoint(point, a[i - 1], a[i + 1], true);
-      return `C ${cps[0]},${cps[1]} ${cpe[0]},${cpe[1]} ${point[0]},${point[1]}`;
-    },
-
-    // Render the svg <path> element
-    // I:  - points (array): points coordinates
-    //     - command (function)
-    //       I:  - point (array) [x,y]: current point coordinates
-    //           - i (integer): index of 'point' in the array 'a'
-    //           - a (array): complete array of points coordinates
-    //       O:  - (string) a svg path command
-    // O:  - (string): a Svg <path> element
-    svgPath(points: Array<Array<number>>, command: any): string {
-      // build the d attributes by looping over the points
-      const d = points.reduce(
-        (
-          acc: string,
-          point: Array<number>,
-          i: number,
-          a: Array<Array<number>>
-        ) =>
-          i === 0
-            ? `M ${point[0]},${point[1]}`
-            : `${acc} ${command(point, i, a)}`,
-        ""
-      );
-      return d;
-    }
   }
 };
 
