@@ -153,8 +153,10 @@ export default Vue.extend({
   padding: 0 1rem 1rem 1rem
 .features
   margin: 2hv 1vw
+  display: flex
+  flex-wrap: wrap
 .feature
-  margin: 1vh 1vw
+  margin: 5px
   .v-chip
     border: 1px solid rgba(255,255,255,0.3) !important
     text-shadow: 0px 1px 5px #000000
