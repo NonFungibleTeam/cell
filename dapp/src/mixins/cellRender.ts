@@ -5,6 +5,7 @@ import { SVG, Pattern } from "@svgdotjs/svg.js";
 import {
   preserve,
   features,
+  cytoplasmOpacity,
   families,
   featureBase
 } from "./renderSettings";
@@ -164,13 +165,20 @@ const cellRender: any = {
       // calculate gradient
       const gradient = draw.gradient("radial", function(add: any) {
         // sort by family with most features
-        //const count = data.featureFamilies.reduce((families: any, f: string) => families[parseInt(f)]++, {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0});
-        for (let i = 0; i < 8; i++) {
-          const f = parseInt(data.featureFamilies[i]);
+        const counts = data.featureFamilies.reduce((families: any, f: string) => {
+          families[parseInt(f)]
+            ? families[parseInt(f)]++
+            : families[parseInt(f)] = 1;
+          return families;
+        }, {});
+        const sorted = Object.keys(counts).sort((a, b) => (counts[b] - counts[a]));
+        let a = 0;
+        for (const i of sorted) {
+          a += counts[i];
           add.stop({
-            offset: i / 10 + 0.25,
-            color: families[f].color,
-            opacity: 0.5
+            offset: a / 10 + 0.25,
+            color: families[parseInt(i)].color,
+            opacity: cytoplasmOpacity
           });
         }
       });
