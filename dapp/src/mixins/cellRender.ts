@@ -4,6 +4,7 @@
 import { SVG, Pattern } from "@svgdotjs/svg.js";
 import {
   preserve,
+  nucleusPortion,
   features,
   cytoplasmOpacity,
   families,
@@ -98,7 +99,7 @@ const cellRender: any = {
       const [[minX, maxX], [minY, maxY]] = this.wallRange(shape);
       const w = maxX - minX;
       const h = maxY - minY;
-      const nucleusSize = 0.2 * size;
+      const nucleusSize = nucleusPortion * size;
       const findCenter = (d: number) =>
         (d - nucleusSize) / 2 + margin + (size - d) / 2;
       const center = {
@@ -176,7 +177,7 @@ const cellRender: any = {
       margin: number
     ) {
       // plot shape from wave
-      const shape = this.plotShape(size, waveform, count, preserve);
+      const shape = this.plotShape(size, waveform, count);
 
       const [[minX, maxX], [minY, maxY]] = this.wallRange(shape);
       const w = maxX - minX;
@@ -287,7 +288,7 @@ const cellRender: any = {
     ) {
       const [w, h] = base.size;
       for (let i = 0; i < features.count; i++) {
-        const location = [this.getRandomInt(180)-70, this.getRandomInt(180)-70];
+        const location = this.randomRadialPlotter(150, 360);
         draw
           .ellipse(w, h)
           .fill(features.fill)
@@ -316,36 +317,36 @@ const cellRender: any = {
 
     // function parameters ( size, wave, repeat, mod )
     // returns an array of points for a polygon
-    plotShape(size: number, wave: Array<number>, repeat: number, mod: number) {
+    plotShape(size: number, wave: Array<number>, repeat: number) {
       const radius = size / 2;
       const segments = repeat * wave.length;
       const points = [];
       for (let i = 0; i <= segments; i++)
-        points[i] = this.radialWavePlotter(i, radius, mod, wave, segments);
+        points[i] = this.radialWavePlotter(i, radius, wave, segments);
       return points;
     },
 
     radialWavePlotter(
       i: number,
       radius: number,
-      mod: number,
       wave: Array<number>,
       segments: number
     ) {
-      const scale = radius * mod + radius * (1 - mod) * wave[i % wave.length];
+      const scale =
+        radius * preserve + radius * (1 - preserve) * wave[i % wave.length];
       const x = Math.round(Math.sin((tao * i) / segments) * scale);
       const y = Math.round(Math.cos((tao * i) / segments) * scale * -1);
       return [x, y];
     },
 
-    radialPlotter(
-      i: number,
+    randomRadialPlotter(
       radius: number,
-      mod: number,
-      out: number,
       segments: number
     ) {
-      const scale = radius * mod * out;
+      const i = this.getRandomInt(segments);
+      const scale =
+        radius * nucleusPortion +
+        radius * (1 - preserve) * Math.random(); // 
       const x = Math.round(Math.sin((tao * i) / segments) * scale);
       const y = Math.round(Math.cos((tao * i) / segments) * scale * -1);
       return [x, y];

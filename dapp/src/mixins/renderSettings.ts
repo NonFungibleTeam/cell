@@ -1,5 +1,6 @@
 export const smoothing = 0.2;
 export const preserve = 0.6;
+export const nucleusPortion = 0.2;
 export const cytoplasmOpacity = 0.75;
 export const features = [
   { title: "Endoplasmic Reticulum", key: "endo" },
