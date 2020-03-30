@@ -137,6 +137,7 @@ export default {
     loadCells: async function() {
       this.cells = {};
       this.cellIDs = [];
+      this.clearMerge();
       this.count = await this.$store.state.contracts.cell.methods.balanceOf(this.currentAccount).call();
       this.$store.commit('setCount', this.count);
       if (this.page > this.pages) this.page = this.pages;
