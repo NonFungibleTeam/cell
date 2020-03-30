@@ -5,10 +5,10 @@
         template(v-if="web3Status === 'active'")
           .mobile-link
             v-list-item(two-line)
-              Gravatar.gravatar.gravatar-mobile(:size="50" :email="currentAccount !== '' ? currentAccount : defaultAccount")
+              Gravatar.gravatar.gravatar-mobile(:size="50" :email="currentAccount")
               v-list-item-content 
                 h4.account-label Active Account
-                span.address {{ formatAccount(currentAccount !== '' ? currentAccount : defaultAccount) }}
+                span.address {{ currentAccount !== '' ? formatAccount(currentAccount) : "loading" }}
           v-divider
         .mobile-link
           v-list-item(link to="/")
@@ -40,7 +40,7 @@
         template(v-slot:activator="{ on }")
           Gravatar.gravatar.gravatar-desktop(v-on="on" :size="40" :email="currentAccount")
         h4.account-label Active Account
-        span.address.address-tooltip {{ formatAccount(currentAccount !== '' ? currentAccount : defaultAccount) }}
+        span.address.address-tooltip {{ currentAccount !== '' ? formatAccount(currentAccount) : "loading" }}
       v-btn(@click="drawer = !drawer" text).mobile-menu-btn
         v-icon mdi-menu
         
@@ -65,7 +65,6 @@ export default {
   },
   data: () => ({
     drawer: false,
-    defaultAccount: "268b87E4F6B7e7BEB58e3128138D4F6b768E1b17",
     links: [
       {
         type: "page",
