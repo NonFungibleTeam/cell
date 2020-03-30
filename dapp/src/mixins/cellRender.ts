@@ -127,9 +127,13 @@ const cellRender: any = {
           count: data.featureCounts[i] as number,
           fill: c === "2" ? mitoPattern(color) : color
         };
-        if (c === "0") this.drawEndo(draw, feature, center, size);
+        if (c === "0") {
+          this.drawEndo(draw, feature, center, size);
+        }
         // endoplasmic reticulum
-        else if (c === "1") this.drawGolgi(draw, feature, center, size);
+        else if (c === "1") {
+          this.drawGolgi(draw, feature, center, size);
+        }
         // golgi apparatus
         else {
           // this should be abstracted into a feature drawing function
@@ -145,6 +149,18 @@ const cellRender: any = {
 
     getFeatureFamily(i: number): string {
       return families[i].title;
+    },
+
+    countList(list: Array<any>) {
+      // count and sort by family with most features
+      return list.reduce((count: any, f: string) => {
+        count[parseInt(f)] ? count[parseInt(f)]++ : (count[parseInt(f)] = 1);
+        return count;
+      }, {});
+    },
+
+    sortObject(counts: any) {
+      return Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
     },
 
     drawBody(
@@ -163,15 +179,9 @@ const cellRender: any = {
       const h = maxY - minY;
 
       // calculate gradient
+      const counts = this.countList(data.featureFamilies);
+      const sorted = this.sortObject(counts);
       const gradient = draw.gradient("radial", function(add: any) {
-        // sort by family with most features
-        const counts = data.featureFamilies.reduce((families: any, f: string) => {
-          families[parseInt(f)]
-            ? families[parseInt(f)]++
-            : families[parseInt(f)] = 1;
-          return families;
-        }, {});
-        const sorted = Object.keys(counts).sort((a, b) => (counts[b] - counts[a]));
         let a = 0;
         for (const i of sorted) {
           a += counts[i];
@@ -322,7 +332,7 @@ const cellRender: any = {
       const x = Math.round(Math.sin((tao * i) / segments) * scale);
       const y = Math.round(Math.cos((tao * i) / segments) * scale * -1);
       return [x, y];
-    },
+    }
   }
 };
 
