@@ -287,7 +287,7 @@ const cellRender: any = {
     ) {
       const [w, h] = base.size;
       for (let i = 0; i < features.count; i++) {
-        const location = base.locations[i % base.locations.length];
+        const location = [this.getRandomInt(180)-70, this.getRandomInt(180)-70];
         draw
           .ellipse(w, h)
           .fill(features.fill)
