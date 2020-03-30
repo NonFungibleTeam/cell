@@ -30,6 +30,10 @@ const cellRender: any = {
       return template.substring(0, 7 - HTMLcolor.length) + HTMLcolor;
     },
 
+    getRandomInt(max: number) {
+      return Math.floor(Math.random() * Math.floor(max));
+    },
+
     contrastingColor(hex: string) {
       const [R, G, B] = [0, 1, 2].map(i =>
         parseInt(hex.substring(i * 2 + 1, i * 2 + 3), 16)
@@ -288,7 +292,7 @@ const cellRender: any = {
           .ellipse(w, h)
           .fill(features.fill)
           .move(center.x + location[0], center.y + location[1])
-          .transform({ rotate: location[2] })
+          .transform({ rotate: this.getRandomInt(359) })
           .stroke("none");
       }
     },
@@ -332,7 +336,20 @@ const cellRender: any = {
       const x = Math.round(Math.sin((tao * i) / segments) * scale);
       const y = Math.round(Math.cos((tao * i) / segments) * scale * -1);
       return [x, y];
-    }
+    },
+
+    radialPlotter(
+      i: number,
+      radius: number,
+      mod: number,
+      out: number,
+      segments: number
+    ) {
+      const scale = radius * mod * out;
+      const x = Math.round(Math.sin((tao * i) / segments) * scale);
+      const y = Math.round(Math.cos((tao * i) / segments) * scale * -1);
+      return [x, y];
+    },
   }
 };
 
