@@ -145,19 +145,18 @@ export default {
       for (let i = 0; i < this.itemsPerPage && (start + i) < this.count; i++) {
         const index = start + i;
         const cellID = await this.$store.state.contracts.cell.methods.tokenOfOwnerByIndex(this.currentAccount, index).call();
-        this.$store.commit('setCellID', {index: index, id: cellID});
-        this.$set(this.cellsLoading, cellID, true);
         this.$set(this.cellIDs, index, cellID);
+        this.$set(this.cellsLoading, cellID, true);
         this.loading = false;
-        const data = this.$store.state.cachedCells[this.cellIDs[index]];
+        const data = this.$store.state.cachedCells[cellID];
         if (data) {
-          this.$set(this.cells, this.cellIDs[index], data);
-          this.$set(this.cellsLoading, this.cellIDs[index], false);
+          this.$set(this.cells, cellID, data);
+          this.$set(this.cellsLoading, cellID, false);
         } else {
-          this.lookupCell(this.cellIDs[index]).then((resp) => {
-            this.$store.commit('setCell', {id: this.cellIDs[index], data: resp});
-            this.$set(this.cells, this.cellIDs[index], resp);
-            this.$set(this.cellsLoading, this.cellIDs[index], false);
+          this.lookupCell(cellID).then((resp) => {
+            this.$store.commit('setCell', {id: cellID, data: resp});
+            this.$set(this.cells, cellID, resp);
+            this.$set(this.cellsLoading, cellID, false);
           });
         }
       }
