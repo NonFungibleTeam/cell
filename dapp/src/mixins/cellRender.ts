@@ -11,6 +11,9 @@ import {
   featureBase
 } from "./renderSettings";
 import { svgPath } from "./polyToCurve";
+import randomSeed from "random-seed";
+
+//const randomSeed = require("random-seed");
 
 const tao = 2 * Math.PI;
 
@@ -92,6 +95,10 @@ const cellRender: any = {
       const draw = SVG()
         .addTo(target)
         .size(size + margin * 2, size + margin * 2);
+      
+      // seed rng with wave shape
+      const seed = data.wallWave;
+      const rand = randomSeed.create(seed);
 
       const shape = this.drawBody(draw, waveform, level, size, data, margin);
 
@@ -143,7 +150,14 @@ const cellRender: any = {
         else {
           // this should be abstracted into a feature drawing function
           const type = this.getFeatureType(c, 0).key; // TODO - change to use family id as second arg, once art is ready
-          this.drawFeature(draw, center, feature, featureBase[type]);
+          this.drawFeature(
+            draw,
+            center,
+            feature,
+            featureBase[type],
+            size / 2,
+            rand
+          );
         }
       }
     },
@@ -284,16 +298,18 @@ const cellRender: any = {
       draw: any,
       center: { x: number; y: number },
       features: { count: number; fill: string | Pattern },
-      base: { locations: Array<Array<number>>; size: Array<number> }
+      base: { locations: Array<Array<number>>; size: Array<number> },
+      radius: number,
+      rand: any
     ) {
       const [w, h] = base.size;
       for (let i = 0; i < features.count; i++) {
-        const location = this.randomRadialPlotter(150, 360);
+        const location = this.randomRadialPlotter(radius, 90, rand);
         draw
           .ellipse(w, h)
           .fill(features.fill)
-          .move(center.x + location[0], center.y + location[1])
-          .transform({ rotate: this.getRandomInt(359) })
+          .move(center.x + 20 + location[0], center.y + 20 + location[1])
+          .transform({ rotate: rand(359) })
           .stroke("none");
       }
     },
@@ -341,12 +357,12 @@ const cellRender: any = {
 
     randomRadialPlotter(
       radius: number,
-      segments: number
+      segments: number,
+      rand: any,
     ) {
-      const i = this.getRandomInt(segments);
-      const scale =
-        radius * nucleusPortion +
-        radius * (1 - preserve) * Math.random(); // 
+      const i = rand(segments);
+      const buffer = 25;
+      const scale = nucleusPortion * radius + buffer + radius * (preserve - nucleusPortion) * rand.random() - buffer;
       const x = Math.round(Math.sin((tao * i) / segments) * scale);
       const y = Math.round(Math.cos((tao * i) / segments) * scale * -1);
       return [x, y];
