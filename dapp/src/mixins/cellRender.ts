@@ -156,6 +156,7 @@ const cellRender: any = {
             feature,
             featureBase[type],
             size / 2,
+            !data.nucleusHidden,
             rand
           );
         }
@@ -297,17 +298,18 @@ const cellRender: any = {
     drawFeature(
       draw: any,
       center: { x: number; y: number },
-      features: { count: number; fill: string | Pattern },
+      feature: { count: number; fill: string | Pattern },
       base: { locations: Array<Array<number>>; size: Array<number> },
       radius: number,
+      nucleus: boolean,
       rand: any
     ) {
       const [w, h] = base.size;
-      for (let i = 0; i < features.count; i++) {
-        const location = this.randomRadialPlotter(radius, 90, rand);
+      for (let i = 0; i < feature.count; i++) {
+        const location = this.randomRadialPlotter(radius, nucleus, 25, 90, rand); // radius, buffer, segments, random
         draw
           .ellipse(w, h)
-          .fill(features.fill)
+          .fill(feature.fill)
           .move(center.x + 20 + location[0], center.y + 20 + location[1])
           .transform({ rotate: rand(359) })
           .stroke("none");
@@ -336,7 +338,7 @@ const cellRender: any = {
     plotShape(size: number, wave: Array<number>, repeat: number) {
       const radius = size / 2;
       const segments = repeat * wave.length;
-      const points = [];
+      const points = [];  
       for (let i = 0; i <= segments; i++)
         points[i] = this.radialWavePlotter(i, radius, wave, segments);
       return points;
@@ -357,16 +359,21 @@ const cellRender: any = {
 
     randomRadialPlotter(
       radius: number,
+      nucleus: boolean,
+      buffer: number,
       segments: number,
       rand: any,
     ) {
-      const i = rand(segments);
-      const buffer = 25;
-      const scale = nucleusPortion * radius + buffer + radius * (preserve - nucleusPortion) * rand.random() - buffer;
-      const x = Math.round(Math.sin((tao * i) / segments) * scale);
-      const y = Math.round(Math.cos((tao * i) / segments) * scale * -1);
-      return [x, y];
-    },
+        const angle = rand(segments);
+        // mask inner portion for nucleus
+        const inner = nucleus ? nucleusPortion * radius + buffer : buffer;
+        // randomly place in band from inner to preserve portion
+        const range = nucleus ? preserve - nucleusPortion : preserve;
+        const scale =
+          inner + radius * range * rand.random() - buffer;
+        const p = (tao * angle) / segments;
+        return [Math.sin(p), -Math.cos(p)].map(c => Math.round(c * scale));
+      },
   }
 };
 
