@@ -63,8 +63,7 @@ const cellRender: any = {
           count: data.featureCounts[i] as number,
           color: this.intToColor(data.featureColors[i])
         };
-        // TODO - change to draw all families
-        const type = this.getFeatureType(feature.category, 0).key; //feature.family).key;
+        const type = this.getFeatureType(feature.category, feature.family).key;
         // check feature is dominant if type is solo
         const thisFeature = features.filter(f => f.key === type)[0];
         const dominant = [...Array(8).keys()].reduce(
