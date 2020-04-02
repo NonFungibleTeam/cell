@@ -3,6 +3,7 @@ import {
   nucleusPortion,
   featureBase,
 } from "./renderSettings";
+import { contrastingColor } from "./colorUtils";
 
 const tao = 2 * Math.PI;
 
@@ -24,16 +25,6 @@ function randomRadialPlotter(
     const p = (tao * angle) / segments;
     return [Math.sin(p), -Math.cos(p)].map(c => Math.round(c * scale));
 };
-
-function contrastingColor(hex: string) {
-  const [R, G, B] = [0, 1, 2].map(i =>
-    parseInt(hex.substring(i * 2 + 1, i * 2 + 3), 16)
-  );
-  const cBrightness = (R * 299 + G * 587 + B * 114) / 1000;
-  const threshold = 100; /* about half of 256. Lower threshold equals more dark text on dark background  */
-  return cBrightness > threshold ? "#000000" : "#ffffff";
-};
-
 
 function drawMitochndria(
   draw: any,

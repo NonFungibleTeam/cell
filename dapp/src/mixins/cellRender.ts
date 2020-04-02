@@ -10,6 +10,7 @@ import {
   families,
 } from "./renderSettings";
 import featureRenderers from "./featureRender";
+import { intToColor } from "./colorUtils";
 import { svgPath } from "./polyToCurve";
 import randomSeed from "random-seed";
 
@@ -45,8 +46,8 @@ const cellRender: any = {
 
       // draw nucleus
       const colors = {
-        nucleusColor: this.intToColor(data.nucleusColor),
-        wallColor: this.intToColor(data.wallColor)
+        nucleusColor: intToColor(data.nucleusColor),
+        wallColor: intToColor(data.wallColor)
       };
       if (!data.nucleusHidden)
         featureRenderers["nucleus"](draw, nucleusSize, center, colors);
@@ -61,7 +62,7 @@ const cellRender: any = {
           category: data.featureCategories[i],
           family: data.featureFamilies[i],
           count: data.featureCounts[i] as number,
-          color: this.intToColor(data.featureColors[i])
+          color: intToColor(data.featureColors[i])
         };
         const type = this.getFeatureType(feature.category, feature.family).key;
         // check feature is dominant if type is solo
@@ -153,7 +154,7 @@ const cellRender: any = {
         .fill(gradient)
         .stroke({
           width: 3,
-          color: this.intToColor(data.wallColor),
+          color: intToColor(data.wallColor),
           linecap: "round",
           linejoin: "round"
         });
@@ -237,21 +238,8 @@ const cellRender: any = {
       }
       return inputArray[l - 1];
     },
-
-    intToColor(intnumber: number) {
-      // bit shift color channel components
-      const red = (intnumber & 0x0000ff) << 16;
-      const green = intnumber & 0x00ff00;
-      const blue = (intnumber & 0xff0000) >>> 16;
-
-      // mask out each color and reverse the order
-      intnumber = red | green | blue;
-
-      // convert number to a hexstring, zero fill on left & add a #
-      const HTMLcolor = intnumber.toString(16);
-      const template = "#000000";
-      return template.substring(0, 7 - HTMLcolor.length) + HTMLcolor;
-    }
+    
+    intToColor: intToColor,
   }
 };
 

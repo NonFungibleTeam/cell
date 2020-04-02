@@ -80,7 +80,7 @@ export default Vue.extend({
     },
     familyChartOptions(): any {
       const sorted = this.sortFamilies(this.data.featureFamilies);
-      const slices = sorted.map(i => ({ color: this.getFeatureFamily(i[0]).colorString }));
+      const slices = sorted.map(i => ({ color: this.getFeatureFamily(i[0]).color }));
       const options = { ...this.chartOptions, slices: slices };
       return options;
     },
