@@ -306,7 +306,7 @@ const cellRender: any = {
     ) {
       const [w, h] = base.size;
       for (let i = 0; i < feature.count; i++) {
-        const location = this.randomRadialPlotter(radius, nucleus, 25, 90, rand); // radius, buffer, segments, random
+        const location = this.randomRadialPlotter(radius, nucleus, h, 90, rand); // radius, buffer, segments, random
         draw
           .ellipse(w, h)
           .fill(feature.fill)
@@ -366,11 +366,12 @@ const cellRender: any = {
     ) {
         const angle = rand(segments);
         // mask inner portion for nucleus
-        const inner = nucleus ? nucleusPortion * radius + buffer : buffer;
+        const inner = nucleus ? nucleusPortion * radius + buffer / radius : buffer / radius;
         // randomly place in band from inner to preserve portion
-        const range = nucleus ? preserve - nucleusPortion : preserve;
+        const range = nucleus ? preserve - nucleusPortion : preserve - buffer / radius;
+        const exp = 10000;
         const scale =
-          inner + radius * range * rand.random() - buffer;
+          inner + radius * range * (1 - (rand(exp) * rand(exp)) / (exp ** 2));
         const p = (tao * angle) / segments;
         return [Math.sin(p), -Math.cos(p)].map(c => Math.round(c * scale));
       },
