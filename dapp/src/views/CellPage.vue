@@ -144,7 +144,7 @@ export default Vue.extend({
         position: 'labeled',
         maxLines: 8,
       },
-      pieSliceText: 'value',
+      pieSliceText: 'none',
     },
   })
 });
