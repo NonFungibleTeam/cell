@@ -54,19 +54,6 @@ const cellRender: any = {
       if (!data.nucleusHidden)
         this.drawNucleus(draw, nucleusSize, data, center); // nucleus
 
-      const mitoPattern = (baseColor: string) =>
-        draw.pattern(10, 10, (add: any) => {
-          add.rect(10, 10).fill(baseColor);
-          add
-            .rect(10, 2)
-            .move(5, 5)
-            .fill(this.contrastingColor(baseColor));
-          add
-            .rect(7, 2)
-            .move(0, 0)
-            .fill(this.contrastingColor(baseColor));
-        });
-
       // render features
       for (let i = 0; i < 8; i++) {
         const feature = {
@@ -75,29 +62,18 @@ const cellRender: any = {
           count: data.featureCounts[i] as number,
           color: this.intToColor(data.featureColors[i])
         };
-        //feature.fill = c === "2" ? mitoPattern(color) : color
-        if (feature.category === "0") {
-          this.drawEndo(draw, feature, center, size);
-        }
-        // endoplasmic reticulum
-        else if (feature.category === "1") {
-          this.drawGolgi(draw, feature, center, size);
-        }
-        // golgi apparatus
-        else {
-          // this should be abstracted into a feature drawing function
-          const type = this.getFeatureType(feature.category, 0).key; // TODO - change to use family id as second arg, once art is ready
-          // call feature renderer function
-          featureRenderers[type](
-            draw,
-            center,
-            feature,
-            featureBase[type],
-            size / 2,
-            !data.nucleusHidden,
-            rand
-          );
-        }
+        // TODO - change to draw all families
+        const type = this.getFeatureType(feature.category, 0).key; //feature.family).key;
+        // call feature renderer function
+        featureRenderers[type](
+          draw,
+          feature,
+          center,
+          size,
+          featureBase[type],
+          !data.nucleusHidden,
+          rand
+        );
       }
     },
 
@@ -125,53 +101,6 @@ const cellRender: any = {
           linecap: "round",
           linejoin: "round"
         });
-    },
-
-    drawGolgi(
-      draw: any,
-      feature: any,
-      center: { x: number; y: number },
-      size: number
-    ) {
-      for (let i = 0; i < feature.count; i++) {
-        draw
-          .ellipse(30, 8)
-          .fill(feature.color)
-          .move(center.x + 70 + (i % 6) * 5, center.y + 50 + (i % 3) * 8)
-          .transform({ rotate: 165 })
-          .stroke("none");
-      }
-    },
-
-    drawEndo(
-      draw: any,
-      feature: any,
-      center: { x: number; y: number },
-      size: number
-    ) {
-      // endoplasmic reticulum
-      const layers = [
-        { path: "10 70", dashes: "5,3,9" },
-        { path: "0 80", dashes: "3,9,7" },
-        { path: "-5 85", dashes: "2,7,5" }
-      ];
-      const endoStroke = {
-        width: 3,
-        color: feature.color, // find endo entry with largest count and use that color
-        linecap: "round",
-        linejoin: "round",
-        dasharray: ""
-      };
-      const erScale = (1 / 55) * size;
-      for (let i = 0; i < feature.count >> 2; i++) {
-        endoStroke.dasharray = layers[i].dashes;
-        const angle = 35 + 5 * i;
-        const layerPath = `M ${layers[i].path} A ${angle} ${angle} -45 0 1 70 50`;
-        const ER = draw.path(layerPath);
-        ER.move(center.x - erScale * (i + 1), center.y - erScale * (i + 1))
-          .stroke(endoStroke)
-          .fill("none");
-      }
     },
 
     drawBody(
@@ -323,19 +252,6 @@ const cellRender: any = {
       const HTMLcolor = intnumber.toString(16);
       const template = "#000000";
       return template.substring(0, 7 - HTMLcolor.length) + HTMLcolor;
-    },
-
-    getRandomInt(max: number) {
-      return Math.floor(Math.random() * Math.floor(max));
-    },
-
-    contrastingColor(hex: string) {
-      const [R, G, B] = [0, 1, 2].map(i =>
-        parseInt(hex.substring(i * 2 + 1, i * 2 + 3), 16)
-      );
-      const cBrightness = (R * 299 + G * 587 + B * 114) / 1000;
-      const threshold = 100; /* about half of 256. Lower threshold equals more dark text on dark background  */
-      return cBrightness > threshold ? "#000000" : "#ffffff";
     },
   }
 };
