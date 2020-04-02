@@ -1,9 +1,6 @@
 import {
   preserve,
   nucleusPortion,
-  features,
-  cytoplasmOpacity,
-  families,
   featureBase
 } from "./renderSettings";
 

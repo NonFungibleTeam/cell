@@ -8,7 +8,6 @@ import {
   features,
   cytoplasmOpacity,
   families,
-  featureBase
 } from "./renderSettings";
 import featureRenderers from "./featureRender";
 import { svgPath } from "./polyToCurve";
