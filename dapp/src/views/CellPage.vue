@@ -142,7 +142,13 @@ export default Vue.extend({
     chartOptions: {
       backgroundColor: "#121212",
       pieHole: 0.75,
-      legend: {textStyle: {color: '#ffffff', fontSize: 16}},
+      legend: {
+        textStyle: {color: '#ffffff', fontSize: 16},
+        position: 'labeled',
+        maxLines: 8,
+      },
+      pieSliceText: 'value',
+      slices: [{color: 'yellow'},{color: 'purple'},{color: 'blue'},{color: 'white'},{color: 'cyan'},],
     },
   })
 });
