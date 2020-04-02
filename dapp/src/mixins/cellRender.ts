@@ -65,16 +65,26 @@ const cellRender: any = {
         };
         // TODO - change to draw all families
         const type = this.getFeatureType(feature.category, 0).key; //feature.family).key;
-        // call feature renderer function
-        featureRenderers[type](
-          draw,
-          feature,
-          center,
-          size,
-          type,
-          !data.nucleusHidden,
-          rand
+        // check feature is dominant if type is solo
+        const thisFeature = features.filter(f => f.key === type)[0];
+        const dominant = [...Array(8).keys()].reduce(
+          (acc: boolean, index: number) =>
+            acc &&
+            (data.featureCategories[index] !== feature.category ||
+              data.featureCounts[index] <= feature.count),
+          true
         );
+        if (!thisFeature.solo || dominant)
+          // call feature renderer function
+          featureRenderers[type](
+            draw,
+            feature,
+            center,
+            size,
+            type,
+            !data.nucleusHidden,
+            rand
+          );
       }
     },
 
