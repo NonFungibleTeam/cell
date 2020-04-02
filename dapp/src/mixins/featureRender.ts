@@ -41,7 +41,7 @@ function contrastingColor(hex: string) {
 function drawMitochndria(
   draw: any,
   feature: any,
-  center: { x: number; y: number },
+  center: Array<number>,
   size: number,
   base: { locations: Array<Array<number>>; size: Array<number> },
   nucleus: boolean,
@@ -66,7 +66,7 @@ function drawMitochndria(
     draw
       .ellipse(w, h)
       .fill(mitoPattern(feature.color))
-      .move(center.x + 20 + location[0], center.y + 20 + location[1])
+      .move(center[0] + 20 + location[0], center[1] + 20 + location[1])
       .transform({ rotate: rand(359) })
       .stroke("none");
   }
@@ -76,7 +76,7 @@ function drawMitochndria(
 function drawGolgi(
   draw: any,
   feature: any,
-  center: { x: number; y: number },
+  center: Array<number>,
   size: number,
   base: { locations: Array<Array<number>>; size: Array<number> },
   nucleus: boolean,
@@ -86,7 +86,7 @@ function drawGolgi(
     draw
       .ellipse(30, 8)
       .fill(feature.color)
-      .move(center.x + 70 + (i % 6) * 5, center.y + 50 + (i % 3) * 8)
+      .move(center[0] + 70 + (i % 6) * 5, center[1] + 50 + (i % 3) * 8)
       .transform({ rotate: 165 })
       .stroke("none");
   }
@@ -95,7 +95,7 @@ function drawGolgi(
 function drawEndo(
   draw: any,
   feature: any,
-  center: { x: number; y: number },
+  center: Array<number>,
   size: number,
   base: { locations: Array<Array<number>>; size: Array<number> },
   nucleus: boolean,
@@ -120,7 +120,7 @@ function drawEndo(
     const angle = 35 + 5 * i;
     const layerPath = `M ${layers[i].path} A ${angle} ${angle} -45 0 1 70 50`;
     const ER = draw.path(layerPath);
-    ER.move(center.x - erScale * (i + 1), center.y - erScale * (i + 1))
+    ER.move(center[0] - erScale * (i + 1), center[1] - erScale * (i + 1))
       .stroke(endoStroke)
       .fill("none");
   }
@@ -129,7 +129,7 @@ function drawEndo(
 function defaultRenderer(
   draw: any,
   feature: any,
-  center: { x: number; y: number },
+  center: Array<number>,
   size: number,
   base: { locations: Array<Array<number>>; size: Array<number> },
   nucleus: boolean,
@@ -142,7 +142,7 @@ function defaultRenderer(
     draw
       .ellipse(w, h)
       .fill(feature.color)
-      .move(center.x + 20 + location[0], center.y + 20 + location[1])
+      .move(center[0] + 20 + location[0], center[1] + 20 + location[1])
       .transform({ rotate: rand(359) })
       .stroke("none");
   }

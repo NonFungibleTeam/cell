@@ -28,54 +28,51 @@ const cellRender: any = {
       margin: number,
       target: string
     ) {
-      // draw, style and position the SVG path
-      const draw = SVG()
-        .addTo(target)
-        .size(size + margin * 2, size + margin * 2);
+        // init draw with a dom taret and size
+        const draw = SVG()
+          .addTo(target)
+          .size(size + margin * 2, size + margin * 2);
 
-      // seed rng with wave shape
-      const seed = data.wallWave;
-      const rand = randomSeed.create(seed);
-
-      const shape = this.drawBody(draw, waveform, level, size, data, margin);
-
-      // find cell range and center
-      const [[minX, maxX], [minY, maxY]] = this.wallRange(shape);
-      const w = maxX - minX;
-      const h = maxY - minY;
-      const nucleusSize = nucleusPortion * size;
-      const findCenter = (d: number) =>
-        (d - nucleusSize) / 2 + margin + (size - d) / 2;
-      const center = {
-        x: findCenter(w),
-        y: findCenter(h)
-      };
-
-      if (!data.nucleusHidden)
-        this.drawNucleus(draw, nucleusSize, data, center); // nucleus
-
-      // render features
-      for (let i = 0; i < 8; i++) {
-        const feature = {
-          category: data.featureCategories[i],
-          family: data.featureFamilies[i],
-          count: data.featureCounts[i] as number,
-          color: this.intToColor(data.featureColors[i])
-        };
-        // TODO - change to draw all families
-        const type = this.getFeatureType(feature.category, 0).key; //feature.family).key;
-        // call feature renderer function
-        featureRenderers[type](
-          draw,
-          feature,
-          center,
-          size,
-          featureBase[type],
-          !data.nucleusHidden,
-          rand
+        // render cell body
+        const shape = this.drawBody(draw, waveform, level, size, data, margin);
+      
+        // find cell range and center
+        const [[minX, maxX], [minY, maxY]] = this.wallRange(shape);
+        const dimensions = [maxX - minX, maxY - minY];
+        const nucleusSize = nucleusPortion * size;
+        const center = dimensions.map(
+          (d: number) => ((d - nucleusSize) + (size - d)) / 2 + margin
         );
-      }
-    },
+
+        if (!data.nucleusHidden)
+          this.drawNucleus(draw, nucleusSize, data, center); // nucleus
+
+        // seed rng with wave shape
+        const seed = data.wallWave;
+        const rand = randomSeed.create(seed);
+
+        // render features
+        for (let i = 0; i < 8; i++) {
+          const feature = {
+            category: data.featureCategories[i],
+            family: data.featureFamilies[i],
+            count: data.featureCounts[i] as number,
+            color: this.intToColor(data.featureColors[i])
+          };
+          // TODO - change to draw all families
+          const type = this.getFeatureType(feature.category, 0).key; //feature.family).key;
+          // call feature renderer function
+          featureRenderers[type](
+            draw,
+            feature,
+            center,
+            size,
+            featureBase[type],
+            !data.nucleusHidden,
+            rand
+          );
+        }
+      },
 
     getFeatureType(i: number, f: number): any {
       return features[families[f].features[i]];
@@ -89,12 +86,12 @@ const cellRender: any = {
       draw: any,
       size: number,
       data: any,
-      center: { x: number; y: number }
+      center: Array<number>,
     ) {
       draw
         .ellipse(size, size)
         .fill(this.intToColor(data.nucleusColor))
-        .move(center.x, center.y)
+        .move(...center)
         .stroke({
           width: 2,
           color: this.intToColor(data.wallColor),
