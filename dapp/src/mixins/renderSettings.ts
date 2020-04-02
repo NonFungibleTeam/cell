@@ -1,7 +1,7 @@
 export const smoothing = 0.2;
 export const preserve = 0.6;
 export const nucleusPortion = 0.2;
-export const cytoplasmOpacity = 0.5;
+export const cytoplasmOpacity = 0.25;
 export const features = [
          { title: "Endoplasmic Reticulum", key: "endo", solo: true },
          { title: "Golgi Aparatus", key: "golgi", solo: true },
