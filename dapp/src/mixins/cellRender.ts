@@ -10,6 +10,7 @@ import {
   families,
   featureBase
 } from "./renderSettings";
+import featureRenderers from "./featureRender";
 import { svgPath } from "./polyToCurve";
 import randomSeed from "random-seed";
 
@@ -139,6 +140,8 @@ const cellRender: any = {
           count: data.featureCounts[i] as number,
           fill: c === "2" ? mitoPattern(color) : color
         };
+        // call feature renderer function
+        featureRenderers[this.getFeatureType(c, 0).key](f);
         if (c === "0") {
           this.drawEndo(draw, feature, center, size);
         }
