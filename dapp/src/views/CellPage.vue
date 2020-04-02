@@ -36,8 +36,8 @@
                   v-icon(left) mdi-asterisk
                   span Complete
         v-col
-          h1 Family
-          p Add a chart (maybe from google visualization API?) here showing the family type distribution of features
+          h1 Families
+          GChart(type="PieChart" :data="families" :options="chartOptions")
           v-icon mdi-bacteria
           v-icon mdi-leaf
           v-icon mdi-paw
@@ -64,6 +64,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { mapGetters } from "vuex";
+import { GChart } from 'vue-google-charts';
 import Cell from "@/components/Cell.vue";
 import Level from "@/components/Level.vue";
 import { cellAddress, cellABI } from "@/cell-contract";
@@ -74,7 +75,7 @@ import cellRender from "@/mixins/cellRender";
 export default Vue.extend({
   name: "CellPage",
   mixins: [cellUtils, cellRender],
-  components: { Cell, Level },
+  components: { Cell, Level, GChart },
   computed: {
     id(): number {
       return parseInt(this.$route.params.id);
@@ -130,6 +131,19 @@ export default Vue.extend({
     walls: 11,
     loading: true,
     data: {} as any,
+    families: [
+      ['Family', 'Features'],
+      ['Fungi', 3],
+      ['Protist', 2],
+      ['Bacteria', 1],
+      ['Battery', 1],
+      ['Amoeba', 1],
+    ],
+    chartOptions: {
+      backgroundColor: "#121212",
+      pieHole: 0.75,
+      legend: {textStyle: {color: '#ffffff', fontSize: 16}},
+    },
   })
 });
 </script>
