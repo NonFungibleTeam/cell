@@ -38,12 +38,6 @@
         v-col
           h1 Families
           GChart(type="PieChart" :data="families" :options="chartOptions")
-          v-icon mdi-bacteria
-          v-icon mdi-leaf
-          v-icon mdi-paw
-          v-icon mdi-mushroom
-          v-icon mdi-robot
-          v-icon mdi-battery
 
           h1 Features
           .features
