@@ -91,8 +91,8 @@ const cellRender: any = {
       return features[families[f].features[i]];
     },
 
-    getFeatureFamily(i: number): string {
-      return families[i].title;
+    getFeatureFamily(i: number): any {
+      return families[i];
     },
 
     countList(list: Array<any>) {

@@ -37,7 +37,7 @@
                   span Complete
         v-col
           h1 Families
-          GChart(type="PieChart" :data="familyChart" :options="chartOptions")
+          GChart(type="PieChart" :data="familyChart" :options="familyChartOptions")
 
           h1 Features
           .features
@@ -51,7 +51,7 @@
               v-chip(:color="intToColor(data.featureColors[i])" label) 
                 v-avatar
                   .count(left) {{ data.featureCounts[i] }}
-                span {{ getFeatureFamily(data.featureFamilies[i]) }} {{ getFeatureType(f, data.featureFamilies[i]).title }}
+                span {{ getFeatureFamily(data.featureFamilies[i]).title }} {{ getFeatureType(f, data.featureFamilies[i]).title }}
     
 </template>
 
@@ -75,8 +75,14 @@ export default Vue.extend({
     },
     familyChart(): any {
       const sorted = this.sortFamilies(this.data.featureFamilies);
-      const titled = sorted.map(i => [this.getFeatureFamily(i[0]), i[1]]);
+      const titled = sorted.map(i => [this.getFeatureFamily(i[0]).title, i[1]]);
       return [this.familyChartHeader, ...titled];
+    },
+    familyChartOptions(): any {
+      const sorted = this.sortFamilies(this.data.featureFamilies);
+      const slices = sorted.map(i => ({ color: this.getFeatureFamily(i[0]).colorString }));
+      const options = { ...this.chartOptions, slices: slices };
+      return options;
     },
     founder(): boolean {
       return this.id < this.founders;
@@ -139,7 +145,6 @@ export default Vue.extend({
         maxLines: 8,
       },
       pieSliceText: 'value',
-      slices: [{color: 'yellow'},{color: 'purple'},{color: 'blue'},{color: 'white'},{color: 'cyan'},],
     },
   })
 });
