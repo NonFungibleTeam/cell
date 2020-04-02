@@ -133,27 +133,26 @@ const cellRender: any = {
 
       // render features
       for (let i = 0; i < 8; i++) {
-        const c = data.featureCategories[i];
-        const f = data.featureFamilies[i];
-        const color = this.intToColor(data.featureColors[i]);
         const feature = {
+          category: data.featureCategories[i],
+          family: data.featureFamilies[i],
           count: data.featureCounts[i] as number,
-          fill: c === "2" ? mitoPattern(color) : color
+          color: this.intToColor(data.featureColors[i]),
         };
-        // call feature renderer function
-        featureRenderers[this.getFeatureType(c, 0).key](f);
-        if (c === "0") {
+        //feature.fill = c === "2" ? mitoPattern(color) : color
+        if (feature.category === "0") {
           this.drawEndo(draw, feature, center, size);
         }
         // endoplasmic reticulum
-        else if (c === "1") {
+        else if (feature.category === "1") {
           this.drawGolgi(draw, feature, center, size);
         }
         // golgi apparatus
         else {
           // this should be abstracted into a feature drawing function
-          const type = this.getFeatureType(c, 0).key; // TODO - change to use family id as second arg, once art is ready
-          this.drawFeature(
+          const type = this.getFeatureType(feature.category, 0).key; // TODO - change to use family id as second arg, once art is ready
+          // call feature renderer function
+          featureRenderers[type](
             draw,
             center,
             feature,
@@ -253,14 +252,14 @@ const cellRender: any = {
 
     drawGolgi(
       draw: any,
-      feature: { count: number; fill: string | Pattern },
+      feature: any,
       center: { x: number; y: number },
       size: number
     ) {
       for (let i = 0; i < feature.count; i++) {
         draw
           .ellipse(30, 8)
-          .fill(feature.fill)
+          .fill(feature.color)
           .move(center.x + 70 + (i % 6) * 5, center.y + 50 + (i % 3) * 8)
           .transform({ rotate: 165 })
           .stroke("none");
@@ -269,7 +268,7 @@ const cellRender: any = {
 
     drawEndo(
       draw: any,
-      feature: { count: number; fill: string | Pattern },
+      feature: any,
       center: { x: number; y: number },
       size: number
     ) {
@@ -281,7 +280,7 @@ const cellRender: any = {
       ];
       const endoStroke = {
         width: 3,
-        color: feature.fill, // find endo entry with largest count and use that color
+        color: feature.color, // find endo entry with largest count and use that color
         linecap: "round",
         linejoin: "round",
         dasharray: ""
@@ -295,27 +294,6 @@ const cellRender: any = {
         ER.move(center.x - erScale * (i + 1), center.y - erScale * (i + 1))
           .stroke(endoStroke)
           .fill("none");
-      }
-    },
-
-    drawFeature(
-      draw: any,
-      center: { x: number; y: number },
-      feature: { count: number; fill: string | Pattern },
-      base: { locations: Array<Array<number>>; size: Array<number> },
-      radius: number,
-      nucleus: boolean,
-      rand: any
-    ) {
-      const [w, h] = base.size;
-      for (let i = 0; i < feature.count; i++) {
-        const location = this.randomRadialPlotter(radius, nucleus, h, 90, rand); // radius, buffer, segments, random
-        draw
-          .ellipse(w, h)
-          .fill(feature.fill)
-          .move(center.x + 20 + location[0], center.y + 20 + location[1])
-          .transform({ rotate: rand(359) })
-          .stroke("none");
       }
     },
 
@@ -359,25 +337,6 @@ const cellRender: any = {
       const y = Math.round(Math.cos((tao * i) / segments) * scale * -1);
       return [x, y];
     },
-
-    randomRadialPlotter(
-      radius: number,
-      nucleus: boolean,
-      buffer: number,
-      segments: number,
-      rand: any,
-    ) {
-        const angle = rand(segments);
-        // mask inner portion for nucleus
-        const inner = nucleus ? nucleusPortion * radius + buffer / radius : buffer / radius;
-        // randomly place in band from inner to preserve portion
-        const range = nucleus ? preserve - nucleusPortion : preserve - buffer / radius;
-        const exp = 10000;
-        const scale =
-          inner + radius * range * (1 - (rand(exp) * rand(exp)) / (exp ** 2));
-        const p = (tao * angle) / segments;
-        return [Math.sin(p), -Math.cos(p)].map(c => Math.round(c * scale));
-      },
   }
 };
 
