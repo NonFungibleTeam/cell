@@ -2,7 +2,7 @@ function defaultRenderer(family: string) {
   return;
 }
 
-const featureRenderers = {
+const featureRenderers: any = {
   "endo": defaultRenderer,
   "golgi": defaultRenderer,
   "mitochondria": defaultRenderer,
