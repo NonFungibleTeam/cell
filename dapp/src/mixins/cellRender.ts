@@ -70,7 +70,7 @@ const cellRender: any = {
           (acc: boolean, index: number) =>
             acc &&
             (data.featureCategories[index] !== feature.category ||
-              data.featureCounts[index] <= feature.count),
+            parseInt(data.featureCounts[index]) <= feature.count),
           true
         );
         if (!thisFeature.solo || dominant)
