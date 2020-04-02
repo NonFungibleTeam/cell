@@ -28,51 +28,56 @@ const cellRender: any = {
       margin: number,
       target: string
     ) {
-        // init draw with a dom taret and size
-        const draw = SVG()
-          .addTo(target)
-          .size(size + margin * 2, size + margin * 2);
+      // init draw with a dom taret and size
+      const draw = SVG()
+        .addTo(target)
+        .size(size + margin * 2, size + margin * 2);
 
-        // render cell body
-        const shape = this.drawBody(draw, waveform, level, size, data, margin);
-      
-        // find cell range and center
-        const [[minX, maxX], [minY, maxY]] = this.wallRange(shape);
-        const dimensions = [maxX - minX, maxY - minY];
-        const nucleusSize = nucleusPortion * size;
-        const center = dimensions.map(
-          (d: number) => ((d - nucleusSize) + (size - d)) / 2 + margin
+      // render cell body
+      const shape = this.drawBody(draw, waveform, level, size, data, margin);
+
+      // find cell range and center
+      const [[minX, maxX], [minY, maxY]] = this.wallRange(shape);
+      const dimensions = [maxX - minX, maxY - minY];
+      const nucleusSize = nucleusPortion * size;
+      const center = dimensions.map(
+        (d: number) => (d - nucleusSize + (size - d)) / 2 + margin
+      );
+
+      // draw nucleus
+      const colors = {
+        nucleusColor: this.intToColor(data.nucleusColor),
+        wallColor: this.intToColor(data.wallColor)
+      };
+      if (!data.nucleusHidden)
+        featureRenderers["nucleus"](draw, nucleusSize, center, colors);
+
+      // seed rng with wave shape
+      const seed = data.wallWave;
+      const rand = randomSeed.create(seed);
+
+      // render features
+      for (let i = 0; i < 8; i++) {
+        const feature = {
+          category: data.featureCategories[i],
+          family: data.featureFamilies[i],
+          count: data.featureCounts[i] as number,
+          color: this.intToColor(data.featureColors[i])
+        };
+        // TODO - change to draw all families
+        const type = this.getFeatureType(feature.category, 0).key; //feature.family).key;
+        // call feature renderer function
+        featureRenderers[type](
+          draw,
+          feature,
+          center,
+          size,
+          type,
+          !data.nucleusHidden,
+          rand
         );
-
-        if (!data.nucleusHidden)
-          this.drawNucleus(draw, nucleusSize, data, center); // nucleus
-
-        // seed rng with wave shape
-        const seed = data.wallWave;
-        const rand = randomSeed.create(seed);
-
-        // render features
-        for (let i = 0; i < 8; i++) {
-          const feature = {
-            category: data.featureCategories[i],
-            family: data.featureFamilies[i],
-            count: data.featureCounts[i] as number,
-            color: this.intToColor(data.featureColors[i])
-          };
-          // TODO - change to draw all families
-          const type = this.getFeatureType(feature.category, 0).key; //feature.family).key;
-          // call feature renderer function
-          featureRenderers[type](
-            draw,
-            feature,
-            center,
-            size,
-            featureBase[type],
-            !data.nucleusHidden,
-            rand
-          );
-        }
-      },
+      }
+    },
 
     getFeatureType(i: number, f: number): any {
       return features[families[f].features[i]];
@@ -80,24 +85,6 @@ const cellRender: any = {
 
     getFeatureFamily(i: number): string {
       return families[i].title;
-    },
-
-    drawNucleus(
-      draw: any,
-      size: number,
-      data: any,
-      center: Array<number>,
-    ) {
-      draw
-        .ellipse(size, size)
-        .fill(this.intToColor(data.nucleusColor))
-        .move(...center)
-        .stroke({
-          width: 2,
-          color: this.intToColor(data.wallColor),
-          linecap: "round",
-          linejoin: "round"
-        });
     },
 
     drawBody(
@@ -249,7 +236,7 @@ const cellRender: any = {
       const HTMLcolor = intnumber.toString(16);
       const template = "#000000";
       return template.substring(0, 7 - HTMLcolor.length) + HTMLcolor;
-    },
+    }
   }
 };
 

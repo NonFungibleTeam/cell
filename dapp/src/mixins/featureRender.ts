@@ -43,7 +43,7 @@ function drawMitochndria(
   feature: any,
   center: Array<number>,
   size: number,
-  base: { locations: Array<Array<number>>; size: Array<number> },
+  type: string,
   nucleus: boolean,
   rand: any
 ) {
@@ -60,7 +60,7 @@ function drawMitochndria(
         .fill(contrastingColor(baseColor));
     });
   const radius = size / 2;
-  const [w, h] = base.size;
+  const [w, h] = featureBase[type].size;
   for (let i = 0; i < feature.count; i++) {
     const location = randomRadialPlotter(radius, nucleus, h, 90, rand); // radius, buffer, segments, random
     draw
@@ -78,7 +78,7 @@ function drawGolgi(
   feature: any,
   center: Array<number>,
   size: number,
-  base: { locations: Array<Array<number>>; size: Array<number> },
+  type: string,
   nucleus: boolean,
   rand: any
 ) {
@@ -97,7 +97,7 @@ function drawEndo(
   feature: any,
   center: Array<number>,
   size: number,
-  base: { locations: Array<Array<number>>; size: Array<number> },
+  type: string,
   nucleus: boolean,
   rand: any
 ) {
@@ -126,17 +126,38 @@ function drawEndo(
   }
 };
 
+function drawNucleus(
+  draw: any,
+  size: number,
+  center: Array<number>,
+  colors: {
+    nucleusColor: string,
+    wallColor: string,
+  },
+) {
+  draw
+    .ellipse(size, size)
+    .fill(colors.nucleusColor)
+    .move(...center)
+    .stroke({
+      width: 2,
+      color: colors.wallColor,
+      linecap: "round",
+      linejoin: "round"
+    });
+};
+
 function defaultRenderer(
   draw: any,
   feature: any,
   center: Array<number>,
   size: number,
-  base: { locations: Array<Array<number>>; size: Array<number> },
+  type: string,
   nucleus: boolean,
   rand: any
 ) {
   const radius = size / 2;
-  const [w, h] = base.size;
+  const [w, h] = featureBase[type].size;
   for (let i = 0; i < feature.count; i++) {
     const location = randomRadialPlotter(radius, nucleus, h, 90, rand); // radius, buffer, segments, random
     draw
@@ -149,6 +170,7 @@ function defaultRenderer(
 };
 
 const featureRenderers: any = {
+  nucleus: drawNucleus,
   endo: drawEndo,
   golgi: drawGolgi,
   mitochondria: drawMitochndria,
