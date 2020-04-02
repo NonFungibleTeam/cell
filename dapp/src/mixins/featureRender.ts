@@ -1,7 +1,7 @@
 import {
   preserve,
   nucleusPortion,
-  featureBase
+  featureBase,
 } from "./renderSettings";
 
 const tao = 2 * Math.PI;

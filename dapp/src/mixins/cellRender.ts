@@ -70,7 +70,7 @@ const cellRender: any = {
           (acc: boolean, index: number) =>
             acc &&
             (data.featureCategories[index] !== feature.category ||
-            parseInt(data.featureCounts[index]) <= feature.count),
+              parseInt(data.featureCounts[index]) <= feature.count),
           true
         );
         if (!thisFeature.solo || dominant)
@@ -95,6 +95,24 @@ const cellRender: any = {
       return families[i].title;
     },
 
+    countList(list: Array<any>) {
+      // count and sort by family with most features
+      return list.reduce((count: any, f: string) => {
+        count[parseInt(f)] ? count[parseInt(f)]++ : (count[parseInt(f)] = 1);
+        return count;
+      }, {});
+    },
+
+    sortObject(counts: any) {
+      return Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+    },
+
+    sortFamilies(families: Array<Array<number>>) {
+      const counts = this.countList(families);
+      const sorted = this.sortObject(counts).map(i => [i, counts[i]]);
+      return sorted;
+    },
+
     drawBody(
       draw: any,
       waveform: Array<number>,
@@ -110,16 +128,17 @@ const cellRender: any = {
       const w = maxX - minX;
       const h = maxY - minY;
 
+      // count and sort families
+      const sorted = this.sortFamilies(data.featureFamilies);
+
       // calculate gradient
-      const counts = this.countList(data.featureFamilies);
-      const sorted = this.sortObject(counts);
       const gradient = draw.gradient("radial", function(add: any) {
         let a = 0;
         for (const i of sorted) {
-          a += counts[i];
+          a += i[1];
           add.stop({
             offset: a / 10 + 0.25,
-            color: families[parseInt(i)].color,
+            color: families[parseInt(i[0])].color,
             opacity: cytoplasmOpacity
           });
         }
@@ -140,18 +159,6 @@ const cellRender: any = {
         });
 
       return shape;
-    },
-
-    countList(list: Array<any>) {
-      // count and sort by family with most features
-      return list.reduce((count: any, f: string) => {
-        count[parseInt(f)] ? count[parseInt(f)]++ : (count[parseInt(f)] = 1);
-        return count;
-      }, {});
-    },
-
-    sortObject(counts: any) {
-      return Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
     },
 
     wallRange(shape: Array<Array<number>>) {

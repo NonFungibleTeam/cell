@@ -37,7 +37,7 @@
                   span Complete
         v-col
           h1 Families
-          GChart(type="PieChart" :data="families" :options="chartOptions")
+          GChart(type="PieChart" :data="familyChart" :options="chartOptions")
 
           h1 Features
           .features
@@ -62,7 +62,6 @@ import { GChart } from 'vue-google-charts';
 import Cell from "@/components/Cell.vue";
 import Level from "@/components/Level.vue";
 import { cellAddress, cellABI } from "@/cell-contract";
-
 import cellUtils from "@/mixins/cellUtils";
 import cellRender from "@/mixins/cellRender";
 
@@ -73,6 +72,11 @@ export default Vue.extend({
   computed: {
     id(): number {
       return parseInt(this.$route.params.id);
+    },
+    familyChart(): any {
+      const sorted = this.sortFamilies(this.data.featureFamilies);
+      const titled = sorted.map(i => [this.getFeatureFamily(i[0]), i[1]]);
+      return [this.familyChartHeader, ...titled];
     },
     founder(): boolean {
       return this.id < this.founders;
@@ -125,17 +129,10 @@ export default Vue.extend({
     walls: 11,
     loading: true,
     data: {} as any,
-    families: [
-      ['Family', 'Features'],
-      ['Fungi', 3],
-      ['Protist', 2],
-      ['Bacteria', 1],
-      ['Battery', 1],
-      ['Amoeba', 1],
-    ],
+    familyChartHeader: ['Family', 'Features'],
     chartOptions: {
       backgroundColor: "#121212",
-      pieHole: 0.75,
+      pieHole: 0.55,
       legend: {
         textStyle: {color: '#ffffff', fontSize: 16},
         position: 'labeled',
