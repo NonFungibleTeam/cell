@@ -186,7 +186,12 @@ const cellRender: any = {
       const segments = repeat * wave.length;
       const points = [];
       for (let i = 0; i <= segments; i++)
-        points[i] = this.radialWavePlotter(i, radius, wave, segments);
+        points[i] = this.radialWavePlotter(
+          i + ((segments / repeat) % segments),
+          radius,
+          wave,
+          segments
+        );
       return points;
     },
 
