@@ -35,44 +35,62 @@ export const features = [
          { title: "Electrons", key: "electrons", solo: false }
        ];
 export const families = [
-         { title: "Plant", color: "#0f0", colorString: "green", features: [0, 1, 2, 3, 4, 5, 6, 7] },
-         { title: "Animal", color: "#f00", colorString: "red", features: [0, 1, 2, 3, 4, 5, 6, 7] }, // [0, 1, 2, 8, 4, 5, 6, 7]
-         { title: "Fungi", color: "#ff0", colorString: "yellow", features: [0, 1, 2, 3, 4, 5, 6, 7] }, // [0, 1, 2, 9, 4, 5, 6, 7]
+         { title: "Plant", color: "#0f0", features: [0, 1, 2, 3, 4, 5, 6, 7] },
+         { title: "Animal", color: "#f00", features: [0, 1, 2, 8, 4, 5, 6, 7] },
+         { title: "Fungi", color: "#ff0", features: [0, 1, 2, 9, 4, 5, 6, 7] },
          {
            title: "Bacteria",
-           color: "#00f", colorString: "blue",
-           features: [0, 1, 2, 3, 4, 5, 6, 7] // [(10, 11, 12, 13, 4, 5, 6, 7)]
+           color: "#00f",
+           features: [10, 11, 12, 13, 4, 5, 6, 7]
          },
          {
            title: "Nanite",
-           color: "#000", colorString: "black",
-           features: [0, 1, 2, 3, 4, 5, 6, 7] // [14, 15, 16, 17, 18, 19, 20, 21]
+           color: "#000",
+           features: [14, 15, 16, 17, 18, 19, 20, 21]
          },
          {
            title: "Battery",
-           color: "#fff", colorString: "white",
-           features: [0, 1, 2, 3, 4, 5, 6, 7] // [22, 23, 24, 25, 26, 27, 28, 29]
+           color: "#fff",
+           features: [22, 23, 24, 25, 26, 27, 28, 29]
          },
-         { title: "Amoeba", color: "#0ff", colorString: "cyan", features: [0, 1, 2, 3, 4, 5, 6, 7] }, // [10, 9, 8, 3, 4, 5, 6, 7]
-         { title: "Protist", color: "#f0f", colorString: "purple", features: [0, 1, 2, 3, 4, 5, 6, 7] } // [10, 9, 8, 3, 4, 5, 6, 7]
+         {
+           title: "Amoeba",
+           color: "#0ff",
+           features: [10, 9, 8, 3, 4, 5, 6, 7]
+         },
+         {
+           title: "Protist",
+           color: "#f0f",
+           features: [10, 9, 8, 3, 4, 5, 6, 7]
+         },
        ];
-export const featureBase: any = {
-  mitochondria: {
-    size: [10, 18]
-  },
-  chloroplasts: {
-    size: [8, 16]
-  },
-  vacuoles: {
-    size: [20, 28]
-  },
-  ribosomes: {
-    size: [4, 10]
-  },
-  microtubules: {
-    size: [2, 20]
-  },
-  vesicles: {
-    size: [5, 5]
-  }
-};
+export const featureSizes: any = {
+         mitochondria: [10, 18],
+         chloroplasts: [8, 16],
+         vacuoles: [20, 28],
+         ribosomes: [4, 10],
+         microtubules: [2, 20],
+         vesicles: [5, 5],
+         lysosomes: [15, 20],
+         lipid: [3, 3],
+         crystals: [12, 20],
+         magnetosomes: [15, 15],
+         carboxysomes: [12, 12],
+         chromatophores: [10, 10],
+         logic: [15, 15],
+         rf: [5, 10],
+         memory: [10, 10],
+         pv: [12, 24],
+         balasts: [30, 30],
+         mam: [10, 30],
+         buses: [5, 30],
+         bundles: [8, 8],
+         anode: [7, 11],
+         cathode: [7, 11],
+         charger: [5, 15],
+         fuse: [3, 12],
+         separator: [1, 60],
+         electrolyte: [4, 7],
+         wire: [1, 30],
+         electrons: [3, 3],
+       };

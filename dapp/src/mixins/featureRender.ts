@@ -1,7 +1,7 @@
 import {
   preserve,
   nucleusPortion,
-  featureBase,
+  featureSizes,
 } from "./renderSettings";
 import { contrastingColor } from "./colorUtils";
 
@@ -48,7 +48,7 @@ function drawMitochndria(
         .fill(contrastingColor(baseColor));
     });
   const radius = size / 2;
-  const [w, h] = featureBase[type].size;
+  const [w, h] = featureSizes[type];
   for (let i = 0; i < feature.count; i++) {
     const location = randomRadialPlotter(radius, nucleus, h, 90, rand); // radius, buffer, segments, random
     draw
@@ -145,11 +145,33 @@ function defaultRenderer(
   rand: any
 ) {
   const radius = size / 2;
-  const [w, h] = featureBase[type].size;
+  const [w, h] = featureSizes[type];
   for (let i = 0; i < feature.count; i++) {
     const location = randomRadialPlotter(radius, nucleus, h, 90, rand); // radius, buffer, segments, random
     draw
       .ellipse(w, h)
+      .fill(feature.color)
+      .move(center[0] + 20 + location[0], center[1] + 20 + location[1])
+      .transform({ rotate: rand(359) })
+      .stroke("none");
+  }
+};
+
+function defaultRendererSquare(
+  draw: any,
+  feature: any,
+  center: Array<number>,
+  size: number,
+  type: string,
+  nucleus: boolean,
+  rand: any
+) {
+  const radius = size / 2;
+  const [w, h] = featureSizes[type];
+  for (let i = 0; i < feature.count; i++) {
+    const location = randomRadialPlotter(radius, nucleus, h, 90, rand); // radius, buffer, segments, random
+    draw
+      .rect(w, h)
       .fill(feature.color)
       .move(center[0] + 20 + location[0], center[1] + 20 + location[1])
       .transform({ rotate: rand(359) })
@@ -173,21 +195,21 @@ const featureRenderers: any = {
   magnetosomes: defaultRenderer,
   carboxysomes: defaultRenderer,
   chromatophores: defaultRenderer,
-  logic: defaultRenderer,
+  logic: defaultRendererSquare,
   rf: defaultRenderer,
-  memory: defaultRenderer,
-  pv: defaultRenderer,
+  memory: defaultRendererSquare,
+  pv: defaultRendererSquare,
   balasts: defaultRenderer,
   mam: defaultRenderer,
   buses: defaultRenderer,
   bundles: defaultRenderer,
-  anode: defaultRenderer,
-  cathode: defaultRenderer,
-  charger: defaultRenderer,
-  fuse: defaultRenderer,
-  separator: defaultRenderer,
+  anode: defaultRendererSquare,
+  cathode: defaultRendererSquare,
+  charger: defaultRendererSquare,
+  fuse: defaultRendererSquare,
+  separator: defaultRendererSquare,
   electrolyte: defaultRenderer,
-  wire: defaultRenderer,
+  wire: defaultRendererSquare,
   electrons: defaultRenderer
 };
 
