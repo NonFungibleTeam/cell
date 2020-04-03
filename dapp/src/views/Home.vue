@@ -67,16 +67,16 @@ export default {
   },
   data: () => ({
     data: {
-      "mass": "754",
-      "wallWave": "10330701",
+      "mass": "1854",
+      "wallWave": "13",
       "wallRound": true,
-      "wallColor": "6371645",
+      "wallColor": "76379945",
       "nucleusHidden": false,
-      "nucleusColor": "91030709",
+      "nucleusColor": "120900",
       "featureCategories": ["0","1","2","3","4","5","6","7"],
-      "featureFamilies": ["1","3","4","6","7","4","4","1"],
-      "featureCounts": ["5","9","1","3","7","11","13","2"],
-      "featureColors": ["12276130","15004091","9558604","13202218","579032","16426533","14842158","568390"]
+      "featureFamilies": ["1","1","1","1","1","3","3","3"],
+      "featureCounts": ["14","9","5","3","2","11","13","14"],
+      "featureColors": ["176130","15004091","9558604","13202218","579032","16426533","14842158","568390"]
     },
   }),
   computed: {
