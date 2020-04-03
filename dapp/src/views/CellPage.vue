@@ -74,13 +74,13 @@ export default Vue.extend({
       return parseInt(this.$route.params.id);
     },
     familyChart(): any {
-      const sorted = this.sortFamilies(this.data.featureFamilies);
-      const titled = sorted.map(i => [this.getFeatureFamily(i[0]).title, i[1]]);
+      const sorted = (this as any).sortFamilies(this.data.featureFamilies);
+      const titled = sorted.map((i: Array<any>) => [(this as any).getFeatureFamily(i[0]).title, i[1]]);
       return [this.familyChartHeader, ...titled];
     },
     familyChartOptions(): any {
-      const sorted = this.sortFamilies(this.data.featureFamilies);
-      const slices = sorted.map(i => ({ color: this.getFeatureFamily(i[0]).color }));
+      const sorted = (this as any).sortFamilies(this.data.featureFamilies);
+      const slices = sorted.map((i: Array<any>) => ({ color: (this as any).getFeatureFamily(i[0]).color }));
       const options = { ...this.chartOptions, slices: slices };
       return options;
     },
