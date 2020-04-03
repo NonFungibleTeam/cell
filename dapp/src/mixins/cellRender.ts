@@ -138,7 +138,7 @@ const cellRender: any = {
         for (const i of sorted) {
           a += i[1];
           add.stop({
-            offset: a / 10 + 0.25,
+            offset: a / 9 + (data.nucleusHidden ? 0 : nucleusPortion),
             color: families[parseInt(i[0])].color,
             opacity: cytoplasmOpacity
           });
