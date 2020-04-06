@@ -46,7 +46,7 @@
           v-col(align="center" md="2" offset-sm="5" xs="4" offset-xs="4")
             v-pagination(v-model="page" circle @click="loadCells" :length="pages")
             v-combobox.page-items(v-model="itemsPerPage" @change="selectCellsPerPage" dense hint="Cells per page" label="Cells per page" menu-props="top" :items='["12","18","24","36","48","96"]')
-    v-bottom-sheet(v-model="mergeCompare" inset persistent)
+    v-bottom-sheet(v-model="mergeCompare" inset persistent @keydown.enter="previewTX('merge'); mergeCompare = false" @keydown.esc="clearMerge()" @keydown.delete="clearMerge()")
       v-sheet(v-if="mergeCompare" align="center" height="430px")
         v-container
           v-row
@@ -62,8 +62,8 @@
               v-divider(v-if="i === merge[0]" vertical)
         .merge-btns
           v-btn(class="mt-6" text color="success" @click="previewTX('merge'); mergeCompare = false") Merge
-          v-btn(class="mt-6" text color="error" @click="clearMerge(); mergeCompare = false") Cancel
-    v-dialog(v-model="dialog" persistent max-width="600px")
+          v-btn(class="mt-6" text color="error" @click="clearMerge()") Cancel
+    v-dialog(v-model="dialog" persistent max-width="600px" @keydown.enter="tx.send(); dialog = false" @keydown.esc="clearMerge(); dialog = false" @keydown.delete="clearMerge(); dialog = false")
       v-card.tx-preview
         v-card-title {{ tx.title }}
         v-card-subtitle Transaction Preview
